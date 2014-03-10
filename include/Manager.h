@@ -13,6 +13,7 @@
 
 #include "Object.h"
 #include "PulseManager.h"
+#include "DiscreteData.h"
 
 class Manager
 {
@@ -22,7 +23,7 @@ public:
     //-------------------------------------------------------------------------
     Manager();
     //-------------------------------------------------------------------------
-    /// @brief create object
+    /// @brief create object from full waveform LiDAR data
     /// @param[in] i_x the number of voxels in the x-axis
     /// @param[in] user_limits the limits that define the area of interest
     /// [maxNorthY, minNorthY, maxEastX, maxEastX, maxHeightZ, minHeightZ]
@@ -31,7 +32,20 @@ public:
     static Object *createObject(
             unsigned int i_x,
             const std::vector<double> user_limits,
-            PulseManager *i_pulseManager, double noiseLevel
+            PulseManager *i_pulseManager,
+            double noiseLevel
+            );
+    //-------------------------------------------------------------------------
+    /// @brief create object from the discrete LiDAR data
+    /// @param[in] i_x the number of voxels in the x-axis
+    /// @param[in] user_limits the limits that define the area of interest
+    /// [maxNorthY, minNorthY, maxEastX, maxEastX, maxHeightZ, minHeightZ]
+    /// @param[in] i_discreteData it holds all the info about the las file
+    //-------------------------------------------------------------------------
+    static Object *createObject(
+            unsigned int i_x,
+            const std::vector<double> user_limits,
+            DiscreteData *i_discreteData
             );
     //-------------------------------------------------------------------------
     /// @brief method that returns a polygonised object

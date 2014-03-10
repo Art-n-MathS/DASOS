@@ -26,17 +26,38 @@ std::string Convert (float number){
 }
 
 
+void getData (unsigned int **mydata)
+{
+    *mydata = new unsigned int[5];
+    (*mydata)[0] = 1;
+    (*mydata)[1] = 2;
+    (*mydata)[2] = 3;
+    (*mydata)[3] = 4;
+    (*mydata)[4] = 5;
+}
+
+
+
 int main(int argc, char **argv)
 {
 
-
   QApplication a(argc, argv);
+
+  unsigned int *mydata;
+  getData(&mydata);
+  for(unsigned int i=0; i<5; i++)
+  {
+      std::cout << mydata[i] << " ";
+  }
+  std::cout << "\n";
 
 
   MainWindow w;
   std::cout << "~Main Window created\n";
   // show it
   w.show();
+
+
 
 //  double* data=0;
 //  try

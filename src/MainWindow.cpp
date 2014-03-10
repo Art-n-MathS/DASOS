@@ -14,10 +14,12 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_ui(new Ui::MainWindow),
-    m_pulseManager(0),
-    m_obj(0),
     m_gl(0),
-    m_glData(0)
+    m_pulseManager(0),
+    m_discreteData(0),
+    m_obj(0),
+    m_glData(0),
+    m_type(false)
 {
    m_ui->setupUi(this);
    m_gl=new  GLWindow(this);
@@ -32,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(m_ui->m_pbLoadHyper,SIGNAL(clicked()),this,SLOT(loadHyperspectraldata()));
    connect(m_ui->m_updateBands,SIGNAL(clicked()),this,SLOT(updateHyperspectral()));
    connect(m_ui->m_pbCreateMap,SIGNAL(clicked()),this,SLOT(createMap()));
+   connect(m_ui->m_cbDataType,SIGNAL(currentIndexChanged(int)),this,SLOT(changeType(int)));
 
 //		connect(m_ui->m_wireframe,SIGNAL(toggled(bool)),m_gl,SLOT(toggleWireframe(bool)));
 //		/// set the combo box index change signal
@@ -40,6 +43,10 @@ MainWindow::MainWindow(QWidget *parent) :
    QStringList maps;
    maps << "Thickness" << "Density" << "Height";
    m_ui->m_cbMaps->insertItems(0,maps);
+   QStringList types;
+   types << "Full-wavefrom" << "Discrete";
+   m_ui->m_cbDataType->insertItems(0,types);
+
    m_user_limits.resize(6);
    loadLASfile();
 }
@@ -65,6 +72,12 @@ void MainWindow::loadHyperspectraldata()
 }
 
 //-----------------------------------------------------------------------------
+void MainWindow::changeType(int i_type)
+{
+    m_type = i_type;
+}
+
+//-----------------------------------------------------------------------------
 void MainWindow::updateHyperspectral()
 {
     std::vector<short unsigned int > bands(3);
@@ -84,6 +97,7 @@ void MainWindow::updateHyperspectral()
                   nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));                  ;
     ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
                   atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
+
     m_glData->createUVs(min,max);
     m_gl->buildVAO(m_glData);
 }
@@ -114,9 +128,15 @@ void MainWindow::loadLASfile()
       if (m_pulseManager!=0)
       {
          delete m_pulseManager;
+         m_pulseManager=0;
+      }
+      if(m_discreteData!=0)
+      {
+         delete m_discreteData;
+         m_discreteData=0;
       }
       // load LAS file into the pulse manager
-      m_pulseManager = lala.readFileAndGetPulseManager();
+      lala.readFileAndGetPulseManager(&m_pulseManager, &m_discreteData);
       t2 = clock();
       float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
       std::cout << "Reading LAS1_3 file took " << diff << " SECONDS!!!\n";
@@ -180,10 +200,19 @@ void MainWindow::createObject()
    {
        delete m_obj;
    }
-   m_obj = Manager::createObject(m_ui->m_sbNoOfVoxelsInX->value(),
+   if(m_type)
+   {
+      std::cout << "discrete\n";
+      m_obj = Manager::createObject(m_ui->m_sbNoOfVoxelsInX->value(),
+                                    m_user_limits,m_discreteData);
+   }
+   else
+   {
+      std::cout << "full waveform\n";
+      m_obj = Manager::createObject(m_ui->m_sbNoOfVoxelsInX->value(),
                    m_user_limits,m_pulseManager,
                    m_ui->m_sbNoiseLevel->value());
-
+   }
    std::cout << "Object created!\n";
 }
 
@@ -225,9 +254,6 @@ void MainWindow::polygonise()
       {
           delete m_glData;
       }
-
-
-
 
       m_glData = Manager::getPolygonisedObject(
                   m_obj,m_ui->m_sbNoOfVoxelsInX->value());

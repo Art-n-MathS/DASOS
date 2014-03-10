@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created: Thu Feb 27 15:28:23 2014
+** Created: Mon Mar 10 09:51:55 2014
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -68,8 +68,6 @@ public:
     QDoubleSpinBox *doubleSpinBox;
     QDoubleSpinBox *m_maxNorthY;
     QPushButton *m_pbLoadLAS;
-    QPushButton *m_pbCreateMap;
-    QComboBox *m_cbMaps;
     QLabel *label_6;
     QPlainTextEdit *m_tHist;
     QPushButton *m_pbCreate;
@@ -80,21 +78,28 @@ public:
     QSpinBox *m_sbNoOfVoxelsInX;
     QDoubleSpinBox *m_maxEastX;
     QPushButton *m_pbSaveHist;
+    QLabel *label_13;
+    QComboBox *m_cbDataType;
     QSpacerItem *verticalSpacer_2;
     QWidget *tab_2;
     QGridLayout *gridLayout_2;
     QGroupBox *groupBox_4;
     QGridLayout *gridLayout_7;
+    QLabel *label_10;
     QPushButton *m_pbLoadHyper;
     QSpinBox *m_sbBand1;
     QLabel *label_11;
     QLabel *label_12;
     QSpinBox *m_sbBand3;
-    QSpacerItem *verticalSpacer;
-    QLabel *label_10;
     QSpinBox *m_sbBand2;
     QPushButton *m_updateBands;
     QCheckBox *checkBox;
+    QSpacerItem *verticalSpacer;
+    QWidget *tab_3;
+    QGridLayout *gridLayout_9;
+    QPushButton *m_pbCreateMap;
+    QComboBox *m_cbMaps;
+    QSpacerItem *verticalSpacer_3;
     QSpacerItem *horizontalSpacer;
     QMenuBar *menubar;
     QStatusBar *statusbar;
@@ -172,32 +177,32 @@ public:
         m_sbNoiseLevel->setMaximum(200);
         m_sbNoiseLevel->setValue(25);
 
-        gridLayout_5->addWidget(m_sbNoiseLevel, 7, 2, 1, 1);
+        gridLayout_5->addWidget(m_sbNoiseLevel, 8, 2, 1, 1);
 
         label_5 = new QLabel(groupBox_3);
         label_5->setObjectName(QString::fromUtf8("label_5"));
 
-        gridLayout_5->addWidget(label_5, 2, 1, 1, 1);
+        gridLayout_5->addWidget(label_5, 3, 1, 1, 1);
 
         label_7 = new QLabel(groupBox_3);
         label_7->setObjectName(QString::fromUtf8("label_7"));
 
-        gridLayout_5->addWidget(label_7, 5, 0, 1, 2);
+        gridLayout_5->addWidget(label_7, 6, 0, 1, 2);
 
         m_minNorthY = new QDoubleSpinBox(groupBox_3);
         m_minNorthY->setObjectName(QString::fromUtf8("m_minNorthY"));
 
-        gridLayout_5->addWidget(m_minNorthY, 3, 2, 1, 1);
+        gridLayout_5->addWidget(m_minNorthY, 4, 2, 1, 1);
 
         label_3 = new QLabel(groupBox_3);
         label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        gridLayout_5->addWidget(label_3, 3, 0, 1, 1);
+        gridLayout_5->addWidget(label_3, 4, 0, 1, 1);
 
         label_2 = new QLabel(groupBox_3);
         label_2->setObjectName(QString::fromUtf8("label_2"));
 
-        gridLayout_5->addWidget(label_2, 1, 0, 1, 3);
+        gridLayout_5->addWidget(label_2, 2, 0, 1, 3);
 
         m_limit = new QDoubleSpinBox(groupBox_3);
         m_limit->setObjectName(QString::fromUtf8("m_limit"));
@@ -212,37 +217,27 @@ public:
         label = new QLabel(groupBox_3);
         label->setObjectName(QString::fromUtf8("label"));
 
-        gridLayout_5->addWidget(label, 6, 0, 1, 2);
+        gridLayout_5->addWidget(label, 7, 0, 1, 2);
 
         doubleSpinBox = new QDoubleSpinBox(groupBox_3);
         doubleSpinBox->setObjectName(QString::fromUtf8("doubleSpinBox"));
 
-        gridLayout_5->addWidget(doubleSpinBox, 6, 2, 1, 1);
+        gridLayout_5->addWidget(doubleSpinBox, 7, 2, 1, 1);
 
         m_maxNorthY = new QDoubleSpinBox(groupBox_3);
         m_maxNorthY->setObjectName(QString::fromUtf8("m_maxNorthY"));
 
-        gridLayout_5->addWidget(m_maxNorthY, 3, 1, 1, 1);
+        gridLayout_5->addWidget(m_maxNorthY, 4, 1, 1, 1);
 
         m_pbLoadLAS = new QPushButton(groupBox_3);
         m_pbLoadLAS->setObjectName(QString::fromUtf8("m_pbLoadLAS"));
 
         gridLayout_5->addWidget(m_pbLoadLAS, 0, 0, 1, 3);
 
-        m_pbCreateMap = new QPushButton(groupBox_3);
-        m_pbCreateMap->setObjectName(QString::fromUtf8("m_pbCreateMap"));
-
-        gridLayout_5->addWidget(m_pbCreateMap, 9, 2, 1, 1);
-
-        m_cbMaps = new QComboBox(groupBox_3);
-        m_cbMaps->setObjectName(QString::fromUtf8("m_cbMaps"));
-
-        gridLayout_5->addWidget(m_cbMaps, 9, 0, 1, 2);
-
         label_6 = new QLabel(groupBox_3);
         label_6->setObjectName(QString::fromUtf8("label_6"));
 
-        gridLayout_5->addWidget(label_6, 2, 2, 1, 1);
+        gridLayout_5->addWidget(label_6, 3, 2, 1, 1);
 
         m_tHist = new QPlainTextEdit(groupBox_3);
         m_tHist->setObjectName(QString::fromUtf8("m_tHist"));
@@ -253,17 +248,17 @@ public:
         m_pbCreate = new QPushButton(groupBox_3);
         m_pbCreate->setObjectName(QString::fromUtf8("m_pbCreate"));
 
-        gridLayout_5->addWidget(m_pbCreate, 8, 0, 1, 3);
+        gridLayout_5->addWidget(m_pbCreate, 9, 0, 1, 3);
 
         m_minEastX = new QDoubleSpinBox(groupBox_3);
         m_minEastX->setObjectName(QString::fromUtf8("m_minEastX"));
 
-        gridLayout_5->addWidget(m_minEastX, 4, 2, 1, 1);
+        gridLayout_5->addWidget(m_minEastX, 5, 2, 1, 1);
 
         label_9 = new QLabel(groupBox_3);
         label_9->setObjectName(QString::fromUtf8("label_9"));
 
-        gridLayout_5->addWidget(label_9, 7, 0, 1, 2);
+        gridLayout_5->addWidget(label_9, 8, 0, 1, 2);
 
         label_8 = new QLabel(groupBox_3);
         label_8->setObjectName(QString::fromUtf8("label_8"));
@@ -273,7 +268,7 @@ public:
         label_4 = new QLabel(groupBox_3);
         label_4->setObjectName(QString::fromUtf8("label_4"));
 
-        gridLayout_5->addWidget(label_4, 4, 0, 1, 1);
+        gridLayout_5->addWidget(label_4, 5, 0, 1, 1);
 
         m_sbNoOfVoxelsInX = new QSpinBox(groupBox_3);
         m_sbNoOfVoxelsInX->setObjectName(QString::fromUtf8("m_sbNoOfVoxelsInX"));
@@ -281,17 +276,27 @@ public:
         m_sbNoOfVoxelsInX->setMaximum(9999999);
         m_sbNoOfVoxelsInX->setValue(20);
 
-        gridLayout_5->addWidget(m_sbNoOfVoxelsInX, 5, 2, 1, 1);
+        gridLayout_5->addWidget(m_sbNoOfVoxelsInX, 6, 2, 1, 1);
 
         m_maxEastX = new QDoubleSpinBox(groupBox_3);
         m_maxEastX->setObjectName(QString::fromUtf8("m_maxEastX"));
 
-        gridLayout_5->addWidget(m_maxEastX, 4, 1, 1, 1);
+        gridLayout_5->addWidget(m_maxEastX, 5, 1, 1, 1);
 
         m_pbSaveHist = new QPushButton(groupBox_3);
         m_pbSaveHist->setObjectName(QString::fromUtf8("m_pbSaveHist"));
 
         gridLayout_5->addWidget(m_pbSaveHist, 11, 0, 1, 1);
+
+        label_13 = new QLabel(groupBox_3);
+        label_13->setObjectName(QString::fromUtf8("label_13"));
+
+        gridLayout_5->addWidget(label_13, 1, 0, 1, 1);
+
+        m_cbDataType = new QComboBox(groupBox_3);
+        m_cbDataType->setObjectName(QString::fromUtf8("m_cbDataType"));
+
+        gridLayout_5->addWidget(m_cbDataType, 1, 1, 1, 2);
 
         m_pbLoadLAS->raise();
         label_2->raise();
@@ -314,8 +319,8 @@ public:
         m_pbSaveHist->raise();
         label->raise();
         doubleSpinBox->raise();
-        m_pbCreateMap->raise();
-        m_cbMaps->raise();
+        label_13->raise();
+        m_cbDataType->raise();
 
         gridLayout_3->addWidget(groupBox_3, 0, 0, 1, 3);
 
@@ -335,6 +340,11 @@ public:
         groupBox_4->setObjectName(QString::fromUtf8("groupBox_4"));
         gridLayout_7 = new QGridLayout(groupBox_4);
         gridLayout_7->setObjectName(QString::fromUtf8("gridLayout_7"));
+        label_10 = new QLabel(groupBox_4);
+        label_10->setObjectName(QString::fromUtf8("label_10"));
+
+        gridLayout_7->addWidget(label_10, 2, 0, 1, 1);
+
         m_pbLoadHyper = new QPushButton(groupBox_4);
         m_pbLoadHyper->setObjectName(QString::fromUtf8("m_pbLoadHyper"));
 
@@ -364,15 +374,6 @@ public:
 
         gridLayout_7->addWidget(m_sbBand3, 4, 1, 1, 1);
 
-        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
-
-        gridLayout_7->addItem(verticalSpacer, 7, 0, 1, 1);
-
-        label_10 = new QLabel(groupBox_4);
-        label_10->setObjectName(QString::fromUtf8("label_10"));
-
-        gridLayout_7->addWidget(label_10, 2, 0, 1, 1);
-
         m_sbBand2 = new QSpinBox(groupBox_4);
         m_sbBand2->setObjectName(QString::fromUtf8("m_sbBand2"));
         m_sbBand2->setMaximum(252);
@@ -391,10 +392,33 @@ public:
 
         gridLayout_7->addWidget(checkBox, 6, 0, 1, 2);
 
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_7->addItem(verticalSpacer, 7, 0, 1, 2);
+
 
         gridLayout_2->addWidget(groupBox_4, 0, 0, 1, 1);
 
         tabWidget->addTab(tab_2, QString());
+        tab_3 = new QWidget();
+        tab_3->setObjectName(QString::fromUtf8("tab_3"));
+        gridLayout_9 = new QGridLayout(tab_3);
+        gridLayout_9->setObjectName(QString::fromUtf8("gridLayout_9"));
+        m_pbCreateMap = new QPushButton(tab_3);
+        m_pbCreateMap->setObjectName(QString::fromUtf8("m_pbCreateMap"));
+
+        gridLayout_9->addWidget(m_pbCreateMap, 0, 1, 1, 1);
+
+        m_cbMaps = new QComboBox(tab_3);
+        m_cbMaps->setObjectName(QString::fromUtf8("m_cbMaps"));
+
+        gridLayout_9->addWidget(m_cbMaps, 0, 0, 1, 1);
+
+        verticalSpacer_3 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        gridLayout_9->addItem(verticalSpacer_3, 1, 0, 1, 2);
+
+        tabWidget->addTab(tab_3, QString());
 
         gridLayout_8->addWidget(tabWidget, 0, 4, 1, 1);
 
@@ -437,22 +461,24 @@ public:
         label_2->setText(QApplication::translate("MainWindow", "Limits of the area of your interest:", 0, QApplication::UnicodeUTF8));
         label->setText(QApplication::translate("MainWindow", "Length of Voxel", 0, QApplication::UnicodeUTF8));
         m_pbLoadLAS->setText(QApplication::translate("MainWindow", "Load LAS1.3 file", 0, QApplication::UnicodeUTF8));
-        m_pbCreateMap->setText(QApplication::translate("MainWindow", "Create", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("MainWindow", "Min", 0, QApplication::UnicodeUTF8));
         m_pbCreate->setText(QApplication::translate("MainWindow", "Create Implicit Object", 0, QApplication::UnicodeUTF8));
         label_9->setText(QApplication::translate("MainWindow", "Noise Level", 0, QApplication::UnicodeUTF8));
         label_8->setText(QApplication::translate("MainWindow", "Object Isolevel", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("MainWindow", "East", 0, QApplication::UnicodeUTF8));
         m_pbSaveHist->setText(QApplication::translate("MainWindow", "Save Hist", 0, QApplication::UnicodeUTF8));
+        label_13->setText(QApplication::translate("MainWindow", "Use", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("MainWindow", "LiDAR", 0, QApplication::UnicodeUTF8));
         groupBox_4->setTitle(QApplication::translate("MainWindow", "GroupBox", 0, QApplication::UnicodeUTF8));
+        label_10->setText(QApplication::translate("MainWindow", "Red Band", 0, QApplication::UnicodeUTF8));
         m_pbLoadHyper->setText(QApplication::translate("MainWindow", "Load Hyperspectral images", 0, QApplication::UnicodeUTF8));
         label_11->setText(QApplication::translate("MainWindow", "Green Band", 0, QApplication::UnicodeUTF8));
         label_12->setText(QApplication::translate("MainWindow", "Blue Band", 0, QApplication::UnicodeUTF8));
-        label_10->setText(QApplication::translate("MainWindow", "Red Band", 0, QApplication::UnicodeUTF8));
         m_updateBands->setText(QApplication::translate("MainWindow", "Update Bands", 0, QApplication::UnicodeUTF8));
         checkBox->setText(QApplication::translate("MainWindow", "Disable Hyperspectral texture", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Hyperspectral", 0, QApplication::UnicodeUTF8));
+        m_pbCreateMap->setText(QApplication::translate("MainWindow", "Create", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Maps", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

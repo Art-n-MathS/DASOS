@@ -165,24 +165,6 @@ void Pulse::print()const
 }
 
 //-----------------------------------------------------------------------------
-void Pulse::addAllReturnsToCloud(
-        pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud
-        )
-{
-   ngl::Vec3 nextPoint = m_origin;
-
-   for(unsigned short int i=0; i<m_noOfSamples; ++i)
-   {
-     cloud->points.push_back(pcl::PointXYZI(m_returns[i]));
-     cloud->points[cloud->points.size()-1].x = nextPoint.m_x;
-     cloud->points[cloud->points.size()-1].y = nextPoint.m_y;
-     cloud->points[cloud->points.size()-1].z = nextPoint.m_z;
-     nextPoint+=m_offset;
-   }
-      count++;
-}
-
-//-----------------------------------------------------------------------------
 bool Pulse::isInsideLimits(const std::vector<double> &i_user_limits)const
 {
    return m_point.m_y<i_user_limits[0] && m_point.m_y>i_user_limits[1] &&

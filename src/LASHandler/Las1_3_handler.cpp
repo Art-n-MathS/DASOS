@@ -17,7 +17,10 @@ Las1_3_handler::Las1_3_handler(
 }
 
 //-----------------------------------------------------------------------------
-PulseManager *Las1_3_handler::readFileAndGetPulseManager()
+void Las1_3_handler::readFileAndGetPulseManager(
+        PulseManager **i_pulseManager,
+        DiscreteData **i_discreteData
+        )
 {
    lasfile.open(m_filename.c_str(),std::ios::binary);
    if(!lasfile.is_open())
@@ -26,10 +29,86 @@ PulseManager *Las1_3_handler::readFileAndGetPulseManager()
    }
    read_public_header();
    read_variable_length_records();
-   PulseManager *pulseManager = read_point_data_records();
-   lasfile.close();
 
-   return pulseManager;
+
+   //method that reads point data records
+   //---------------------------------------------------------------
+   *i_pulseManager =
+           new (std::nothrow) PulseManager(public_header,wv_info);
+   if(*i_pulseManager==0)
+   {
+       std::cerr << "Error: Memory could not be allocated\n";
+       exit(EXIT_FAILURE);
+   }
+   *i_discreteData = new(std::nothrow)DiscreteData(public_header.number_of_point_records);
+   if(*i_discreteData==0)
+   {
+       std::cerr << "Error: Memory could not be allocated\n";
+       exit(EXIT_FAILURE);
+   }
+
+   Types::Data_Point_Record_Format_4 point_info;
+   lasfile.seekg((int) public_header.offset_to_point);
+
+   unsigned int count=0;
+   unsigned int countDiscrete = 0;
+   for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+   {
+      lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+
+      if((int)point_info.classification!=7)
+      {
+         if( point_info.wave_packet_descriptor_index!=0 &&
+                 (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
+           {
+             (*i_discreteData)->addPoint(point_info.itensity,
+                                         ngl::Vec3(point_info.X*public_header.x_scale_factor,
+                                                   point_info.Y*public_header.y_scale_factor,
+                                                   point_info.Z*public_header.z_scale_factor));
+              count++;
+              int wave_offset = public_header.start_of_wf_data_Packet_record +
+                      point_info.byte_offset_to_wf_packet_data;
+              char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+              if(wave_data==0)
+              {
+                  std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                            << "Program will terminate\n";
+                  exit(EXIT_FAILURE);
+              }
+              int tmp = lasfile.tellg();
+              lasfile.seekg(wave_offset);
+              lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+              (*i_pulseManager)->addPoint(point_info,wave_data);
+              lasfile.seekg(tmp);
+              delete []wave_data;
+        }
+        else
+        {
+            (*i_discreteData)->addPoint(point_info.itensity,
+                                        ngl::Vec3(point_info.X*public_header.x_scale_factor,
+                                                  point_info.Y*public_header.y_scale_factor,
+                                                  point_info.Z*public_header.z_scale_factor));
+            countDiscrete++;
+            // no waveform associated with the data
+        }
+      }
+      else
+      {
+          // only noise has been recorded
+      }
+   }
+   if(count==0)
+   {
+       std::cout << "no waveforms associated with that area\n";
+   }
+   else
+   {
+       std::cout << count << " waveforms found\n";
+       std::cout << count+countDiscrete << " discrete points found\n";
+   }
+   //---------------------------------------------------------------
+
+   lasfile.close();
 }
 
 //-----------------------------------------------------------------------------
@@ -151,82 +230,6 @@ void Las1_3_handler::read_variable_length_records()
 //                   << "Digitizer Offset = " << (int) wv_info.digitizer_offset << "\n";
       }
    }
-}
-
-//-----------------------------------------------------------------------------
-PulseManager * Las1_3_handler::read_point_data_records()
-{
-   PulseManager *pulseManager =
-           new (std::nothrow) PulseManager(public_header,wv_info);
-   if(pulseManager==0)
-   {
-       std::cerr << "Error: Memory could not be allocated\n";
-       exit(EXIT_FAILURE);
-   }
-   Types::Data_Point_Record_Format_4 point_info;
-   lasfile.seekg((int) public_header.offset_to_point);
-   //---------------------------------------------------------------
-   unsigned int count=0;
-   for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
-   {
-      lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-//      std::cout << "// --------------------------------------------------------------\n";
-//      std::cout << "Point INFO: \n";
-//      std::cout << "X = " << point_info.X << "\n";
-//      std::cout << "Y = " << point_info.Y << "\n";
-//      std::cout << "Z = " << point_info.Z << "\n";
-//      std::cout << "itensity = " << point_info.itensity << "\n";
-//      std::cout << "returnNo_noOfRe_scanDirFla_EdgeFLn = " << (int) point_info.returnNo_noOfRe_scanDirFla_EdgeFLn << "\n";
-//      std::cout << "classification = " << (int)point_info.classification << "\n";
-//      std::cout << "scan_angle_rank = " << (int)point_info.scan_angle_rank << "\n";
-//      std::cout << "user_data = " << (int)point_info.user_data << "\n";
-//      std::cout << "point_source_ID = " << (int)point_info.point_source_ID << "\n";
-//      std::cout << "GBS_time = " << (double) point_info.GBS_time << "\n";
-//      std::cout << "wave_packet_descriptor_index = " << (unsigned int) point_info.wave_packet_descriptor_index << "\n";
-//      std::cout << "byte_offset_to_wf_packet_data = " <<(unsigned int) point_info.byte_offset_to_wf_packet_data << "\n";
-//      std::cout << "wf_packet_size_in_bytes = " <<(unsigned int) point_info.wf_packet_size_in_bytes << "\n";
-//      std::cout << "return_point_wf_location = " << (float)point_info.return_point_wf_location << "\n";
-//      std::cout << "X(t) = " <<(float) point_info.X_t << "\n";
-//      std::cout << "Y(t) = " << (float)point_info.Y_t << "\n";
-//      std::cout << "Z(t) = " <<(float) point_info.Z_t << "\n";
-
-      // if there is a waveform associated to this point
-
-      if( point_info.wave_packet_descriptor_index!=0 &&
-         (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 &&
-         (int)point_info.classification!=7)
-      {
-            count++;
-            int wave_offset = public_header.start_of_wf_data_Packet_record +
-                    point_info.byte_offset_to_wf_packet_data;
-            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-            if(wave_data==0)
-            {
-                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-                          << "Program will terminate\n";
-                exit(EXIT_FAILURE);
-            }
-            int tmp = lasfile.tellg();
-            lasfile.seekg(wave_offset);
-            lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-            pulseManager->addPoint(point_info,wave_data);
-            lasfile.seekg(tmp);
-            delete []wave_data;
-      }
-      else
-      {
-          // no waveform associated with the data
-      }
-   }
-   if(count==0)
-   {
-       std::cout << "no waveforms associated with that area\n";
-   }
-   else
-   {
-       std::cout << count << " waveforms found\n";
-   }
-   return pulseManager;
 }
 
 //-----------------------------------------------------------------------------

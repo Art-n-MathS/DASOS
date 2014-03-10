@@ -47,18 +47,18 @@ void GLData::createUVs(
         const ngl::Vec2 &i_hyperMaxLimits
         )
 {
-//    std::cout << i_hyperMinLimits.m_x << " " << i_hyperMinLimits.m_y << "\n";
-//    std::cout << i_hyperMaxLimits.m_x << " " << i_hyperMaxLimits.m_y << "\n";
+    std::cout << i_hyperMinLimits.m_x << " " << i_hyperMinLimits.m_y << "\n";
+    std::cout << i_hyperMaxLimits.m_x << " " << i_hyperMaxLimits.m_y << "\n";
 
-//   m_UVs.resize(m_vertices.size()/3*2);
-//   for(unsigned int i=0; i<m_vertices.size()/3; ++i)
-//   {
-//       m_UVs[i*2  ] = (m_vertices[i*3  ]-i_hyperMinLimits.m_x)/
-//                         (i_hyperMaxLimits.m_x-i_hyperMinLimits.m_x);
+   m_UVs.resize(m_vertices.size()/3*2);
+   for(unsigned int i=0; i<m_vertices.size()/3; ++i)
+   {
+       m_UVs[i*2  ] = (m_vertices[i*3  ]-i_hyperMinLimits.m_x)/
+                         (i_hyperMaxLimits.m_x-i_hyperMinLimits.m_x);
 
-//       m_UVs[i*2+1] = (m_vertices[i*3+1]-i_hyperMinLimits.m_y)/
-//                         (i_hyperMaxLimits.m_y-i_hyperMinLimits.m_y);
-//   }
+       m_UVs[i*2+1] = (m_vertices[i*3+1]-i_hyperMinLimits.m_y)/
+                         (i_hyperMaxLimits.m_y-i_hyperMinLimits.m_y);
+   }
 
 }
 
@@ -69,12 +69,6 @@ unsigned int GLData::addVertex(const ngl::Vec3 &i_vertex)
    m_vertices.push_back(i_vertex.m_x);
    m_vertices.push_back(i_vertex.m_y);
    m_vertices.push_back(i_vertex.m_z);
-
-   m_UVs.push_back((i_vertex.m_x-m_hyperMinLimits.m_x)
-                   /(m_hyperMaxLimits.m_x-m_hyperMinLimits.m_x));
-
-   m_UVs.push_back((i_vertex.m_y-m_hyperMinLimits.m_y)
-                   /(m_hyperMaxLimits.m_y-m_hyperMinLimits.m_y));
 
    return (m_vertices.size()/3-1);
 }

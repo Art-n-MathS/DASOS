@@ -1,6 +1,5 @@
 #ifndef PULSE_H
 #define PULSE_H
-#include <pcl/point_types.h>
 #include <ngl/Vec3.h>
 #include "Types.h"
 #include "Object.h"
@@ -35,39 +34,6 @@ public:
    /// @brief method that prints all the attributes associated with this pulse
    //--------------------------------------------------------------------------
    void print()const;
-//   //--------------------------------------------------------------------------
-//   /// @brief method that returns all the peak points of the pulse return
-//   /// it also calculates them if they have not already been calcualated
-//   /// @note this method uses s_kernel, which should be initialised outside
-//   /// this class. Pulse Manager usually does it. If not initialised then
-//   /// no correlation is applied to the waves.
-//   /// The program allows you to use a different kernel, but the peaks already
-//   /// calculated will not be change through, unless the clearPeak() function
-//   /// is called.
-//   //--------------------------------------------------------------------------
-//   const std::vector <Peak *> &getPeakPoints();
-//   //-------------------------------------------------------------------------
-//   /// @brief method that adds the peak points to the given points cloud
-//   /// @param[in] i_cloud the given points cloud
-//   //-------------------------------------------------------------------------
-//   void addPeaks(
-//           pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud,
-//           const std::vector<float> &user_limits
-//           );
-//   //--------------------------------------------------------------------------
-//   /// @brief method that clears all the peak values that has already been
-//   /// calculated
-//   //--------------------------------------------------------------------------
-//   void clearPeaks();
-   //-------------------------------------------------------------------------
-   /// @brief method that adds the wave to the given points cloud if the
-   /// origin point lies inside the given limits
-   /// @param[in] i_cloud the given cloud that the points will be added to
-   /// @param[in] i_user_limits the limits of the points cloud
-   //-------------------------------------------------------------------------
-   void addAllReturnsToCloud(
-           pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud
-           );
    //--------------------------------------------------------------------------
    /// @brief method that returns the origin of the point
    //--------------------------------------------------------------------------

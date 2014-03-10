@@ -16,6 +16,7 @@
 #include "GLData.h"
 #include "Object.h"
 #include "PulseManager.h"
+#include "DiscreteData.h"
 
 namespace Ui {
     class MainWindow;
@@ -80,6 +81,10 @@ public slots:
     /// @brief method that creates a map and saves it as an image
     //-------------------------------------------------------------------------
     void createMap();
+    //-------------------------------------------------------------------------
+    /// @brief method that changes the type of data that will be used
+    //-------------------------------------------------------------------------
+    void changeType(int i_type);
 
 
 private:
@@ -106,6 +111,10 @@ private:
     //-------------------------------------------------------------------------
     PulseManager *m_pulseManager;
     //-------------------------------------------------------------------------
+    /// @brief all the discrete data
+    //-------------------------------------------------------------------------
+    DiscreteData *m_discreteData;
+    //-------------------------------------------------------------------------
     /// @brief those limits define the area that the user would like to process
     /// @note before you use them you should always update them by calling the
     /// updateLimits() function.
@@ -123,6 +132,12 @@ private:
     /// it is equal to 0 if it does not include any object
     //-------------------------------------------------------------------------
     GLData *m_glData;
+    //-------------------------------------------------------------------------
+    /// @brief what time of data will be used
+    /// 0/false for fullwaveform data and 1/true for discrete data
+    //-------------------------------------------------------------------------
+    bool m_type;
+
 
 
 };

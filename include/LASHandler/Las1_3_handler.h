@@ -7,6 +7,7 @@
 
 #include "Types.h"
 #include "PulseManager.h"
+#include "DiscreteData.h"
 
 class Las1_3_handler
 {
@@ -19,10 +20,13 @@ public:
    //-------------------------------------------------------------------------
    /// @brief method that reads the data and returns a pulse manager with all
    /// the waveform information of the pulses
-   /// NOTE: pulseManager is dynamic allocated, so by calling this function,
+   /// NOTE: i_pulseManager is dynamic allocated, so by calling this function,
    /// you are responsible for releasing memory afterwards.
    //-------------------------------------------------------------------------
-   PulseManager *readFileAndGetPulseManager();
+   void readFileAndGetPulseManager(
+           PulseManager **i_pulseManager,
+           DiscreteData **i_discreteData
+           );
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------
@@ -65,14 +69,6 @@ private:
    /// packet descriptors (up to 255)
    //-------------------------------------------------------------------------
    void read_variable_length_records();
-   //-------------------------------------------------------------------------
-   /// @brief method that reads point data records
-   /// @returns returns a pulse manager with all the information about points
-   /// and waveforms
-   /// dynamic allocation of memory, so it has to be deleted later
-   //-------------------------------------------------------------------------
-   PulseManager *read_point_data_records();
-
    //-------------------------------------------------------------------------
    /// @brief saved here to avoid opening and closing the file multiple times
    //-------------------------------------------------------------------------

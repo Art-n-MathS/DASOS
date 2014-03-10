@@ -37,7 +37,8 @@ SOURCES += \
     src/Maps/Map.cpp \
     src/Maps/HeightMap.cpp \
     src/Maps/DensityMap.cpp \
-    src/Texture.cpp
+    src/Texture.cpp \
+    src/LASHandler/DiscreteData.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -66,7 +67,8 @@ HEADERS += \
     include/Maps/Map.h \
     include/Maps/HeightMap.h \
     include/Maps/DensityMap.h \
-    include/Texture.h
+    include/Texture.h \
+    include/LASHandler/DiscreteData.h
 
 FORMS += \
     ui/MainWindow.ui
@@ -80,33 +82,18 @@ OTHER_FILES+= shaders/Phong.fs \
     shaders/Fragment.fs
 
 INCLUDEPATH +=   "/usr/include/eigen3/" \
-                 "/usr/include/pcl-1.5/" \
                  "/usr/include/vtk/" \
                  "/usr/include/boost/" \
                  "/usr/include/flann" \
                  "/usr/include/gtkmm-2.4/" \
                  "/usr/include/glibmm-2.4/" \
                  "/usr/include/sigc++-2.0/"
-#                 "/users/rsg/arsf/usr/include/lidar/quadtree/"
-#                 "/usr/lib/"
+
 
 
 LIBS += -lQtGui -lQtCore -lQtOpenGL \
         -L/usr/lib64/vtk -lvtkCommon -lvtksys -lvtkViews -lvtkWidgets  -lvtkRendering -lvtkGraphics -lvtkImaging -lvtkIO -lvtkFiltering -lvtkDICOMParser -lvtkmetaio -lvtkexoIIc -lvtkHybrid \
-#        -llzo2 -llaslib -ljemalloc #-llidarquadtree
 
-#prefix=/users/rsg/arsf/usr
-#exec_prefix=/users/rsg/arsf/usr
-#libdir=/users/rsg/arsf/usr/lib
-#includedir=/users/rsg/arsf/usr/include/lidar/quadtree
-
-#Name: lidarquadtree
-#Description: Library to handle LIDAR data using a quad tree structure with paging to disk
-#URL: http://rsg.pml.ac.uk/
-#Version: 1.3
-#Requires: laslib
-#Libs: -L${libdir} -llidarquadtree
-#Cflags: -I${includedir}
 
 QMAKE_CXXFLAGS+= -msse -msse2 -msse3
 macx:QMAKE_CXXFLAGS+= -arch x86_64
@@ -122,8 +109,6 @@ LIBS += -L/users/rsg/arsf/usr/lib
 LIBS +=  -L/$(HOME)/BilLibrary/lib -lBilLibrary
 LIBS +=  -L/$(HOME)/NGL/lib -lNGL
 
-
-#                    -L/$(HOME)/FReps/lib -lFReps \
 
 # now if we are under unix and not on a Mac (i.e. linux) define GLEW
 linux-clang {

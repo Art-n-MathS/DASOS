@@ -17,12 +17,28 @@ Object *Manager::createObject(
         )
 {
    Object *obj = new Object(i_x,user_limits);
-   obj->setNoiseLevel(noiseLevel);
+   std::cout << "Start filling object - full waveform\n";
+   i_pulseManager->setNoiseLevel(noiseLevel);
+   std::cout << "Noise level set\n";
    obj = i_pulseManager->fillObject(obj,user_limits);
    std::cout << "Object Created\n";
    return obj;
 }
 
+//-----------------------------------------------------------------------------
+Object *Manager::createObject(
+        unsigned int i_x,
+        const std::vector <double> user_limits,
+        DiscreteData *i_discreteData
+        )
+{
+   Object *obj = new Object(i_x,user_limits);
+   std::cout << "Start filling object - discrete\n";
+   obj->setNoiseLevel(0.0f);
+   obj = i_discreteData->fillObject(obj,user_limits);
+   std::cout << "Object Created\n";
+   return obj;
+}
 
 //-----------------------------------------------------------------------------
 GLData *Manager::getPolygonisedObject(Object *i_obj, unsigned int i_x)
