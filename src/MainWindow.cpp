@@ -60,10 +60,7 @@ void MainWindow::loadHyperspectraldata()
    if(!file.isEmpty())
    {
       m_bilFilename = file.toStdString();
-//      m_bilFilename ="/local/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.Reprojected/e098223b_mapped_osng.bil";
-//      m_bilFilename ="/local/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.Reprojected/h098223b_mapped_osng.bil";
       updateHyperspectral();
-
    }
    else
    {
@@ -188,10 +185,7 @@ void MainWindow::createObject()
    }
    m_pulseManager->setNoiseLevel(m_ui->m_sbNoiseLevel->value());
    std::cout << "Start creating Object\n";
-//   m_user_limits[0] = 103900;
-//   m_user_limits[1] = 103700;
-//   m_user_limits[2] = 437900;
-//   m_user_limits[3] = 437800;
+
 
    updateLimits();
    std::cout << "user limits = " << m_user_limits[0] << " " << m_user_limits[1]
@@ -213,6 +207,10 @@ void MainWindow::createObject()
                    m_user_limits,m_pulseManager,
                    m_ui->m_sbNoiseLevel->value());
    }
+   std::string labelStr("Object Status: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data");
+   std::cout << "Object Satus: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data\n" ;
+   std::cout << labelStr << "\n";
+   m_ui->m_lbObjectType->setText(labelStr.c_str());
    std::cout << "Object created!\n";
 }
 
