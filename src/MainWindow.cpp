@@ -119,9 +119,7 @@ void MainWindow::loadLASfile()
    {
       clock_t t1,t2;
       t1 =clock();
-//      Las1_3_handler lala("/local/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW10_01-201009822.LAS");
       Las1_3_handler lala(file.toStdString());
-   //   std::cout << "~"<<file.toStdString() <<"\n";
       if (m_pulseManager!=0)
       {
          delete m_pulseManager;
@@ -141,7 +139,7 @@ void MainWindow::loadLASfile()
 //      m_pulseManager->createQuadtree(10000);
       t2 =clock();
       diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
-      std::cout << "Creating Quadtree took " << diff << " SECONDS. \n";
+//      std::cout << "Creating Quadtree took " << diff << " SECONDS. \n";
 
       // update the limits North and East on GUI
       m_ui->m_maxNorthY->setMaximum(m_pulseManager->getMaxY());
@@ -187,6 +185,8 @@ void MainWindow::createObject()
    std::cout << "Start creating Object\n";
 
 
+   double voxelLength = m_ui->m_dsVoxelLength->value();
+
    updateLimits();
    std::cout << "user limits = " << m_user_limits[0] << " " << m_user_limits[1]
              << " " << m_user_limits[2] << " " << m_user_limits[3] << "\n";
@@ -197,19 +197,20 @@ void MainWindow::createObject()
    if(m_type)
    {
       std::cout << "discrete\n";
-      m_obj = Manager::createObject(m_ui->m_sbNoOfVoxelsInX->value(),
-                                    m_user_limits,m_discreteData);
+      m_obj = Manager::createObject(
+                   ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
+                   m_user_limits,m_discreteData);
    }
    else
    {
       std::cout << "full waveform\n";
-      m_obj = Manager::createObject(m_ui->m_sbNoOfVoxelsInX->value(),
+      m_obj = Manager::createObject(
+                   ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
                    m_user_limits,m_pulseManager,
                    m_ui->m_sbNoiseLevel->value());
    }
+   m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]-m_user_limits[3])/voxelLength));
    std::string labelStr("Object Status: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data");
-   std::cout << "Object Satus: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data\n" ;
-   std::cout << labelStr << "\n";
    m_ui->m_lbObjectType->setText(labelStr.c_str());
    std::cout << "Object created!\n";
 }
@@ -252,7 +253,6 @@ void MainWindow::polygonise()
       {
           delete m_glData;
       }
-
       m_glData = Manager::getPolygonisedObject(
                   m_obj,m_ui->m_sbNoOfVoxelsInX->value());
       if(m_bilFilename!="")

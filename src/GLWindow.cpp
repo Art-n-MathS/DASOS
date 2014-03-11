@@ -26,7 +26,7 @@ GLWindow::GLWindow(
                    QWidget *_parent
                   )
                     : QGLWidget( new CreateCoreGLContext(QGLFormat::defaultFormat()), _parent ),
-                      m_object(0),m_vao(0),m_zoom(1.0),m_material(ngl::GOLD), m_shaderMode(0), m_currentTextureName(0)
+                      m_vao(0),m_object(0),m_zoom(1.0),m_material(ngl::GOLD), m_shaderMode(0), m_currentTextureName(0)
 {
 
   // set this widget to have the initial keyboard focus
