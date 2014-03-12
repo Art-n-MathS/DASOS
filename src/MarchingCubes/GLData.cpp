@@ -50,7 +50,7 @@ void GLData::createUVs(
     std::cout << i_hyperMinLimits.m_x << " " << i_hyperMinLimits.m_y << "\n";
     std::cout << i_hyperMaxLimits.m_x << " " << i_hyperMaxLimits.m_y << "\n";
 
-   m_UVs.resize(m_vertices.size()/3*2);
+   m_UVs.resize(m_vertices.size()/3*2+1);
    for(unsigned int i=0; i<m_vertices.size()/3; ++i)
    {
        m_UVs[i*2  ] = (m_vertices[i*3  ]-i_hyperMinLimits.m_x)/
@@ -59,7 +59,6 @@ void GLData::createUVs(
        m_UVs[i*2+1] = (m_vertices[i*3+1]-i_hyperMinLimits.m_y)/
                          (i_hyperMaxLimits.m_y-i_hyperMinLimits.m_y);
    }
-
 }
 
 
