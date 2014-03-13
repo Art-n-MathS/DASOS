@@ -1,10 +1,7 @@
 #include "GLWindow.h"
 #include <iostream>
-#include <ngl/Camera.h>
-#include <ngl/Light.h>
 #include <ngl/Transformation.h>
 #include <ngl/TransformStack.h>
-#include <ngl/Material.h>
 #include <ngl/NGLInit.h>
 #include <ngl/VAOPrimitives.h>
 #include <ngl/ShaderLib.h>
@@ -76,12 +73,12 @@ void GLWindow::initializeGL()
   (*shader)["Phong"]->use();
 
   m_material.loadToShader("material");
-  ngl::Vec3 from(0,1,m_zoom);
-  ngl::Vec3 to(0,0,0);
+  ngl::Vec3 from(0,0,m_zoom);
+  ngl::Vec3 to(1,0,0);
   ngl::Vec3 up(0,1,0);
   // now load to our new camera
-  m_cam= new ngl::Camera(from,to,up,ngl::PERSPECTIVE);
-  m_cam->setShape(45,(float)720.0/576.0,0.05,350,ngl::PERSPECTIVE);
+  m_cam= new Camera(from,to,up,Camera::PERSPECTIVE);
+  m_cam->setShape(45,(float)720.0/576.0,0.05,350,Camera::PERSPECTIVE);
   shader->setShaderParam3f("viewerPos",m_cam->getEye().m_x,m_cam->getEye().m_y,m_cam->getEye().m_z);
 
   ngl::Mat4 iv=m_cam->getViewMatrix();
@@ -110,13 +107,36 @@ void GLWindow::initializeGL()
 }
 
 //----------------------------------------------------------------------------------------------------------------------
+void GLWindow::changeShaderMode(bool i_shaderMode)
+{
+    m_shaderMode = i_shaderMode;
+    updateGL();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+void GLWindow::processKeyPress(QKeyEvent *i_event)
+{
+   switch (i_event->key())
+   {
+   case Qt::Key_F : m_cam->moveForward(0.05); break;
+   case Qt::Key_B : m_cam->moveForward(-0.05);break;
+   case Qt::Key_R : m_cam->panCamera(5.0f);   break;
+   case Qt::Key_L : m_cam->panCamera(-5.0f);  break;
+   case Qt::Key_U : m_cam->tiltCamera(5.0f);  break;
+   case Qt::Key_D : m_cam->tiltCamera(-0.5f); break;
+   default : break;
+   }
+   updateGL();
+}
+
+//----------------------------------------------------------------------------------------------------------------------
 void GLWindow::loadHyperspectral(const std::string i_filename, const std::vector<unsigned short int> &i_bands)
 {
     if(m_currentTextureName!=0)
     {
        glDeleteTextures(1, &m_currentTextureName);
     }
-    m_shaderMode = 1;
+
     m_texture.loadImage(i_filename,i_bands);
     m_currentTextureName = m_texture.setTextureGL();
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -136,7 +156,7 @@ void GLWindow::resizeGL(
   // set the viewport for openGL
   glViewport(0,0,_w,_h);
   // now set the camera size values as the screen size has changed
-  m_cam->setShape(45,(float)_w/_h,0.05,350,ngl::PERSPECTIVE);
+  m_cam->setShape(45,(float)_w/_h,0.05,350,Camera::PERSPECTIVE);
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -147,7 +167,7 @@ void GLWindow::loadMatricesToShader(
 
    ngl::ShaderLib *shader=ngl::ShaderLib::instance();
 
-   if(!m_shaderMode)
+   if(!m_shaderMode && m_currentTextureName==0)
    {
       ngl::Mat4 MV;
       ngl::Mat4 MVP;
@@ -183,7 +203,7 @@ void GLWindow::paintGL()
 
   // grab an instance of the shader manager
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
-  if(m_shaderMode)
+  if(m_shaderMode && m_currentTextureName!=0)
   {
      (*shader)["TextureShader"]->use();
   }

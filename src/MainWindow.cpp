@@ -34,7 +34,8 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(m_ui->m_pbLoadHyper,SIGNAL(clicked()),this,SLOT(loadHyperspectraldata()));
    connect(m_ui->m_updateBands,SIGNAL(clicked()),this,SLOT(updateHyperspectral()));
    connect(m_ui->m_pbCreateMap,SIGNAL(clicked()),this,SLOT(createMap()));
-   connect(m_ui->m_cbDataType,SIGNAL(currentIndexChanged(int)),this,SLOT(changeType(int)));
+   connect(m_ui->m_cbDataType,SIGNAL(currentIndexChanged(int)),this,SLOT(changeDataType(int)));
+   connect(m_ui->m_cbHyperTexture,SIGNAL(clicked(bool)),this,SLOT(changeShaderType(bool)));
 
 //		connect(m_ui->m_wireframe,SIGNAL(toggled(bool)),m_gl,SLOT(toggleWireframe(bool)));
 //		/// set the combo box index change signal
@@ -69,7 +70,7 @@ void MainWindow::loadHyperspectraldata()
 }
 
 //-----------------------------------------------------------------------------
-void MainWindow::changeType(int i_type)
+void MainWindow::changeDataType(int i_type)
 {
     m_type = i_type;
 }
@@ -97,6 +98,13 @@ void MainWindow::updateHyperspectral()
 
     m_glData->createUVs(min,max);
     m_gl->buildVAO(m_glData);
+}
+
+
+//-----------------------------------------------------------------------------
+void MainWindow::changeShaderType(bool i_type)
+{
+   m_gl->changeShaderMode(i_type);
 }
 
 //-----------------------------------------------------------------------------
@@ -164,6 +172,20 @@ void MainWindow::loadLASfile()
    {
       // no file has been loaded
    }
+}
+
+//-----------------------------------------------------------------------------
+void MainWindow::keyPressEvent(QKeyEvent *i_event)
+{
+   switch (i_event->key())
+   {
+   case Qt::Key_W : std::cout << "hello W\n"; break;
+      case Qt::Key_S :std::cout << "hello S\n"; break;
+      case Qt::Key_F : break;
+      case Qt::Key_N : break;
+      default : break;
+   }
+   m_gl->processKeyPress(i_event);
 }
 
 //-----------------------------------------------------------------------------

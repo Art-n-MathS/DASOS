@@ -79,7 +79,7 @@
        <item row="1" column="4">
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>1</number>
+          <number>3</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -431,7 +431,7 @@
               <item row="6" column="0" colspan="2">
                <widget class="QCheckBox" name="m_cbHyperTexture">
                 <property name="text">
-                 <string>Disable Hyperspectral texture</string>
+                 <string>Enable Hyperspectral texturing</string>
                 </property>
                </widget>
               </item>
@@ -550,7 +550,7 @@
              </property>
             </widget>
            </item>
-           <item row="13" column="0" colspan="4">
+           <item row="15" column="0" colspan="4">
             <spacer name="verticalSpacer_4">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -644,6 +644,13 @@
              </property>
             </widget>
            </item>
+           <item row="13" column="0">
+            <widget class="QLabel" name="label_30">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="1">
             <widget class="QLabel" name="label_15">
              <property name="text">
@@ -678,6 +685,13 @@
              </property>
             </widget>
            </item>
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_29">
+             <property name="text">
+              <string/>
+             </property>
+            </widget>
+           </item>
            <item row="1" column="0" colspan="4">
             <widget class="QFrame" name="frame_5">
              <property name="frameShape">
@@ -702,13 +716,13 @@
                     <number>1</number>
                    </property>
                    <property name="text">
-                    <string>-&gt;, &lt;- : moving the camera in the x-axis
-      : moving the camera in the y-axis
-a,z: moving the camera on the z-axis
-u: tilting the camera up
-d: tilting the camera down
-r: panning the camera on the right
-l: panning the camera on the left</string>
+                    <string>F: move forward
+B: move backwards
+U: tilt up
+D: tilt down
+L: pan left
+R: pan right
+O: Refresh to original position</string>
                    </property>
                   </widget>
                  </item>
@@ -748,10 +762,10 @@ l: panning the camera on the left</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_29">
+           <item row="14" column="0" colspan="4">
+            <widget class="QPushButton" name="pushButton">
              <property name="text">
-              <string/>
+              <string>Reset Camera</string>
              </property>
             </widget>
            </item>

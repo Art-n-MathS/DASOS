@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created: Wed Mar 12 13:00:27 2014
+** Created: Thu Mar 13 16:12:56 2014
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -123,10 +123,12 @@ public:
     QLabel *m_lbCamPanRight;
     QLabel *m_lbCamPositionY;
     QLabel *label_14;
+    QLabel *label_30;
     QLabel *label_15;
     QLabel *label_22;
     QLabel *label_27;
     QDoubleSpinBox *doubleSpinBox;
+    QLabel *label_29;
     QFrame *frame_5;
     QGridLayout *gridLayout_13;
     QGroupBox *groupBox_5;
@@ -135,7 +137,7 @@ public:
     QLabel *m_lbCamPanLeft;
     QLabel *m_lbCamTiltDown;
     QLabel *m_lbCamTiltUp;
-    QLabel *label_29;
+    QPushButton *pushButton;
     QSpacerItem *horizontalSpacer;
     QMenuBar *menubar;
     QStatusBar *statusbar;
@@ -520,7 +522,7 @@ public:
 
         verticalSpacer_4 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
-        gridLayout_11->addItem(verticalSpacer_4, 13, 0, 1, 4);
+        gridLayout_11->addItem(verticalSpacer_4, 15, 0, 1, 4);
 
         label_20 = new QLabel(tab_4);
         label_20->setObjectName(QString::fromUtf8("label_20"));
@@ -574,6 +576,11 @@ public:
 
         gridLayout_11->addWidget(label_14, 4, 0, 1, 1);
 
+        label_30 = new QLabel(tab_4);
+        label_30->setObjectName(QString::fromUtf8("label_30"));
+
+        gridLayout_11->addWidget(label_30, 13, 0, 1, 1);
+
         label_15 = new QLabel(tab_4);
         label_15->setObjectName(QString::fromUtf8("label_15"));
 
@@ -596,6 +603,11 @@ public:
         doubleSpinBox->setValue(2.2);
 
         gridLayout_11->addWidget(doubleSpinBox, 11, 2, 1, 2);
+
+        label_29 = new QLabel(tab_4);
+        label_29->setObjectName(QString::fromUtf8("label_29"));
+
+        gridLayout_11->addWidget(label_29, 0, 0, 1, 1);
 
         frame_5 = new QFrame(tab_4);
         frame_5->setObjectName(QString::fromUtf8("frame_5"));
@@ -638,10 +650,10 @@ public:
 
         gridLayout_11->addWidget(m_lbCamTiltUp, 6, 1, 1, 1);
 
-        label_29 = new QLabel(tab_4);
-        label_29->setObjectName(QString::fromUtf8("label_29"));
+        pushButton = new QPushButton(tab_4);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
 
-        gridLayout_11->addWidget(label_29, 0, 0, 1, 1);
+        gridLayout_11->addWidget(pushButton, 14, 0, 1, 4);
 
         tabWidget->addTab(tab_4, QString());
 
@@ -665,7 +677,7 @@ public:
 
         retranslateUi(MainWindow);
 
-        tabWidget->setCurrentIndex(1);
+        tabWidget->setCurrentIndex(3);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -701,7 +713,7 @@ public:
         label_11->setText(QApplication::translate("MainWindow", "Green Band", 0, QApplication::UnicodeUTF8));
         label_12->setText(QApplication::translate("MainWindow", "Blue Band", 0, QApplication::UnicodeUTF8));
         m_updateBands->setText(QApplication::translate("MainWindow", "Update Bands", 0, QApplication::UnicodeUTF8));
-        m_cbHyperTexture->setText(QApplication::translate("MainWindow", "Disable Hyperspectral texture", 0, QApplication::UnicodeUTF8));
+        m_cbHyperTexture->setText(QApplication::translate("MainWindow", "Enable Hyperspectral texturing", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("MainWindow", "Hyperspectral", 0, QApplication::UnicodeUTF8));
         m_pbCreateMap->setText(QApplication::translate("MainWindow", "Create", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("MainWindow", "Maps", 0, QApplication::UnicodeUTF8));
@@ -720,21 +732,23 @@ public:
         m_lbCamPanRight->setText(QApplication::translate("MainWindow", "0", 0, QApplication::UnicodeUTF8));
         m_lbCamPositionY->setText(QApplication::translate("MainWindow", "0", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("MainWindow", "Position", 0, QApplication::UnicodeUTF8));
+        label_30->setText(QString());
         label_15->setText(QApplication::translate("MainWindow", "X", 0, QApplication::UnicodeUTF8));
         label_22->setText(QApplication::translate("MainWindow", "Pan", 0, QApplication::UnicodeUTF8));
         label_27->setText(QString());
+        label_29->setText(QString());
         groupBox_5->setTitle(QApplication::translate("MainWindow", "Camera Manual", 0, QApplication::UnicodeUTF8));
-        label_25->setText(QApplication::translate("MainWindow", "->, <- : moving the camera in the x-axis\n"
-"      : moving the camera in the y-axis\n"
-"a,z: moving the camera on the z-axis\n"
-"u: tilting the camera up\n"
-"d: tilting the camera down\n"
-"r: panning the camera on the right\n"
-"l: panning the camera on the left", 0, QApplication::UnicodeUTF8));
+        label_25->setText(QApplication::translate("MainWindow", "F: move forward\n"
+"B: move backwards\n"
+"U: tilt up\n"
+"D: tilt down\n"
+"L: pan left\n"
+"R: pan right\n"
+"O: Refresh to original position", 0, QApplication::UnicodeUTF8));
         m_lbCamPanLeft->setText(QApplication::translate("MainWindow", "0", 0, QApplication::UnicodeUTF8));
         m_lbCamTiltDown->setText(QApplication::translate("MainWindow", "0", 0, QApplication::UnicodeUTF8));
         m_lbCamTiltUp->setText(QApplication::translate("MainWindow", "0", 0, QApplication::UnicodeUTF8));
-        label_29->setText(QString());
+        pushButton->setText(QApplication::translate("MainWindow", "Reset Camera", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("MainWindow", "Camera", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

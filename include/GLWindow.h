@@ -2,20 +2,19 @@
 #define GLWINDOW_H__
 
 
-#include <ngl/Camera.h>
 #include <ngl/Colour.h>
 #include <ngl/Light.h>
 #include <ngl/TransformStack.h>
 #include <ngl/Text.h>
-// must be included after our stuff becuase GLEW needs to be first
+#include <ngl/Material.h>
 #include <QTime>
 #include <QEvent>
 #include <QResizeEvent>
 #include <ngl/VertexArrayObject.h>
 #include "GLData.h"
 #include "Object.h"
+#include "Camera.h"
 #include "PulseManager.h"
-#include <ngl/Material.h>
 #include "Texture.h"
 
 /// @file GLWindow.h
@@ -104,7 +103,7 @@ private :
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief Our Camera
     //----------------------------------------------------------------------------------------------------------------------
-    ngl::Camera *m_cam;
+    Camera *m_cam;
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief transformation stack for the gl transformations etc
     //----------------------------------------------------------------------------------------------------------------------
@@ -157,7 +156,14 @@ protected:
     void paintGL();
 
 private :
-
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief method that changes the type of the shader. Either texture or Gold
+    //----------------------------------------------------------------------------------------------------------------------
+    void changeShaderMode(bool i_shaderMode);
+    //----------------------------------------------------------------------------------------------------------------------
+    /// @brief method that processes the key events and ajusts the camera accordingly
+    //----------------------------------------------------------------------------------------------------------------------
+    void processKeyPress(QKeyEvent *i_event);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief method that draws the object to the scene
     //----------------------------------------------------------------------------------------------------------------------
