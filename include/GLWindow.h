@@ -162,8 +162,10 @@ private :
     void changeShaderMode(bool i_shaderMode);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief method that processes the key events and ajusts the camera accordingly
+    /// @param[in] i_event the event that indicated which button was pressed
+    /// @param[in] i_step how much to rotate or move the camera
     //----------------------------------------------------------------------------------------------------------------------
-    void processKeyPress(QKeyEvent *i_event);
+    void processKeyPress(QKeyEvent *i_event, float i_step);
     //----------------------------------------------------------------------------------------------------------------------
     /// @brief method that draws the object to the scene
     //----------------------------------------------------------------------------------------------------------------------

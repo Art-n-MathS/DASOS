@@ -10,7 +10,9 @@ Object::Object(unsigned int i_x, const std::vector<double> &i_userLimits):
                              i_userLimits[0]+0.0001,
                              i_userLimits[4]+0.0001)),
     m_isolevel(-99.9999999),
-    m_noiseLevel(0.0)
+    m_noiseLevel(0.0),
+    m_isIntegralVolume(false),
+    m_integralVolume(0)
 {
     m_noOfVoxelsX = i_x;
     m_dis.m_x= (m_higherLimits.m_x - m_lowerLimits.m_x);
@@ -70,6 +72,14 @@ double Object::functionValue(const ngl::Vec3 &i_point)
 
   return value;
 }
+
+//-----------------------------------------------------------------------------
+void Object::insertIntoIntegralVolume()
+{
+    m_integralVolume = new IntegralVolumes(m_noOfVoxelsX,m_noOfVoxelsY,
+                                           m_noOfVoxelsZ,m_intensities);
+}
+
 
 //-----------------------------------------------------------------------------
 ngl::Vec3 Object::getCentreOfVoxel(
@@ -292,119 +302,12 @@ double Object::getIsolevel()const
    return m_isolevel;
 }
 
-//-----------------------------------------------------------------------------
-void Object::createDensityMap(const std::string &i_name) const
-{
-   std::vector<float> densities(m_noOfVoxelsX*m_noOfVoxelsY);
-   unsigned int numOfvoxels=0;
-   float value, min, max;
-
-   for(unsigned int y=0; y<m_noOfVoxelsY; ++y)
-   {
-      for(unsigned int x=0; x<m_noOfVoxelsX; ++x)
-      {
-         densities[x+y*m_noOfVoxelsX] = 0;
-         numOfvoxels =0;
-         for(unsigned int z=0; z<m_noOfVoxelsZ; ++z)
-         {
-            value = m_intensities[x+y*m_noOfVoxelsX+z*m_noOfVoxelsX*m_noOfVoxelsY];
-            if(value>m_isolevel)
-            {
-               numOfvoxels++;
-               densities[x+y*m_noOfVoxelsX]+=((value+100.0f)/100.0f);
-            }
-         }
-         if(numOfvoxels!=0)
-         {
-            densities[x+y*m_noOfVoxelsX]=densities[x+y*m_noOfVoxelsX]/numOfvoxels/2.0f*255.0f;
-         }
-      }
-   }
-   min = densities[0];
-   max = densities[0];
-   for(unsigned int i=0; i<densities.size(); ++i)
-   {
-      if(min>densities[i])
-      {
-          min=densities[i];
-      }
-      else if (max<densities[i])
-      {
-          max= densities[i];
-      }
-   }
-   writeMapToImage(densities,i_name);
-}
-
-//-----------------------------------------------------------------------------
-void Object::writeMapToImage(
-        const std::vector<float> &i_mapValues,
-        const std::string &i_name) const
-{
-   if (i_mapValues.size()!=m_noOfVoxelsX*m_noOfVoxelsY)
-   {
-      std::cout << "Length of i_mapValues is wrong! Image map not saved\n";
-      return;
-   }
-   QImage *image =new QImage(m_noOfVoxelsX, m_noOfVoxelsY,QImage::Format_RGB16);
-   for(unsigned int x=0; x<m_noOfVoxelsX; ++x)
-   {
-      for(unsigned int y=0; y<m_noOfVoxelsY; ++y)
-      {
-         int value = (i_mapValues[x+y*m_noOfVoxelsX]);
-         image->setPixel(x,y,qRgb(value,value,value));
-      }
-   }
-   image->save(i_name.c_str());
-   delete image;
-}
-
-//-----------------------------------------------------------------------------
-void Object::createThicknessMap(const std::string &i_name) const
-{
-   std::vector<float> heights(m_noOfVoxelsX*m_noOfVoxelsY);
-   float min, max;
-
-   for(unsigned int x=0; x<m_noOfVoxelsX; ++x)
-   {
-      for(unsigned int y=0; y<m_noOfVoxelsY; ++y)
-      {
-         int h=0;
-         for (unsigned int z=0; z<m_noOfVoxelsZ; ++z)
-         {
-            if (m_intensities[x+y*m_noOfVoxelsX+z*
-               m_noOfVoxelsX*m_noOfVoxelsY]>=m_isolevel)
-            {
-               h++;
-            }
-         }
-         heights[x+y*m_noOfVoxelsX] = (float)h;
-      }
-   }
-
-   min = heights[0];
-   max = heights[0];
-   for(unsigned int i=0; i<heights.size(); ++i)
-   {
-      if(min>heights[i])
-      {
-         min=heights[i];
-      }else if (max<heights[i])
-      {
-         max = heights[i];
-      }
-   }
-
-   std::cout << "max min = " << max << " " << min << "\n";
-   for(unsigned int i=0; i<heights.size(); ++i)
-   {
-       heights[i] = (heights[i]-min)/(max-min)*255.0f;
-   }
-   writeMapToImage(heights,i_name);
-}
 
 //-----------------------------------------------------------------------------
 Object::~Object()
 {
-
+   if (m_integralVolume!=0)
+   {
+      delete m_integralVolume;
+   }
 }

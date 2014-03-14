@@ -92,7 +92,7 @@ void MainWindow::updateHyperspectral()
 
     ngl::Vec2 min(atof(bilLib::GetItemFromString(map_info,3,',').c_str()),
                    atof(bilLib::GetItemFromString(map_info,4,',').c_str())-
-                  nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));                  ;
+                  nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));
     ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
                   atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
 
@@ -177,15 +177,21 @@ void MainWindow::loadLASfile()
 //-----------------------------------------------------------------------------
 void MainWindow::keyPressEvent(QKeyEvent *i_event)
 {
-   switch (i_event->key())
-   {
-   case Qt::Key_W : std::cout << "hello W\n"; break;
-      case Qt::Key_S :std::cout << "hello S\n"; break;
-      case Qt::Key_F : break;
-      case Qt::Key_N : break;
-      default : break;
-   }
-   m_gl->processKeyPress(i_event);
+    switch (i_event->key())
+    {
+    case Qt::Key_F :
+    case Qt::Key_B :
+        m_gl->processKeyPress(i_event,m_ui->m_sbMoveStep->value());
+        break;
+    case Qt::Key_R :
+    case Qt::Key_L :
+    case Qt::Key_U :
+    case Qt::Key_D :
+        m_gl->processKeyPress(i_event,m_ui->m_sbRotDeg->value());
+        break;
+    default : break;
+    }
+    std::cout << "Button pressed\n";
 }
 
 //-----------------------------------------------------------------------------

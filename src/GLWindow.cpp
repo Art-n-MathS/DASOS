@@ -114,16 +114,16 @@ void GLWindow::changeShaderMode(bool i_shaderMode)
 }
 
 //----------------------------------------------------------------------------------------------------------------------
-void GLWindow::processKeyPress(QKeyEvent *i_event)
+void GLWindow::processKeyPress(QKeyEvent *i_event, float i_step)
 {
    switch (i_event->key())
    {
-   case Qt::Key_F : m_cam->moveForward(0.05); break;
-   case Qt::Key_B : m_cam->moveForward(-0.05);break;
-   case Qt::Key_R : m_cam->panCamera(5.0f);   break;
-   case Qt::Key_L : m_cam->panCamera(-5.0f);  break;
-   case Qt::Key_U : m_cam->tiltCamera(5.0f);  break;
-   case Qt::Key_D : m_cam->tiltCamera(-0.5f); break;
+   case Qt::Key_F : m_cam->moveForward(i_step); break;
+   case Qt::Key_B : m_cam->moveForward(-i_step);break;
+   case Qt::Key_R : m_cam->panCamera(i_step);   break;
+   case Qt::Key_L : m_cam->panCamera(-i_step);  break;
+   case Qt::Key_U : m_cam->tiltCamera(i_step);  break;
+   case Qt::Key_D : m_cam->tiltCamera(-i_step); break;
    default : break;
    }
    updateGL();

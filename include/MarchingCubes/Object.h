@@ -12,6 +12,7 @@
 
 #include <ngl/Vec3.h>
 #include "GLData.h"
+#include "IntegralVolumes.h"
 
 class Object
 {
@@ -73,16 +74,10 @@ public:
     //-------------------------------------------------------------------------
     void normalise();
     //-------------------------------------------------------------------------
-    /// @brief method that creates a density map and saves it as an image
-    /// @param[in] i_name name of image to be saved
+    /// @brief method that inserts the values of the object inside the integral
+    /// volume
     //-------------------------------------------------------------------------
-    void createDensityMap(const std::string &i_name)const;
-    //-------------------------------------------------------------------------
-    /// @brief method that creates a height map and saves it as a grayscale
-    /// image
-    /// @param[in] i_name the name of the image to be saved
-    //-------------------------------------------------------------------------
-    void createThicknessMap(const std::string &i_name)const;
+    void insertIntoIntegralVolume();
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------
@@ -100,17 +95,6 @@ protected:
     unsigned int getIndex(
             const ngl::Vec3 &i_point
             ) const;
-    //-------------------------------------------------------------------------
-    /// @brief method that takes as input the values of one of the maps and
-    /// produces an image. The size of the input array should be equal to
-    /// m_noOfVoxelsX*m_noOfVoxelsY
-    /// @param[in] i_mapValues the values of the map
-    /// @param[in] i_name the name of the image to be saved
-    //-------------------------------------------------------------------------
-    void writeMapToImage(
-            const std::vector<float> &i_mapValues,
-            const std::string &i_name
-            )const;
     //-------------------------------------------------------------------------
     /// @brief method that returns the centre of a voxel given its x y z index
     /// @param[in] i_x the position of the voxel of our interest in the x axis
@@ -165,11 +149,18 @@ protected:
     /// @brief the length of voxel (voxels are cubes)
     //-------------------------------------------------------------------------
     float m_lengthOfVoxel;
-
     //-------------------------------------------------------------------------
     /// @brief the noise level
     //-------------------------------------------------------------------------
     double m_noiseLevel;
+    //-------------------------------------------------------------------------
+    /// @brief indicates if the data's been inserted into the integral volume
+    //-------------------------------------------------------------------------
+    bool m_isIntegralVolume;
+    //-------------------------------------------------------------------------
+    /// @brief all the data inserted into an integral volume
+    //-------------------------------------------------------------------------
+    IntegralVolumes *m_integralVolume;
 
 };
 

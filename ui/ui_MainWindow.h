@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'MainWindow.ui'
 **
-** Created: Thu Mar 13 16:12:56 2014
+** Created: Fri Mar 14 11:55:20 2014
 **      by: Qt User Interface Compiler version 4.8.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -118,7 +118,7 @@ public:
     QLabel *m_lbCamPositionZ;
     QLabel *label_26;
     QLabel *label_18;
-    QSpinBox *spinBox;
+    QSpinBox *m_sbRotDeg;
     QLabel *label_28;
     QLabel *m_lbCamPanRight;
     QLabel *m_lbCamPositionY;
@@ -127,7 +127,7 @@ public:
     QLabel *label_15;
     QLabel *label_22;
     QLabel *label_27;
-    QDoubleSpinBox *doubleSpinBox;
+    QDoubleSpinBox *m_sbMoveStep;
     QLabel *label_29;
     QFrame *frame_5;
     QGridLayout *gridLayout_13;
@@ -545,14 +545,14 @@ public:
 
         gridLayout_11->addWidget(label_18, 11, 0, 1, 2);
 
-        spinBox = new QSpinBox(tab_4);
-        spinBox->setObjectName(QString::fromUtf8("spinBox"));
-        spinBox->setMinimum(1);
-        spinBox->setMaximum(60);
-        spinBox->setSingleStep(3);
-        spinBox->setValue(3);
+        m_sbRotDeg = new QSpinBox(tab_4);
+        m_sbRotDeg->setObjectName(QString::fromUtf8("m_sbRotDeg"));
+        m_sbRotDeg->setMinimum(1);
+        m_sbRotDeg->setMaximum(60);
+        m_sbRotDeg->setSingleStep(3);
+        m_sbRotDeg->setValue(5);
 
-        gridLayout_11->addWidget(spinBox, 12, 2, 1, 2);
+        gridLayout_11->addWidget(m_sbRotDeg, 12, 2, 1, 2);
 
         label_28 = new QLabel(tab_4);
         label_28->setObjectName(QString::fromUtf8("label_28"));
@@ -596,13 +596,13 @@ public:
 
         gridLayout_11->addWidget(label_27, 10, 0, 1, 1);
 
-        doubleSpinBox = new QDoubleSpinBox(tab_4);
-        doubleSpinBox->setObjectName(QString::fromUtf8("doubleSpinBox"));
-        doubleSpinBox->setMinimum(0.2);
-        doubleSpinBox->setSingleStep(0.5);
-        doubleSpinBox->setValue(2.2);
+        m_sbMoveStep = new QDoubleSpinBox(tab_4);
+        m_sbMoveStep->setObjectName(QString::fromUtf8("m_sbMoveStep"));
+        m_sbMoveStep->setMinimum(0.01);
+        m_sbMoveStep->setSingleStep(0.5);
+        m_sbMoveStep->setValue(0.05);
 
-        gridLayout_11->addWidget(doubleSpinBox, 11, 2, 1, 2);
+        gridLayout_11->addWidget(m_sbMoveStep, 11, 2, 1, 2);
 
         label_29 = new QLabel(tab_4);
         label_29->setObjectName(QString::fromUtf8("label_29"));

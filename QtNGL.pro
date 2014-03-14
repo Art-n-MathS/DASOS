@@ -39,7 +39,8 @@ SOURCES += \
     src/Maps/DensityMap.cpp \
     src/Texture.cpp \
     src/LASHandler/DiscreteData.cpp \
-    src/Camera.cpp
+    src/Camera.cpp \
+    src/MarchingCubes/IntegralVolumes.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -70,7 +71,8 @@ HEADERS += \
     include/Maps/DensityMap.h \
     include/Texture.h \
     include/LASHandler/DiscreteData.h \
-    include/Camera.h
+    include/Camera.h \
+    include/MarchingCubes/IntegralVolumes.h
 
 FORMS += \
     ui/MainWindow.ui

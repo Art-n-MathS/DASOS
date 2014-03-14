@@ -28,17 +28,13 @@ Object *DiscreteData::fillObject(
    std::cout << "DiscreteDAta: fillObject\n";
    for(unsigned int i=0; i<m_next;++i)
    {
-//      std::cout << m_positions[i].m_x << " " << m_positions[i].m_y << "\n";
-
       if(isInsideLimits(user_limits,m_positions[i]))
       {
-//          std::cout << "Point added!\n";
          i_obj->addItensity(m_positions[i],m_intensities[i]);
       }
    }
-//   std::cout << "user limits : " << user_limits[0] << " " << user_limits[1] << " , " << user_limits[2] << " " << user_limits[3] << "\n";
-//   std::cout << "noOfPoints = " << m_next << "\n";
    i_obj->normalise();
+   i_obj->insertIntoIntegralVolume();
    return i_obj;
 }
 

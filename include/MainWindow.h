@@ -12,6 +12,7 @@
 
 
 #include <QMainWindow>
+#include <ngl/Vec4.h>
 #include "GLWindow.h"
 #include "GLData.h"
 #include "Object.h"
@@ -145,7 +146,6 @@ private:
     /// 0/false for fullwaveform data and 1/true for discrete data
     //-------------------------------------------------------------------------
     bool m_type;
-
 
 
 };
