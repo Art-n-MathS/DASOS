@@ -29,7 +29,7 @@ public:
 
 
 
-private:
+protected:
    //--------------------------------------------------------------------------
    /// @brief method that calculates the position where a surfaces cuts an edge
    /// between two vertices using linear interpolation
@@ -64,7 +64,7 @@ private:
    /// gl data
    /// @param[in&out] i_glData the normals, vertices, indices,uvs of the object
    //--------------------------------------------------------------------------
-   void computeVertices(GLData *glData);
+   virtual void computeVertices(GLData *glData);
    //--------------------------------------------------------------------------
    /// @brief
    //--------------------------------------------------------------------------

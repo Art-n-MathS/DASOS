@@ -49,11 +49,16 @@ public:
             );
     //-------------------------------------------------------------------------
     /// @brief method that returns a polygonised object
-    /// @param[in] the number of cubes on the x axis
+    /// @param[in] i_obj object to be polygonisedmilmil
+    /// @param[in] i_x the number of cubes on the x axis
     /// @note the method dynamic allocated memory for the object, so by calling
     /// this function you are responsible for freeing the memory afterwards.
     //-------------------------------------------------------------------------
-    static GLData *getPolygonisedObject(Object *i_obj, unsigned int i_x);
+    static GLData *getPolygonisedObject(
+            Object *i_obj,
+            unsigned int i_x,
+            bool i_useIntegralData
+            );
 
     //-------------------------------------------------------------------------
     /// @brief method that saves the histogram of the voxelled object

@@ -95,8 +95,10 @@ void MainWindow::updateHyperspectral()
                   nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));
     ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
                   atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
-
-    m_glData->createUVs(min,max);
+    if(m_glData!=0)
+    {
+       m_glData->createUVs(min,max);
+    }
     m_gl->buildVAO(m_glData);
 }
 
@@ -191,7 +193,6 @@ void MainWindow::keyPressEvent(QKeyEvent *i_event)
         break;
     default : break;
     }
-    std::cout << "Button pressed\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -282,7 +283,8 @@ void MainWindow::polygonise()
           delete m_glData;
       }
       m_glData = Manager::getPolygonisedObject(
-                  m_obj,m_ui->m_sbNoOfVoxelsInX->value());
+                  m_obj,m_ui->m_sbNoOfVoxelsInX->value(),
+                  m_ui->m_cbIntegralVolume->isChecked());
       if(m_bilFilename!="")
       {
          bilLib::BinFile file(m_bilFilename);

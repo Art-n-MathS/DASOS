@@ -79,7 +79,7 @@
        <item row="1" column="4">
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -114,14 +114,14 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0" colspan="2">
+                 <item row="3" column="0" colspan="2">
                   <widget class="QPushButton" name="m_pbCalculate">
                    <property name="text">
                     <string>Polygonise Object</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0" colspan="2">
+                 <item row="4" column="0" colspan="2">
                   <widget class="QPushButton" name="m_pbExport">
                    <property name="text">
                     <string>Export Polygon to .obj</string>
@@ -132,6 +132,13 @@
                   <widget class="QLabel" name="label_7">
                    <property name="text">
                     <string>No of Voxels in X axis</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QCheckBox" name="m_cbIntegralVolume">
+                   <property name="text">
+                    <string>Use Integral Images</string>
                    </property>
                   </widget>
                  </item>
@@ -153,7 +160,7 @@
               <item row="0" column="0" colspan="3">
                <widget class="QGroupBox" name="groupBox_3">
                 <property name="title">
-                 <string>Load and Specifications</string>
+                 <string>File and Object Specifications</string>
                 </property>
                 <layout class="QGridLayout" name="gridLayout_5">
                  <item row="8" column="2">
