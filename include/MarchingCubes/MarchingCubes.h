@@ -31,6 +31,20 @@ public:
 
 protected:
    //--------------------------------------------------------------------------
+   /// @brief method that polygonises the cube with min coordinates x,y,z
+   /// @param[in] i_x the min x coordinate of the cube to be polygonised
+   /// @param[in] i_y the min y coordinate of the cube to be polygonised
+   /// @param[in] i_z the min z coordinate of the cube to be polygonised
+   /// @param[in] i_isolevel the boundary of the object
+   //--------------------------------------------------------------------------
+   void polygoniseXYZ(
+           const unsigned int i_x,
+           const unsigned int i_y,
+           const unsigned int i_z,
+           const double i_isolevel,
+           GLData *i_glData
+           );
+   //--------------------------------------------------------------------------
    /// @brief method that calculates the position where a surfaces cuts an edge
    /// between two vertices using linear interpolation
    /// @param[in] isolevel

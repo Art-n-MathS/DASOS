@@ -45,12 +45,6 @@ int main(int argc, char **argv)
 
   unsigned int *mydata;
   getData(&mydata);
-  for(unsigned int i=0; i<5; i++)
-  {
-      std::cout << mydata[i] << " ";
-  }
-  std::cout << "\n";
-
 
   MainWindow w;
   std::cout << "~Main Window created\n";

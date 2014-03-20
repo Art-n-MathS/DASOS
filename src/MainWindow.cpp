@@ -13,6 +13,8 @@
 //-----------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
+    m_bilFilename(""),
+    m_IGMFilename(""),
     m_ui(new Ui::MainWindow),
     m_gl(0),
     m_pulseManager(0),
@@ -36,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent) :
    connect(m_ui->m_pbCreateMap,SIGNAL(clicked()),this,SLOT(createMap()));
    connect(m_ui->m_cbDataType,SIGNAL(currentIndexChanged(int)),this,SLOT(changeDataType(int)));
    connect(m_ui->m_cbHyperTexture,SIGNAL(clicked(bool)),this,SLOT(changeShaderType(bool)));
+   connect(m_ui->m_pbLoadIGM,SIGNAL(clicked()),this,SLOT(loadIGM()));
+   connect(m_ui->m_cbUseLevel1Data,SIGNAL(clicked(bool)),this,SLOT(hideOrRevealIGMButton(bool)));
 
 //		connect(m_ui->m_wireframe,SIGNAL(toggled(bool)),m_gl,SLOT(toggleWireframe(bool)));
 //		/// set the combo box index change signal
@@ -48,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent) :
    types << "Full-wavefrom" << "Discrete";
    m_ui->m_cbDataType->insertItems(0,types);
 
+   m_ui->m_pbLoadIGM->hide();
    m_user_limits.resize(6);
    loadLASfile();
 }
@@ -62,6 +67,22 @@ void MainWindow::loadHyperspectraldata()
    {
       m_bilFilename = file.toStdString();
       updateHyperspectral();
+   }
+   else
+   {
+      // file does not exist
+   }
+}
+
+//-----------------------------------------------------------------------------
+void MainWindow::loadIGM()
+{
+   QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                     "",tr("Files (*.*)"));
+   if(!file.isEmpty())
+   {
+      m_IGMFilename = file.toStdString();
+      std::cout << "IGM file name: " << m_IGMFilename << "\n";
    }
    else
    {
@@ -102,6 +123,18 @@ void MainWindow::updateHyperspectral()
     m_gl->buildVAO(m_glData);
 }
 
+//-----------------------------------------------------------------------------
+void MainWindow::hideOrRevealIGMButton(bool i_reveal)
+{
+   if(i_reveal)
+   {
+      m_ui->m_pbLoadIGM->show();
+   }
+   else
+   {
+      m_ui->m_pbLoadIGM->hide();
+   }
+}
 
 //-----------------------------------------------------------------------------
 void MainWindow::changeShaderType(bool i_type)

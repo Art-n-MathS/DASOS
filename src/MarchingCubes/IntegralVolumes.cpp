@@ -10,15 +10,24 @@ IntegralVolumes::IntegralVolumes(
         unsigned int i_z,
         const std::vector<double> &i_values
         ):
-    m_values(i_values),
+    m_values(0),
     m_noOfValuesX(i_x),
     m_noOfValuesY(i_y),
-    m_noOfValuesZ(i_z)
+    m_noOfValuesZ(i_z),
+    m_valuesLength(i_x*i_y*i_z)
 {
-   if(m_values.size()!= i_x*i_y*i_z)
+   if(i_values.size()!= m_valuesLength)
    {
       std::cout << "ERROR: the len of the i_values is not equal to i_x*i_y*i_z\n";
       exit(EXIT_FAILURE);
+   }
+   m_values = new double[m_valuesLength];
+   for(unsigned int i=0; i<m_valuesLength;++i)
+   {
+      // all values lie in the range [-100,100]
+      // we don't want any negative values so we will 100 to each value
+      // and then divide by 100 to avoid overfloat
+      m_values[i] = (i_values[i]+100.0)/2.0;
    }
    // create summed table
    // first compute the first horizontal line
@@ -81,6 +90,8 @@ IntegralVolumes::IntegralVolumes(
          }
       }
    }
+   std::cout<< "INTEGRAL VOLUMES : " << m_valuesLength << "\n";
+   std::cout << m_noOfValuesX << " " << m_noOfValuesY << " " << m_noOfValuesZ << "\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -88,7 +99,7 @@ void IntegralVolumes::print()const
 {
    std::cout << "Table size = " << m_noOfValuesX << " x "
              << m_noOfValuesY << " x " << m_noOfValuesZ << "\n";
-   for(unsigned int i=0; i < m_values.size(); ++i)
+   for(unsigned int i=0; i < m_valuesLength; ++i)
    {
       if(i%m_noOfValuesX==0)
       {
@@ -113,8 +124,6 @@ double IntegralVolumes::getSumOfArea(
         unsigned short lenZ
         ) const
 {
-
-
    // if the box of our interest is in the lower corner
    if(x==0 && y==0 && z==0)
    {
@@ -187,4 +196,9 @@ unsigned short int IntegralVolumes::getIndex(
 
 //-----------------------------------------------------------------------------
 IntegralVolumes::~IntegralVolumes()
-{}
+{
+    if(m_values!=0)
+    {
+        delete [] m_values;
+    }
+}

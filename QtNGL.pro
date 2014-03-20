@@ -83,7 +83,6 @@ OTHER_FILES+= shaders/Phong.fs \
               shaders/Phong.vs \
     shaders/PhongFragment.glsl \
     shaders/PhongVertex.glsl \
-    README.txt \
     shaders/Vertex.vs \
     shaders/Fragment.fs
 

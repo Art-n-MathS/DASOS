@@ -28,9 +28,9 @@ public:
    /// @param[in] i_posX the min X position of the area of our interest
    /// @param[in] i_posY the min Y position of the area of our interest
    /// @param[in] i_posZ the min Z position of the area of our interest
-   /// @param[in] i_lenX the length of the area in the x-axis
-   /// @param[in] i_lenY the length of the area in the y-axis
-   /// @param[in] i_lenZ the length of the area in the z-axis
+   /// @param[in] i_lenX the length of the area in the x-axis + 1
+   /// @param[in] i_lenY the length of the area in the y-axis + 1
+   /// @param[in] i_lenZ the length of the area in the z-axis + 1
    //--------------------------------------------------------------------------
    double getSumOfArea(
            unsigned short int i_posX,
@@ -61,7 +61,11 @@ private:
    //--------------------------------------------------------------------------
    /// @brief all the values of the sum table
    //--------------------------------------------------------------------------
-   std::vector<double> m_values;
+   double *m_values;
+   //--------------------------------------------------------------------------
+
+   //--------------------------------------------------------------------------
+   unsigned int m_valuesLength;
    //--------------------------------------------------------------------------
    /// @brief number of values in the x-axis
    //--------------------------------------------------------------------------

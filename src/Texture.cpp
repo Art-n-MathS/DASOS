@@ -44,9 +44,10 @@ bool Texture::loadImage(
        unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
 //       bilLib::StringToUINT(file.FromHeader())
 
+       unsigned int gLsamples = nsamps+((4-(nsamps%4))%4);
        //Print out file dimensions
        std::cout<<"Dimensions: "<<nsamps<<" "<<nlines<<" "<<nbands<<std::endl;
-
+       std::cout<< " Opengl samples: " << nsamps+((4-(nsamps%4))%4) << "\n";
        data1 = new float[nlines*nsamps];
        data2 = new float[nlines*nsamps];
        data3 = new float[nlines*nsamps];
@@ -54,13 +55,13 @@ bool Texture::loadImage(
        m_format = GL_RGB;
        m_hasAlpha=false;
        m_height = nlines;
-       m_width = nsamps;
+       m_width = gLsamples;
 
        if(m_data!=0)
        {
           delete m_data;
        }
-       m_data = new unsigned char [nlines*nsamps*m_bpp];
+       m_data = new char [nlines*gLsamples*m_bpp];
 
        unsigned int b=0;
 //       for(; b<3; ++b)
@@ -112,12 +113,11 @@ bool Texture::loadImage(
               return EXIT_FAILURE;
           }
 
-          std::cout << max1 << " " << min2 << " +\n";
-
           unsigned int index=b;
           for (int y=nlines-1; y>=0; --y)
           {
-             for(unsigned int x=0; x<nsamps; ++x)
+             unsigned int x=0;
+             for(; x<nsamps; ++x)
              {
                 if(data1[y*nsamps+x]>=0.0000001f)
                 {
@@ -144,18 +144,14 @@ bool Texture::loadImage(
                    m_data[index++]= 0;
                 }
              }
+             for(;x<gLsamples;++x)
+             {
+                m_data[index++]= 0;
+                m_data[index++]= 0;
+                m_data[index++]= 0;
+             }
           }
-          std::cout << "\n";
-//          unsigned int index=b;
-//          for (unsigned int y=nlines-1; y<=0; --y)
-//          {
-//             for(unsigned int x=0; x<nsamps; ++x)
-//             {
-//                 int re = floor(double(data1[y*nsamps+x]-min)/(max-min)*255.0);
-//                 m_data[index]= re;
-//                 index+=3;
-//             }
-//          }
+
        }
 
        //Close the file

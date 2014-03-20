@@ -84,6 +84,12 @@ public:
     ~Object();
 
 
+    //-------------------------------------------------------------------------
+    /// @brief all the data inserted into an integral volume
+    //--------------------------------------------------------------------------------------------------------------------temporarly public
+    IntegralVolumes *m_integralVolume;
+
+
 protected:
     //-------------------------------------------------------------------------
     /// @brief method that returns the index of a voxel given its position in
@@ -157,10 +163,6 @@ protected:
     /// @brief indicates if the data's been inserted into the integral volume
     //-------------------------------------------------------------------------
     bool m_isIntegralVolume;
-    //-------------------------------------------------------------------------
-    /// @brief all the data inserted into an integral volume
-    //-------------------------------------------------------------------------
-    IntegralVolumes *m_integralVolume;
 
 };
 

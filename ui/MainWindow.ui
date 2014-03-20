@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1024</width>
-    <height>886</height>
+    <height>891</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,8 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="s_mainWindowGridLayout">
-    <item row="0" column="0">
-     <spacer name="horizontalSpacer_3">
+    <item row="0" column="1">
+     <spacer name="horizontalSpacer_2">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -28,8 +28,8 @@
       </property>
      </spacer>
     </item>
-    <item row="0" column="1">
-     <spacer name="horizontalSpacer_2">
+    <item row="0" column="0">
+     <spacer name="horizontalSpacer_3">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -79,7 +79,7 @@
        <item row="1" column="4">
         <widget class="QTabWidget" name="tabWidget">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab">
           <attribute name="title">
@@ -232,7 +232,7 @@
                     <double>0.500000000000000</double>
                    </property>
                    <property name="value">
-                    <double>4.200000000000000</double>
+                    <double>8.199999999999999</double>
                    </property>
                   </widget>
                  </item>
@@ -367,7 +367,17 @@
               <string>GroupBox</string>
              </property>
              <layout class="QGridLayout" name="gridLayout_7">
-              <item row="2" column="0">
+              <item row="4" column="1">
+               <widget class="QSpinBox" name="m_sbBand1">
+                <property name="maximum">
+                 <number>252</number>
+                </property>
+                <property name="value">
+                 <number>145</number>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
                <widget class="QLabel" name="label_10">
                 <property name="text">
                  <string>Red Band</string>
@@ -381,31 +391,21 @@
                 </property>
                </widget>
               </item>
-              <item row="2" column="1">
-               <widget class="QSpinBox" name="m_sbBand1">
-                <property name="maximum">
-                 <number>252</number>
-                </property>
-                <property name="value">
-                 <number>145</number>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
+              <item row="5" column="0">
                <widget class="QLabel" name="label_11">
                 <property name="text">
                  <string>Green Band</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
+              <item row="6" column="0">
                <widget class="QLabel" name="label_12">
                 <property name="text">
                  <string>Blue Band</string>
                 </property>
                </widget>
               </item>
-              <item row="4" column="1">
+              <item row="6" column="1">
                <widget class="QSpinBox" name="m_sbBand3">
                 <property name="maximum">
                  <number>252</number>
@@ -415,7 +415,7 @@
                 </property>
                </widget>
               </item>
-              <item row="3" column="1">
+              <item row="5" column="1">
                <widget class="QSpinBox" name="m_sbBand2">
                 <property name="maximum">
                  <number>252</number>
@@ -428,21 +428,21 @@
                 </property>
                </widget>
               </item>
-              <item row="5" column="0" colspan="2">
+              <item row="7" column="0" colspan="2">
                <widget class="QPushButton" name="m_updateBands">
                 <property name="text">
                  <string>Update Bands</string>
                 </property>
                </widget>
               </item>
-              <item row="6" column="0" colspan="2">
+              <item row="8" column="0" colspan="2">
                <widget class="QCheckBox" name="m_cbHyperTexture">
                 <property name="text">
                  <string>Enable Hyperspectral texturing</string>
                 </property>
                </widget>
               </item>
-              <item row="7" column="0" colspan="2">
+              <item row="9" column="0" colspan="2">
                <spacer name="verticalSpacer">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -454,6 +454,20 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="2" column="0" colspan="2">
+               <widget class="QCheckBox" name="m_cbUseLevel1Data">
+                <property name="text">
+                 <string>Use Level1 data</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0" colspan="2">
+               <widget class="QPushButton" name="m_pbLoadIGM">
+                <property name="text">
+                 <string>Load IGM file</string>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>
