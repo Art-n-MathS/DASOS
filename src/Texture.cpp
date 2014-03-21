@@ -32,153 +32,90 @@ bool Texture::loadImage(
         const std::vector<unsigned short int> &i_bands
                        )
 {
-   /// TO DO: adjust this code to work as the initial one while keep on testing it with Valgrind
-   float *data1 = 0;
-   float *data2 = 0;
-   float *data3 = 0;
    try
    {
-       bilLib::BinFile file(i_fName);
-       unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
-       unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
-       unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
-//       bilLib::StringToUINT(file.FromHeader())
+      float *data1 = 0;
+      bilLib::BinFile file(i_fName);
+      unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
+      unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
+      unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
 
-       unsigned int gLsamples = nsamps+((4-(nsamps%4))%4);
-       //Print out file dimensions
-       std::cout<<"Dimensions: "<<nsamps<<" "<<nlines<<" "<<nbands<<std::endl;
-       std::cout<< " Opengl samples: " << nsamps+((4-(nsamps%4))%4) << "\n";
-       data1 = new float[nlines*nsamps];
-       data2 = new float[nlines*nsamps];
-       data3 = new float[nlines*nsamps];
-       m_bpp=3;
-       m_format = GL_RGB;
-       m_hasAlpha=false;
-       m_height = nlines;
-       m_width = gLsamples;
-
-       if(m_data!=0)
-       {
-          delete m_data;
-       }
-       m_data = new char [nlines*gLsamples*m_bpp];
-
-       unsigned int b=0;
-//       for(; b<3; ++b)
-       {
-          file.Readband((char *)data1,i_bands[0]);
-          file.Readband((char *)data2,i_bands[1]);
-          file.Readband((char *)data3,i_bands[2]);
-//          int address = data1;
-          unsigned int k=0;
-          while(data1[k]==0 && k!=m_width*m_height-1)
-          {
-             k++;
-          }
-          unsigned short int max1 = data1[k];
-          unsigned short int min1 = data1[k];
-          unsigned short int max2 = data1[k];
-          unsigned short int min2 = data2[k];
-          unsigned short int max3 = data3[k];
-          unsigned short int min3 = data3[k];
-          for(unsigned int i=0;i<nlines*nsamps;++i)
-          {
-             if(max1<data1[i])
-             {
-                max1 = data1[i];
-             }else if (min1>data1[i] && data1[i]!=0)
-             {
-                min1 = data1[i];
-             }
-             if(max2<data2[i])
-             {
-                max2 = data2[i];
-             }else if (min2>data2[i] && data2[i]!=0)
-             {
-                min2 = data2[i];
-             }
-             if(max3<data3[i])
-             {
-                max3 = data3[i];
-             }else if (min3>data3[i] && data3[i]!=0)
-             {
-                min3 = data3[i];
-             }
-          }
-
-
-          if(m_data==0)
-          {
-              std::cout << "Error while allocating memory!\n";
-              return EXIT_FAILURE;
-          }
-
-          unsigned int index=b;
-          for (int y=nlines-1; y>=0; --y)
-          {
-             unsigned int x=0;
-             for(; x<nsamps; ++x)
-             {
-                if(data1[y*nsamps+x]>=0.0000001f)
-                {
-                   m_data[index++]=floor(double(data1[y*nsamps+x]-min1)/(max1-min1)*255.0);
-                }
-                else
-                {
-                   m_data[index++]= 0;
-                }
-                if(data2[y*nsamps+x]>=0.0000001f)
-                {
-                   m_data[index++]=floor(double(data2[y*nsamps+x]-min2)/(max2-min2)*255.0);
-                }
-                else
-                {
-                   m_data[index++]= 0;
-                }
-                if(data3[y*nsamps+x]>=0.0000001f)
-                {
-                   m_data[index++]=floor(double(data3[y*nsamps+x]-min3)/(max3-min3)*255.0);
-                }
-                else
-                {
-                   m_data[index++]= 0;
-                }
-             }
-             for(;x<gLsamples;++x)
-             {
-                m_data[index++]= 0;
-                m_data[index++]= 0;
-                m_data[index++]= 0;
-             }
-          }
-
-       }
-
-       //Close the file
-       file.Close();
-      //tidy up
+      unsigned int gLsamples = nsamps+((4-(nsamps%4))%4);
+      //Print out file dimensions
+      std::cout<<"Dimensions: "<<nsamps<<" "<<nlines<<" "<<nbands<<std::endl;
+      std::cout<< " Opengl samples: " << nsamps+((4-(nsamps%4))%4) << "\n";
+      m_bpp=3;
+      m_format = GL_RGB;
+      m_hasAlpha=false;
+      m_height = nlines;
+      m_width = gLsamples;
+      if(m_data!=0)
+      {
+         delete m_data;
+      }
+      m_data = new char [nlines*gLsamples*m_bpp];
+      for(unsigned int b=0; b<3; ++b)
+      {
+         data1 = new float[nlines*nsamps];
+         file.Readband((char *)data1,i_bands[b]);
+         unsigned int k=0;
+         while(data1[k]==0 && k!=m_width*m_height-1)
+         {
+            k++;
+         }
+         unsigned short int max1 = data1[k];
+         unsigned short int min1 = data1[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max1<data1[i])
+            {
+               max1 = data1[i];
+            }else if (min1>data1[i] && data1[i]!=0)
+            {
+               min1 = data1[i];
+            }
+         }
+         if(m_data==0)
+         {
+             std::cout << "Error while allocating memory!\n";
+             return EXIT_FAILURE;
+         }
+         unsigned int index  = b;
+         for (int y=nlines-1; y>=0; --y)
+         {
+            unsigned int x=0;
+            for(; x<nsamps; ++x)
+            {
+               if(data1[y*nsamps+x]>=0.0000001f)
+               {
+                  m_data[index]=floor(double(data1[y*nsamps+x]-min1)/(max1-min1)*255.0);
+                  index+=3;
+               }
+               else
+               {
+                  m_data[index]= 0;
+                  index+=3;
+               }
+            }
+            for(;x<gLsamples;++x)
+            {
+               m_data[index]= 0;
+               index+=3;
+            }
+         }
+         if(data1!=0)
+         {
+             delete []data1;
+         }
+      }
+      file.Close();
    }
    catch(bilLib::BinaryReader::BRexception e)
    {
       std::cout<<e.what()<<std::endl;
       std::cout<<e.info<<std::endl;
    }
-
-    if(data1!=0)
-    {
-        delete []data1;
-    }
-    if(data2!=0)
-    {
-        delete []data2;
-    }
-    if(data3!=0)
-    {
-        delete []data3;
-    }
-
    return true;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------
