@@ -232,7 +232,7 @@
                     <double>0.500000000000000</double>
                    </property>
                    <property name="value">
-                    <double>8.199999999999999</double>
+                    <double>11.199999999999999</double>
                    </property>
                   </widget>
                  </item>
@@ -373,7 +373,7 @@
                  <number>252</number>
                 </property>
                 <property name="value">
-                 <number>130</number>
+                 <number>145</number>
                 </property>
                </widget>
               </item>

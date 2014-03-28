@@ -1,6 +1,10 @@
 #include "GLData.h"
 #include <iostream>
 #include <fstream>
+#include "Grid.h"
+
+#include <bilLib/binfile.h>
+#include <bilLib/commonfunctions.h>
 
 //-----------------------------------------------------------------------------
 GLData::GLData():
@@ -42,23 +46,60 @@ void GLData::setGLData(const GLData &i_glData)
 }
 
 //-----------------------------------------------------------------------------
-void GLData::createUVs(
-        const ngl::Vec2 &i_hyperMinLimits,
-        const ngl::Vec2 &i_hyperMaxLimits
-        )
+void GLData::createUVsBIL(const std::string &i_bilFilename)
 {
-    std::cout << i_hyperMinLimits.m_x << " " << i_hyperMinLimits.m_y << "\n";
-    std::cout << i_hyperMaxLimits.m_x << " " << i_hyperMaxLimits.m_y << "\n";
+   if(i_bilFilename=="")
+   {
+       return;
+   }
+   try
+   {
+      bilLib::BinFile file(i_bilFilename);
+      std::string map_info = file.FromHeader("map info");
 
+      unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
+      unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
+
+      ngl::Vec2 min(atof(bilLib::GetItemFromString(map_info,3,',').c_str()),
+                     atof(bilLib::GetItemFromString(map_info,4,',').c_str())-
+                    nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));
+      ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
+                    atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
+      std::cout << min.m_x << " " << min.m_y << "\n";
+      std::cout << max.m_x << " " << max.m_y << "\n";
+      file.Close();
+      m_UVs.resize(m_vertices.size()/3*2+1);
+      for(unsigned int i=0; i<m_vertices.size()/3; ++i)
+      {
+         m_UVs[i*2  ] = (m_vertices[i*3  ]-min.m_x)/(max.m_x-min.m_x);
+         m_UVs[i*2+1] = (m_vertices[i*3+1]-min.m_y)/(max.m_y-min.m_y);
+      }
+   }
+   catch(bilLib::BinaryReader::BRexception e)
+   {
+      std::cout<<e.what()<<std::endl;
+      std::cout<<e.info<<std::endl;
+   }
+
+}
+
+//-----------------------------------------------------------------------------
+void GLData::createUVsIGM(const std::string &i_igmFile)
+{
+   if(i_igmFile=="")
+   {
+      return;
+   }
    m_UVs.resize(m_vertices.size()/3*2+1);
+   Grid *grid = new Grid(i_igmFile,30);
    for(unsigned int i=0; i<m_vertices.size()/3; ++i)
    {
-       m_UVs[i*2  ] = (m_vertices[i*3  ]-i_hyperMinLimits.m_x)/
-                         (i_hyperMaxLimits.m_x-i_hyperMinLimits.m_x);
-
-       m_UVs[i*2+1] = (m_vertices[i*3+1]-i_hyperMinLimits.m_y)/
-                         (i_hyperMaxLimits.m_y-i_hyperMinLimits.m_y);
+      const ngl::Vec2 nextPixelPos =
+               grid->getPixelPositionScaled0_1(m_vertices[i*3],m_vertices[i*3+1]);
+      m_UVs[i*2  ] = nextPixelPos.m_x;
+      m_UVs[i*2+1] = nextPixelPos.m_y;
    }
+   delete grid;
 }
 
 

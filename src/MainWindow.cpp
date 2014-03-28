@@ -4,8 +4,7 @@
 #include "Manager.h"
 #include "MapsManager.h"
 
-#include <bilLib/binfile.h>
-#include <bilLib/commonfunctions.h>
+
 #include <time.h>
 #include <QFileDialog>
 
@@ -14,7 +13,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_bilFilename(""),
-    m_IGMFilename(""),
+    m_IGMFilename("/local/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.ReprojectedOSNG/e098061b_osgn.igm"),
     m_ui(new Ui::MainWindow),
     m_gl(0),
     m_pulseManager(0),
@@ -66,6 +65,19 @@ void MainWindow::loadHyperspectraldata()
    if(!file.isEmpty())
    {
       m_bilFilename = file.toStdString();
+  //    min = ngl::Vec2(431564, 104242);
+  //    max = ngl::Vec2(432602, 107940);
+
+      if(m_glData!=0 && !m_ui->m_cbUseLevel1Data->isChecked())
+      {
+         m_glData->createUVsBIL(m_bilFilename);
+      }
+      else if(m_glData!=0 && m_ui->m_cbUseLevel1Data->isChecked())
+      {
+         // create UVs using the igm file provided
+         m_glData->createUVsIGM(m_IGMFilename);
+      }
+
       updateHyperspectral();
    }
    else
@@ -105,22 +117,9 @@ void MainWindow::updateHyperspectral()
     bands[2] = m_ui->m_sbBand3->value();
     m_gl->loadHyperspectral(m_bilFilename,bands);
 
-    bilLib::BinFile file(m_bilFilename);
-    std::string map_info = file.FromHeader("map info");
 
-    unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
-    unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
-
-    ngl::Vec2 min(atof(bilLib::GetItemFromString(map_info,3,',').c_str()),
-                   atof(bilLib::GetItemFromString(map_info,4,',').c_str())-
-                  nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));
-    ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
-                  atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
-    if(m_glData!=0)
-    {
-       m_glData->createUVs(min,max);
-    }
     m_gl->buildVAO(m_glData);
+
 }
 
 //-----------------------------------------------------------------------------
@@ -156,7 +155,8 @@ void MainWindow::createHist()
 //-----------------------------------------------------------------------------
 void MainWindow::loadLASfile()
 {
-   QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
+//    QString file("/local/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009806.LAS");
+    QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                 "",tr("Files (*.*)"));
    if(!file.isEmpty())
    {
@@ -318,20 +318,15 @@ void MainWindow::polygonise()
       m_glData = Manager::getPolygonisedObject(
                   m_obj,m_ui->m_sbNoOfVoxelsInX->value(),
                   m_ui->m_cbIntegralVolume->isChecked());
-      if(m_bilFilename!="")
+      if(m_bilFilename!="" && m_IGMFilename=="")
       {
-         bilLib::BinFile file(m_bilFilename);
-         std::string map_info = file.FromHeader("map info");
-
-         unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
-         unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
-
-         ngl::Vec2 min(atof(bilLib::GetItemFromString(map_info,3,',').c_str()),
-                        atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
-         ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
-                       min.m_y+nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));
-         m_glData->createUVs(min,max);
+         m_glData->createUVsBIL(m_bilFilename);
       }
+      else if (m_bilFilename!="" && m_IGMFilename!="")
+      {
+         m_glData->createUVsIGM(m_IGMFilename);
+      }
+
       m_gl->buildVAO(m_glData);
       std::cout << "Object has been polygonised!\n";
    }

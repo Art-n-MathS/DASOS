@@ -52,13 +52,17 @@ public:
    //------------------------------------------------------------------------
    ngl::Vec3 getVertex(unsigned int i_index);
    //------------------------------------------------------------------------
-   /// @brief method that creates UVs for the model given the limits of
-   /// the hyperspectral data
+   /// @brief method that creates UVs for the model the name of the bil file
+   /// @note please note that this method is for raster data
+   /// @param[in] i_bilFilename the name of the bil file
    //------------------------------------------------------------------------
-   void createUVs(
-           const ngl::Vec2 &i_hyperMinLimits,
-           const ngl::Vec2 &i_hyperMaxLimits
-           );
+   void createUVsBIL(const std::string &i_bilFilename);
+   //------------------------------------------------------------------------
+   /// @brief method that creates UVs for the model given the igm file from
+   /// the original hyperspectral data
+   /// @param[in] i_igmFile the name of the igm file
+   //------------------------------------------------------------------------
+   void createUVsIGM(const std::string &i_igmFile);
    //------------------------------------------------------------------------
    /// @brief default destructor
    //------------------------------------------------------------------------

@@ -41,7 +41,8 @@ SOURCES += \
     src/LASHandler/DiscreteData.cpp \
     src/Camera.cpp \
     src/MarchingCubes/IntegralVolumes.cpp \
-    src/MarchingCubes/MCwithIntegralImages.cpp
+    src/MarchingCubes/MCwithIntegralImages.cpp \
+    src/MarchingCubes/Grid.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -74,7 +75,8 @@ HEADERS += \
     include/LASHandler/DiscreteData.h \
     include/Camera.h \
     include/MarchingCubes/IntegralVolumes.h \
-    include/MarchingCubes/MCwithIntegralImages.h
+    include/MarchingCubes/MCwithIntegralImages.h \
+    include/MarchingCubes/Grid.h
 
 FORMS += \
     ui/MainWindow.ui
