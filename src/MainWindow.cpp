@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //		connect(m_ui->m_objectSelection,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setObjectMode(int)));
 
    QStringList maps;
-   maps << "Thickness" << "Density" << "Height";
+   maps << "Non-Empty Voxels" << "Density" << "Thickness";
    m_ui->m_cbMaps->insertItems(0,maps);
    QStringList types;
    types << "Full-wavefrom" << "Discrete";
@@ -116,10 +116,14 @@ void MainWindow::updateHyperspectral()
     bands[1] = m_ui->m_sbBand2->value();
     bands[2] = m_ui->m_sbBand3->value();
     m_gl->loadHyperspectral(m_bilFilename,bands);
-
-
-    m_gl->buildVAO(m_glData);
-
+    if(m_glData!=NULL)
+    {
+       m_gl->buildVAO(m_glData);
+    }
+    else
+    {
+       // object have not been created yet
+    }
 }
 
 //-----------------------------------------------------------------------------

@@ -22,6 +22,10 @@ Grid::Grid(const std::string &i_IGMfileName,
          // get number of samples and number of lines
          m_nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
          m_nlines=bilLib::StringToUINT(file.FromHeader("lines"));
+         // calculate the number of squares that corresponds to x,y axes
+         m_nX = (unsigned int)sqrt(double(m_nsamps*m_nsamps/i_samplingRate));
+         m_nY = (unsigned int)sqrt(double(m_nlines*m_nlines/i_samplingRate));
+
 
          std::cout << "nsamps x m_nlines : "<< m_nsamps << "x" << m_nlines  << "=" << m_nsamps*m_nlines<< "\n";
          unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
@@ -36,9 +40,6 @@ Grid::Grid(const std::string &i_IGMfileName,
          file.Readband((char *)m_Xs,0);
          file.Readband((char *)m_Ys,1);
 
-         // calculate the number of squares that corresponds to x,y axes
-         m_nX = (unsigned int)sqrt(double(m_nsamps*m_nsamps/i_samplingRate));
-         m_nY = (unsigned int)sqrt(double(m_nlines*m_nlines/i_samplingRate));
 
 
          m_min.m_x = m_Xs[0];
@@ -142,12 +143,10 @@ ngl::Vec2 Grid::getPixelPositionScaled0_1(
    const ngl::Vec2 point(i_x,i_y);
    ngl::Vec2 pixelPos(0,0);
    unsigned int currentPixelKey = 0;
-   unsigned count = 0;
    float minDis = sqrt(pow(m_Xs[0]-point.m_x,2.0)+pow(m_Ys[0]-point.m_y,2.0));
    auto itsElements = m_map.equal_range(getKeyOfSquare(x,y));
    for (auto it = itsElements.first; it != itsElements.second; ++it)
    {
-      count++;
       const float distance = sqrt(pow(m_Xs[it->second]-point.m_x,2.0)+
                                   pow(m_Ys[it->second]-point.m_y,2.0));
       if(distance<minDis)

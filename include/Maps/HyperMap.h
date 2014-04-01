@@ -1,34 +1,28 @@
-#ifndef HEIGHT_H
-#define HEIGHT_H
-
-//-------------------------------------------------------------------------
-/// @file HeightMap.h
-/// @author Milto Miltiadou
-/// @version 1.0
-/// @date 13/01/14
-/// @class HeightMap
-/// @brief this class aims to link the GUI with the libraries.
-//-------------------------------------------------------------------------
+#ifndef HYPERMAP_H
+#define HYPERMAP_H
 
 #include "Map.h"
 
-class HeightMap : public Map
+class HyperMap : public Map
 {
 public:
     //-------------------------------------------------------------------------
     /// @brief default constructor
+    /// @param[in] i_name the name of the map image to be saved
+    /// @param[in] i_obj the object that the map with derived from
     //-------------------------------------------------------------------------
-    HeightMap(const std::string i_name, Object *i_obj);
+    HyperMap(const std::string i_name, Object *i_obj);
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------
-    ~HeightMap();
+    ~HyperMap();
 
 private:
     //-------------------------------------------------------------------------
-    /// @brief method that creates thickness Map
+    /// @brief
     //-------------------------------------------------------------------------
     void createMap();
+
 };
 
-#endif // HEIGHT_H
+#endif // HYPERMAP_H

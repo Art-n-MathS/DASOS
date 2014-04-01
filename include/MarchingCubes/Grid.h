@@ -20,8 +20,6 @@
 
 class Grid
 {
-
-   typedef std::unordered_multimap<int, int> stringmap;
 public:
    //--------------------------------------------------------------------------
    /// @brief default constructor
@@ -103,7 +101,7 @@ private:
    ngl::Vec2 m_max;
 
    //--------------------------------------------------------------------------
-   stringmap m_map;
+   std::unordered_multimap<int, int> m_map;
    //--------------------------------------------------------------------------
    /// @brief the x positions of the IGM file
    //--------------------------------------------------------------------------

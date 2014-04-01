@@ -25,6 +25,20 @@ public:
     //-------------------------------------------------------------------------
     void createAndSave();
     //-------------------------------------------------------------------------
+    /// @brief method that takes as input the values of one of the maps and
+    /// produces an image. The size of the input array should be equal to
+    /// m_noOfVoxelsX*m_noOfVoxelsY
+    //-------------------------------------------------------------------------
+    void saveMapToImage()const;
+    //-------------------------------------------------------------------------
+    /// @brief method that creates a map
+    //-------------------------------------------------------------------------
+    virtual void createMap(){std::cout << "this should never be called\n";}
+    //-------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------
+
+    //-------------------------------------------------------------------------
     /// @brief + operator add Map+Map
     /// @param[in] &i_map the map to add
     /// @returns the Map + i_map
@@ -63,12 +77,7 @@ public:
 
 
 private:
-    //-------------------------------------------------------------------------
-    /// @brief method that takes as input the values of one of the maps and
-    /// produces an image. The size of the input array should be equal to
-    /// m_noOfVoxelsX*m_noOfVoxelsY
-    //-------------------------------------------------------------------------
-    void saveMapToImage()const;
+
     //-------------------------------------------------------------------------
     /// @brief method that normalises the values to be between 0 and 255
     //-------------------------------------------------------------------------
@@ -91,10 +100,7 @@ protected:
     /// @param[in] i_z the z coordinate of the voxel
     //-------------------------------------------------------------------------
     bool isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z);
-    //-------------------------------------------------------------------------
-    /// @brief method that creates a map
-    //-------------------------------------------------------------------------
-    virtual void createMap(){std::cout << "this should never be called\n";}
+
     //-------------------------------------------------------------------------
     /// @brief method that returns the index of the map
     /// @param[in] i_x the x position of the pixel on the image

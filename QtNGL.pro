@@ -32,17 +32,18 @@ SOURCES += \
     src/MarchingCubes/Object.cpp \
     src/Manager.cpp \
     src/MarchingCubes/Histogram.cpp \
-    src/Maps/ThicknessMap.cpp \
     src/Maps/MapsManager.cpp \
     src/Maps/Map.cpp \
-    src/Maps/HeightMap.cpp \
     src/Maps/DensityMap.cpp \
     src/Texture.cpp \
     src/LASHandler/DiscreteData.cpp \
     src/Camera.cpp \
     src/MarchingCubes/IntegralVolumes.cpp \
     src/MarchingCubes/MCwithIntegralImages.cpp \
-    src/MarchingCubes/Grid.cpp
+    src/MarchingCubes/Grid.cpp \
+    src/Maps/NonEmptyVoxelsMap.cpp \
+    src/Maps/ThicknessMap.cpp \
+    src/Maps/HyperMap.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -66,17 +67,18 @@ HEADERS += \
     include/MarchingCubes/MCTables.h \
     include/MarchingCubes/Object.h \
     include/MarchingCubes/Histogram.h \
-    include/Maps/ThicknessMap.h \
     include/Maps/MapsManager.h \
     include/Maps/Map.h \
-    include/Maps/HeightMap.h \
     include/Maps/DensityMap.h \
     include/Texture.h \
     include/LASHandler/DiscreteData.h \
     include/Camera.h \
     include/MarchingCubes/IntegralVolumes.h \
     include/MarchingCubes/MCwithIntegralImages.h \
-    include/MarchingCubes/Grid.h
+    include/MarchingCubes/Grid.h \
+    include/Maps/NonEmptyVoxelsMap.h \
+    include/Maps/ThicknessMap.h \
+    include/Maps/HyperMap.h
 
 FORMS += \
     ui/MainWindow.ui

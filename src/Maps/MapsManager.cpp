@@ -1,16 +1,16 @@
 #include "MapsManager.h"
 #include "DensityMap.h"
+#include "NonEmptyVoxelsMap.h"
 #include "ThicknessMap.h"
-#include "HeightMap.h"
 #include <map>
 
 
 //-----------------------------------------------------------------------------
 MapsManager::MapsManager():m_map(0)
 {
-    m_types["THICKNESS"] = 1;
+    m_types["NON-EMPTY VOXELS"] = 1;
     m_types["DENSITY"]   = 2;
-    m_types["HEIGHT"]    = 3;
+    m_types["Thickness"]    = 3;
 }
 
 
@@ -34,14 +34,14 @@ void MapsManager::createMap(
    {
    case 1:
       std::cout << "thickness map\n";
-      m_map = new ThicknessMap(i_name,i_obj);
+      m_map = new NonEmptyVoxelsMap(i_name,i_obj);
       break;
    case 2:
        std::cout << "density map\n";
       m_map = new DensityMap(i_name,i_obj);
       break;
    case 3:
-       m_map = new HeightMap(i_name,i_obj);
+       m_map = new ThicknessMap(i_name,i_obj);
       break;
    default:
        std::cout << i_type << " is not a valid type of map";

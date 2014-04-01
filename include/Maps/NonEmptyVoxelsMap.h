@@ -1,34 +1,26 @@
-#ifndef HEIGHT_H
-#define HEIGHT_H
-
-//-------------------------------------------------------------------------
-/// @file HeightMap.h
-/// @author Milto Miltiadou
-/// @version 1.0
-/// @date 13/01/14
-/// @class HeightMap
-/// @brief this class aims to link the GUI with the libraries.
-//-------------------------------------------------------------------------
+#ifndef THICKNESSMAP_H
+#define THICKNESSMAP_H
 
 #include "Map.h"
 
-class ThicknessMap : public Map
+class NonEmptyVoxelsMap : public Map
 {
 public:
     //-------------------------------------------------------------------------
     /// @brief default constructor
     //-------------------------------------------------------------------------
-    ThicknessMap(const std::string i_name, Object *i_obj);
+    NonEmptyVoxelsMap(const std::string i_name, Object *i_obj);
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------
-    ~ThicknessMap();
+    ~NonEmptyVoxelsMap();
 
 private:
     //-------------------------------------------------------------------------
     /// @brief method that creates thickness Map
     //-------------------------------------------------------------------------
     void createMap();
+
 };
 
-#endif // HEIGHT_H
+#endif // THICKNESSMAP_H
