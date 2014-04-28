@@ -111,6 +111,36 @@ float Map::getIntensity(unsigned int i_x, unsigned int i_y, unsigned int i_z)
 }
 
 //-----------------------------------------------------------------------------
+void Map::threshold(unsigned int i_thres)
+{
+   for(unsigned int i=0; i<m_mapValues.size(); ++i)
+   {
+      if (m_mapValues[i]> 0.0001)
+      {
+         if (m_mapValues[i]<i_thres )
+         {
+            m_mapValues[i] = 1.0f;
+         }
+         else
+         {
+            m_mapValues[i] = 255.0f;
+         }
+      }
+   }
+}
+
+//-----------------------------------------------------------------------------
+void Map::sample(unsigned int i_samp)
+{
+   float d = 256/pow(2.0,i_samp);
+   for(unsigned int i=0; i<m_mapValues.size(); ++i)
+   {
+       m_mapValues[i]/=d;
+   }
+   normalise();
+}
+
+//-----------------------------------------------------------------------------
 void Map::normalise()
 {
    float min = m_mapValues[0];
@@ -133,7 +163,7 @@ void Map::normalise()
 }
 
 //-----------------------------------------------------------------------------
-void Map::createAndSave()
+void Map::createAndSave(unsigned int i_thres, unsigned int i_sample)
 {
     if(m_mapValues.size()==0)
     {
@@ -142,6 +172,18 @@ void Map::createAndSave()
     }
     createMap();
     normalise();
+    if(i_thres!=0)
+    {
+       threshold(i_thres);
+    }
+    else if (i_sample!=0)
+    {
+       sample(i_sample);
+    }
+    else
+    {
+       // keep original image
+    }
     saveMapToImage();
 }
 

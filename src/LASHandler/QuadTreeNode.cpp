@@ -25,11 +25,11 @@ QuadTreeNode::QuadTreeNode(
       // yThres is the threshold that separates separates (1,2) from (3,4)
       double yThres((i_limits[0]+i_limits[1])/2.0);
       // xThres is the threshold that separates (1,3) from (2,4)
-      double xThres((i_limits[2])+i_limits[3]/2.0);
+//      double xThres((i_limits[2])+i_limits[3]/2.0);
       // the number of points that belong to the group (1,2)
-      unsigned int lengthOf1stGroup;
+      unsigned int lengthOf1stGroup(0);
       // the number of points that belong to the group (3,4)
-      unsigned int lengthOf2stGroup;
+//      unsigned int lengthOf2stGroup;
 
       unsigned int min = 0;
       unsigned int max = m_noOfPulses;
@@ -51,16 +51,16 @@ QuadTreeNode::QuadTreeNode(
       }
 
       lengthOf1stGroup = min;
-      lengthOf2stGroup = m_noOfPulses-lengthOf1stGroup;
+//      lengthOf2stGroup = m_noOfPulses-lengthOf1stGroup;
 
 
 
 
 
-      // the array that all the elements of the group (1,2) are saved
-      std::vector<Pulse *> pulsesOf1stGroup;
-      // the array that all the elements of the group (3,4) are saved
-      std::vector<Pulse *> pulsesOf2ndGroup;
+//      // the array that all the elements of the group (1,2) are saved
+//      std::vector<Pulse *> pulsesOf1stGroup;
+//      // the array that all the elements of the group (3,4) are saved
+//      std::vector<Pulse *> pulsesOf2ndGroup;
 
 
       // then split the node into another four node

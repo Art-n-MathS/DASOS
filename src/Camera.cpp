@@ -263,9 +263,9 @@ void Camera::setTwoPointProjection()
     m_projectionMatrix.m_m[2][3]=c;
     // these are unused remove in next inc
     //ngl::Real xmin, xmax,
-    ngl::Real ymin, ymax;
-    ymax = m_zNear * tan( m_fov * M_PI / 360.0f );
-    ymin = -ymax;
+//    ngl::Real ymin, ymax;
+//    ymax = m_zNear * tan( m_fov * M_PI / 360.0f );
+//    ymin = -ymax;
 
 // this is legacy I think check and remove asap
 //	xmin = ymin * m_aspect;

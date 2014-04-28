@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //		connect(m_ui->m_objectSelection,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setObjectMode(int)));
 
    QStringList maps;
-   maps << "Non-Empty Voxels" << "Density" << "Thickness";
+   maps << "Non-Empty Voxels" << "Density" << "Thickness"  << "Hyperspectral";
    m_ui->m_cbMaps->insertItems(0,maps);
    QStringList types;
    types << "Full-wavefrom" << "Discrete";
@@ -160,8 +160,9 @@ void MainWindow::createHist()
 void MainWindow::loadLASfile()
 {
 //    QString file("/local/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009806.LAS");
-    QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                                "",tr("Files (*.*)"));
+    QString file("/local/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
+//    QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
+//                                                "",tr("Files (*.*)"));
    if(!file.isEmpty())
    {
       clock_t t1,t2;
@@ -298,7 +299,9 @@ void MainWindow::createMap()
       MapsManager m;
       QString mapType = m_ui->m_cbMaps->currentText();
       std::cout << "++++: " << mapType.toStdString() << "\n";
-      m.createMap(mapType.toStdString(),file.toStdString(),m_obj);
+      m.createMap(mapType.toStdString(),file.toStdString(),m_obj,
+                  m_ui->m_sbBand->value(),m_bilFilename,m_IGMFilename,
+                  m_ui->m_sbThreshold->value(), m_ui->m_sbSampling->value());
    }
 }
 

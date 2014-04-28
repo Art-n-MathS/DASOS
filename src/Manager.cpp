@@ -21,6 +21,8 @@ Object *Manager::createObject(
    std::cout << "Start filling object - full waveform\n";
    i_pulseManager->setNoiseLevel(noiseLevel);
    obj = i_pulseManager->fillObject(obj,user_limits);
+   obj->insertIntoIntegralVolume();
+
    return obj;
 }
 
@@ -35,6 +37,7 @@ Object *Manager::createObject(
    std::cout << "Start filling object - discrete\n";
    obj->setNoiseLevel(0.0f);
    obj = i_discreteData->fillObject(obj,user_limits);
+   obj->insertIntoIntegralVolume();
    return obj;
 }
 

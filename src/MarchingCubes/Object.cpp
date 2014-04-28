@@ -5,14 +5,14 @@
 
 //-----------------------------------------------------------------------------
 Object::Object(unsigned int i_x, const std::vector<double> &i_userLimits):
+    m_integralVolume(0),
     m_lowerLimits(ngl::Vec3(i_userLimits[3],i_userLimits[1],i_userLimits[5])),
     m_higherLimits(ngl::Vec3(i_userLimits[2]+0.0001,
                              i_userLimits[0]+0.0001,
                              i_userLimits[4]+0.0001)),
     m_isolevel(-99.9999999),
     m_noiseLevel(0.0),
-    m_isIntegralVolume(false),
-    m_integralVolume(0)
+    m_isIntegralVolume(false)
 {
     m_noOfVoxelsX = i_x;
     m_dis.m_x= (m_higherLimits.m_x - m_lowerLimits.m_x);
@@ -78,6 +78,7 @@ void Object::insertIntoIntegralVolume()
 {
     m_integralVolume = new IntegralVolumes(m_noOfVoxelsX,m_noOfVoxelsY,
                                            m_noOfVoxelsZ,m_intensities);
+//    std::cout << m_integralVolume->getSumOfArea(0,0,0,60,200,50) << "\n";
 }
 
 
@@ -98,9 +99,9 @@ void Object::addItensity(const ngl::Vec3 &i_point, float i_intensity)
 {
    if(i_intensity>m_noiseLevel)
    {
-      int index_x, index_y, index_z;
-      int v_x, v_y, v_z;
-      float sumOfDistances;
+//      int index_x, index_y, index_z;
+//      int v_x, v_y, v_z;
+//      float sumOfDistances;
       std::vector<ngl::Vec3> centresOfnearVoxels;
       centresOfnearVoxels.resize(8);
       std::vector<float> disFromPoint;

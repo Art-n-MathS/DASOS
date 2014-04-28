@@ -47,7 +47,6 @@ Object *PulseManager::fillObject(
       }
    }
    obj->normalise();
-   obj->insertIntoIntegralVolume();
    return obj;
 }
 

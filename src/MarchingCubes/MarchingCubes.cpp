@@ -21,8 +21,16 @@ MarchingCubes::MarchingCubes(
    dis.m_x = maxLimits.m_x - minLimits.m_x;
    dis.m_y = maxLimits.m_y - minLimits.m_y;
    dis.m_z = maxLimits.m_z - minLimits.m_z;
-   m_numOfCubsY = ceil(((double)m_numOfCubsX)*dis.m_y/dis.m_x);
-   m_numOfCubsZ = ceil(((double)m_numOfCubsX)*dis.m_z/dis.m_x);
+   if(m_obj->getNoVoxelsX()==i_x)
+   {
+      m_numOfCubsY = i_obj->getNoVoxelsY();
+      m_numOfCubsZ = i_obj->getNoVoxelsZ();
+   }
+   else
+   {
+      m_numOfCubsY = ceil(((double)m_numOfCubsX)*dis.m_y/dis.m_x);
+      m_numOfCubsZ = ceil(((double)m_numOfCubsX)*dis.m_z/dis.m_x);
+   }
    std::cout << "Num of Cubes: " << m_numOfCubsX << " " << m_numOfCubsY << " " << m_numOfCubsZ << "\n";
 
 }
@@ -72,7 +80,7 @@ ngl::Vec3 MarchingCubes::VertexInterp(
 
    return(p);
 }
-
+unsigned int count = 0;
 //-----------------------------------------------------------------------------
 void MarchingCubes::Polygonise(
         const std::vector<ngl::Vec3> &points,
@@ -109,7 +117,7 @@ void MarchingCubes::Polygonise(
    {
       return;
    }
-
+   count++;
    /* Find the vertices where the surface intersects the cube */
    if (edgeTable[cubeindex] & 1)
    {
@@ -241,6 +249,7 @@ void MarchingCubes::computeVertices(GLData *i_glData)
          }
       }
    }
+   std::cout << "NON EMPTY CUBES: " << count << "\n";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

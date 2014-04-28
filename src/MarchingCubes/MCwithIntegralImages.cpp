@@ -1,5 +1,7 @@
 #include "MCwithIntegralImages.h"
 #include "math.h"
+#include <stack>
+#include "IntegralVolumeBox.h"
 
 //-----------------------------------------------------------------------------
 MCwithIntegralImages::MCwithIntegralImages(
@@ -9,13 +11,14 @@ MCwithIntegralImages::MCwithIntegralImages(
     MarchingCubes(i_obj,i_x)
 {
 }
+unsigned int count1 = 0;
 
 //-----------------------------------------------------------------------------
 void MCwithIntegralImages::divideVolume(
-        unsigned short int i_dividableSides,
-        const unsigned short int i_n,
-        const std::vector<unsigned short int> &i_mins,
-        const std::vector<unsigned short int> &i_lens,
+        unsigned int i_dividableSides,
+        const unsigned int i_n,
+        const std::vector<unsigned int> &i_mins,
+        const std::vector<unsigned int> &i_lens,
         GLData *i_glData
         )
 {
@@ -24,26 +27,30 @@ void MCwithIntegralImages::divideVolume(
      {
        //polygonise cube
        polygoniseXYZ(i_mins[0],i_mins[1],i_mins[2],m_obj->getIsolevel(),i_glData);
+       count1++;
        return;
     }
 
-//    // check if the area is empty. If it is then return without doing anything.
+    // check if the area is empty. If it is then return without doing anything.
     if(m_obj->m_integralVolume->getSumOfArea(i_mins[0],i_mins[1],i_mins[2],i_lens[0]-1,i_lens[1]-1,i_lens[2]-1)<0.0f)
     {
-//        // the volume is empty => no more process is required
+        // the volume is empty => no more process is required
         return;
     } else
     {
     }
-
+//    std::cout << ": " << i_mins[0] << " " << i_mins[1] << " " << i_mins[2] << " "
+//                                 << i_lens[0] << " " << i_lens[1] << " " << i_lens[2] << " -> ";
+    std::cout << m_obj->m_integralVolume->getSumOfArea(i_mins[0],i_mins[1],i_mins[2],i_lens[0]-1,i_lens[1]-1,i_lens[2]-1) << " *** \n";
+    return;
     unsigned char lala = i_dividableSides&(unsigned int)(pow(2.0,(double)i_n));
 
     // value will be 1 instead of 0 - need to check when program terminated and
     // update values correctly
    if(lala!=0) // then current side is dividable
    {
-       std::vector<unsigned short int> nMins1(i_mins),nMins2(i_mins);
-       std::vector<unsigned short int> nLens1(i_lens),nLens2(i_lens);
+       std::vector<unsigned int> nMins1(i_mins),nMins2(i_mins);
+       std::vector<unsigned int> nLens1(i_lens),nLens2(i_lens);
        nLens1[i_n] = i_lens[i_n]/2;
        nLens2[i_n] = i_lens[i_n]-nLens1[i_n];
        nMins2[i_n]+=nLens1[i_n];
@@ -58,7 +65,7 @@ void MCwithIntegralImages::divideVolume(
        {
           // that side cannot be divided anymore
            divideVolume(i_dividableSides&
-              ((unsigned short int)7-(unsigned short int)pow(2.0,double(i_n))),
+              ((unsigned int)7-(unsigned int)pow(2.0,double(i_n))),
               (i_n+1)%3,nMins1,nLens1,i_glData);
 
        }
@@ -73,7 +80,7 @@ void MCwithIntegralImages::divideVolume(
        {
           // that side cannot be divided anymore
           divideVolume(i_dividableSides&(
-               (unsigned short int)7-(unsigned short int)pow(2.0,double(i_n))),
+               (unsigned int)7-(unsigned int)pow(2.0,double(i_n))),
                (i_n+1)%3,nMins2,nLens2,i_glData);
        }
        else
@@ -89,29 +96,115 @@ void MCwithIntegralImages::divideVolume(
    }
 }
 
+
 //-----------------------------------------------------------------------------
 void MCwithIntegralImages::computeVertices(GLData *i_glData)
 {
-//   m_obj->m_integralVolume->print();
-   std::cout << "Marching Cubes algorithm with integral Volumes\n";
-   std::vector<unsigned short int> mins(3,0);
-   std::vector<unsigned short int> lens(3);
-   lens[0]=m_numOfCubsX-1; lens[1]=m_numOfCubsY-1; lens[2]=m_numOfCubsZ-1;
-    // 7 for 1+2+4 => all the 3 coordinates are dividable
-   divideVolume(7,0,mins,lens,i_glData);
 
-//    std::vector<ngl::Vec3> points;
-//    points.resize(8);
-//    for(unsigned int x=0; x<m_numOfCubsX-1; ++x)
-//    {
-//       for(unsigned int y=0; y<m_numOfCubsY-1; ++y)
-//       {
-//          for (unsigned int z=0; z<m_numOfCubsZ-1; ++z)
-//          {
-//             polygoniseXYZ(x,y,z,m_obj->getIsolevel(),i_glData);
-//          }
-//       }
-//    }
+   IntegralVolumeBox currentCube(m_numOfCubsX-2,m_numOfCubsY-2,m_numOfCubsZ-2);
+
+//   Cube cube1 = {{1,2,3},{2,3,4},1,2};
+
+
+   if(m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0],
+           currentCube.m_mins[1],currentCube.m_mins[2],currentCube.m_lens[1]-1,
+           currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)<0.000001f)
+   {
+      // the volume is empty => no more process is required
+      return;
+   }
+
+   std::stack<IntegralVolumeBox> cubes;
+   cubes.push(currentCube);
+   while(cubes.size()!=0)
+   {
+      currentCube = cubes.top();
+      cubes.pop();
+      // check if only one cube is left and polygonise if it is
+      if(currentCube.m_divisibles==0)
+      {
+         polygoniseXYZ( currentCube.m_mins[0], currentCube.m_mins[1],
+                        currentCube.m_mins[2],m_obj->getIsolevel(),i_glData);
+         continue;
+      }
+
+      // check if area is empty and discard if it is
+      if((m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0],currentCube.m_mins[1],currentCube.m_mins[2],currentCube.m_lens[0]-1,currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)<0.0f))
+      {
+         if((currentCube.m_mins[0]>=m_numOfCubsX-1 || m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]+1,currentCube.m_mins[1]  ,currentCube.m_mins[2]  ,1                      ,currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)>0.0f) ||
+            (currentCube.m_mins[1]>=m_numOfCubsY-1 || m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]  ,currentCube.m_mins[1]+1,currentCube.m_mins[2]  ,currentCube.m_lens[0]-1,1                      ,currentCube.m_lens[2]-1)>0.0f) ||
+            (currentCube.m_mins[2]>=m_numOfCubsZ-1 || m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]  ,currentCube.m_mins[1]  ,currentCube.m_mins[2]+1,currentCube.m_lens[0]-1,currentCube.m_lens[1]-1,1                      )>0.0f))
+         {
+         }
+         else
+         {
+            // the volume is empty => no more process is required
+            continue;
+         }
+      }
+
+      // else divide current cube and push the new cubes into the stack
+
+      if(int(currentCube.m_divisibles&(unsigned int)(pow(2.0,(double)currentCube.m_nextSide)))==0)
+      {
+         // current side is not divisible, but at least one is,
+         // so push current cube to stack after moving to the next side
+         currentCube.m_nextSide = (currentCube.m_nextSide+1)%3;
+         cubes.push(currentCube);
+         continue;
+      }
+      // else current side is divisible, so divide it and push the cubes to the
+      // stack if they are not empty.
+
+      IntegralVolumeBox cube1(currentCube);
+      IntegralVolumeBox cube2(currentCube);
+      cube1.m_lens[currentCube.m_nextSide] = currentCube.m_lens[currentCube.m_nextSide]/2;
+      cube2.m_lens[currentCube.m_nextSide] = currentCube.m_lens[currentCube.m_nextSide] -
+                                         cube1.m_lens[currentCube.m_nextSide];
+      cube2.m_mins[currentCube.m_nextSide]+= cube1.m_lens[currentCube.m_nextSide];
+      cube1.m_nextSide = (currentCube.m_nextSide+1)%3;
+      cube2.m_nextSide = cube1.m_nextSide;
+      if(cube1.m_lens[currentCube.m_nextSide]==1)
+      {
+         cube1.m_divisibles = currentCube.m_divisibles&((unsigned int)7-
+                       (unsigned int)pow(2.0,double(currentCube.m_nextSide)));
+      }
+      if(cube2.m_lens[currentCube.m_nextSide]==1)
+      {
+         cube2.m_divisibles = currentCube.m_divisibles&((unsigned int)7-
+                       (unsigned int)pow(2.0,double(currentCube.m_nextSide)));
+      }
+
+      cubes.push(cube1);
+      cubes.push(cube2);
+//      if(m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0],
+//                 cube1.m_mins[1],cube1.m_mins[2],cube1.m_lens[1]-1,
+//                 cube1.m_lens[1]-1,cube1.m_lens[2]-1)>0.000001f)
+//      {
+//         cubes.push(cube1);
+//      }
+//      else if((cube1.m_mins[0]<=m_numOfCubsX-1 || m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0]+1,cube1.m_mins[1],cube1.m_mins[2],1,cube1.m_lens[1]-1,cube1.m_lens[2]-1)>0.0f) ||
+//              (cube1.m_mins[1]<=m_numOfCubsY-1 || m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0],cube1.m_mins[1]+1,cube1.m_mins[2],cube1.m_lens[0]-1,1,cube1.m_lens[2]-1)>0.0f) ||
+//              (cube1.m_mins[2]<=m_numOfCubsZ-1 || m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0],cube1.m_mins[1],cube1.m_mins[2]+1,cube1.m_lens[0]-1,cube1.m_lens[1]-1,1)>0.0f))
+//      {
+//          cubes.push(cube1);
+//      }
+
+
+//      if(m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0],
+//                 cube2.m_mins[1],cube2.m_mins[2],cube2.m_lens[1]-1,
+//                 cube2.m_lens[1]-1,cube2.m_lens[2]-1)>0.000001f)
+//      {
+//         cubes.push(cube2);
+//      }
+//      else if((cube2.m_mins[0]<=m_numOfCubsX-1 || m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0]+1,cube2.m_mins[1],cube2.m_mins[2],1,cube2.m_lens[1]-1,cube2.m_lens[2]-1)>0.0f) ||
+//              (cube2.m_mins[1]<=m_numOfCubsY-1 || m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0],cube2.m_mins[1]+1,cube2.m_mins[2],cube2.m_lens[0]-1,1,cube2.m_lens[2]-1)>0.0f) ||
+//              (cube2.m_mins[2]<=m_numOfCubsZ-1 || m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0],cube2.m_mins[1],cube2.m_mins[2]+1,cube2.m_lens[0]-1,cube2.m_lens[1]-1,1)>0.0f))
+//      {
+//          cubes.push(cube2);
+//      }
+
+   }
 }
 
 

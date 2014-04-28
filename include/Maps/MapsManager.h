@@ -17,7 +17,12 @@ public:
     void createMap(
             const std::string &i_type,
             const std::string &i_name,
-            Object *i_obj
+            Object *i_obj,
+            const unsigned int &i_band,
+            const std::string &i_bilFileName,
+            const std::string &i_IGMfileName,
+            const unsigned int i_thres,
+            const unsigned int i_samp
             );
     //-------------------------------------------------------------------------
     /// @brief default destructor

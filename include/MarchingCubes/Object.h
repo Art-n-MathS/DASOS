@@ -83,12 +83,18 @@ public:
     //-------------------------------------------------------------------------
     ~Object();
 
+    unsigned int getNoVoxelsX()const{return m_noOfVoxelsX;}
+    unsigned int getNoVoxelsY()const{return m_noOfVoxelsY;}
+    unsigned int getNoVoxelsZ()const{return m_noOfVoxelsZ;}
 
     //-------------------------------------------------------------------------
     /// @brief all the data inserted into an integral volume
     //--------------------------------------------------------------------------------------------------------------------temporarly public
     IntegralVolumes *m_integralVolume;
-
+    //-------------------------------------------------------------------------
+    /// @brief the length of voxel (voxels are cubes)
+    //-------------------------------------------------------------------------
+    float m_lengthOfVoxel;
 
 protected:
     //-------------------------------------------------------------------------
@@ -151,10 +157,7 @@ protected:
     /// @brief the distance between the limits
     //-------------------------------------------------------------------------
     ngl::Vec3 m_dis;
-    //-------------------------------------------------------------------------
-    /// @brief the length of voxel (voxels are cubes)
-    //-------------------------------------------------------------------------
-    float m_lengthOfVoxel;
+
     //-------------------------------------------------------------------------
     /// @brief the noise level
     //-------------------------------------------------------------------------

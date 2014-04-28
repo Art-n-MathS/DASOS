@@ -43,7 +43,8 @@ SOURCES += \
     src/MarchingCubes/Grid.cpp \
     src/Maps/NonEmptyVoxelsMap.cpp \
     src/Maps/ThicknessMap.cpp \
-    src/Maps/HyperMap.cpp
+    src/Maps/HyperMap.cpp \
+    src/MarchingCubes/IntegralVolumeBox.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -78,7 +79,8 @@ HEADERS += \
     include/MarchingCubes/Grid.h \
     include/Maps/NonEmptyVoxelsMap.h \
     include/Maps/ThicknessMap.h \
-    include/Maps/HyperMap.h
+    include/Maps/HyperMap.h \
+    include/MarchingCubes/IntegralVolumeBox.h
 
 FORMS += \
     ui/MainWindow.ui
@@ -112,8 +114,7 @@ linux-g++-64:QMAKE_CXXFLAGS +=  -march=native
 # define the _DEBUG flag for the graphics lib
 DEFINES +=NGL_DEBUG
 
-LIBS += -L/usr/local/lib
-LIBS += -L/users/rsg/arsf/usr/lib
+
 
 LIBS +=  -L/$(HOME)/BilLibrary/lib -lBilLibrary
 LIBS +=  -L/$(HOME)/NGL/lib -lNGL
@@ -134,13 +135,13 @@ QMAKE_CXXFLAGS += -std=c++0x
 CONFIG += c++11
 
 DEPENDPATH+=include
+DEPENDPATH+= $HOME/NGL/lib
+DEPENDPATH+= $HOME/BilLibrary/lib
+
 # if we are on a mac define DARWIN
 macx:DEFINES += DARWIN
 # this is where to look for includes
 INCLUDEPATH += $$(HOME)/NGL/include/
-
-#
-
 INCLUDEPATH += $$(HOME)/BilLibrary/include/
 
 

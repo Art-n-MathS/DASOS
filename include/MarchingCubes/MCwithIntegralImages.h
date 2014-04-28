@@ -6,6 +6,7 @@
 class MCwithIntegralImages : public MarchingCubes
 {
 public:
+
     //--------------------------------------------------------------------------
     /// @brief default constructor
     /// @param[in] i_obj object to be polygonised
@@ -25,6 +26,13 @@ public:
     ~MCwithIntegralImages();
 
 private:
+    typedef struct
+    {
+       unsigned int m_mins[3];
+       unsigned int m_lens[3];
+       unsigned int m_divisibles;
+       unsigned int m_nextSide;
+    }Cube;
     //--------------------------------------------------------------------------
     /// @brief recursive method that keep dividing every non empty sub-volumes
     /// and polygonises every non-empty cube that cannot be divided further
@@ -38,17 +46,17 @@ private:
     /// @param[in] i_lens the number of cubes in x,y,z directions accordingly
     //--------------------------------------------------------------------------
     void divideVolume(
-            unsigned short i_dividableSides,
-            const unsigned short i_n,
-            const std::vector<unsigned short int> &i_mins,
-            const std::vector<unsigned short int> &i_lens,
+            unsigned int i_dividableSides,
+            const unsigned int i_n,
+            const std::vector <unsigned int> &i_mins,
+            const std::vector <unsigned int> &i_lens,
             GLData *i_glData
             );
     //--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
     //--------------------------------------------------------------------------
-
+    /// @brief method that divides the volume without recursion
     //--------------------------------------------------------------------------
 
     //--------------------------------------------------------------------------
