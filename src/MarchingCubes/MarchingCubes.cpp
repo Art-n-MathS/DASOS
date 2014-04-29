@@ -80,7 +80,6 @@ ngl::Vec3 MarchingCubes::VertexInterp(
 
    return(p);
 }
-unsigned int count = 0;
 //-----------------------------------------------------------------------------
 void MarchingCubes::Polygonise(
         const std::vector<ngl::Vec3> &points,
@@ -117,7 +116,6 @@ void MarchingCubes::Polygonise(
    {
       return;
    }
-   count++;
    /* Find the vertices where the surface intersects the cube */
    if (edgeTable[cubeindex] & 1)
    {
@@ -249,7 +247,6 @@ void MarchingCubes::computeVertices(GLData *i_glData)
          }
       }
    }
-   std::cout << "NON EMPTY CUBES: " << count << "\n";
 }
 
 //----------------------------------------------------------------------------------------------------------------------

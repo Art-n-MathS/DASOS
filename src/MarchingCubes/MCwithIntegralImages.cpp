@@ -1,7 +1,7 @@
 #include "MCwithIntegralImages.h"
 #include "math.h"
 #include <stack>
-#include "IntegralVolumeBox.h"
+//#include "IntegralVolumeBox.h"
 
 //-----------------------------------------------------------------------------
 MCwithIntegralImages::MCwithIntegralImages(
@@ -11,7 +11,6 @@ MCwithIntegralImages::MCwithIntegralImages(
     MarchingCubes(i_obj,i_x)
 {
 }
-unsigned int count1 = 0;
 
 //-----------------------------------------------------------------------------
 void MCwithIntegralImages::divideVolume(
@@ -27,7 +26,6 @@ void MCwithIntegralImages::divideVolume(
      {
        //polygonise cube
        polygoniseXYZ(i_mins[0],i_mins[1],i_mins[2],m_obj->getIsolevel(),i_glData);
-       count1++;
        return;
     }
 
@@ -100,12 +98,7 @@ void MCwithIntegralImages::divideVolume(
 //-----------------------------------------------------------------------------
 void MCwithIntegralImages::computeVertices(GLData *i_glData)
 {
-
-   IntegralVolumeBox currentCube(m_numOfCubsX-2,m_numOfCubsY-2,m_numOfCubsZ-2);
-
-//   Cube cube1 = {{1,2,3},{2,3,4},1,2};
-
-
+   Cube currentCube = {{0,0,0},{m_numOfCubsX-2,m_numOfCubsY-2,m_numOfCubsZ-2},7,0};
    if(m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0],
            currentCube.m_mins[1],currentCube.m_mins[2],currentCube.m_lens[1]-1,
            currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)<0.000001f)
@@ -113,8 +106,8 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
       // the volume is empty => no more process is required
       return;
    }
-
-   std::stack<IntegralVolumeBox> cubes;
+   double integralIsolevel = (m_obj->getIsolevel()+100.0)/2.0;
+   std::stack<Cube> cubes;
    cubes.push(currentCube);
    while(cubes.size()!=0)
    {
@@ -129,22 +122,25 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
       }
 
       // check if area is empty and discard if it is
-      if((m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0],currentCube.m_mins[1],currentCube.m_mins[2],currentCube.m_lens[0]-1,currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)<0.0f))
+      if(currentCube.m_mins[2]==0 ||
+         currentCube.m_mins[1]==0 ||
+         currentCube.m_mins[0]==0 ||
+         m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]-1,
+                                               currentCube.m_mins[1]-1,
+                                               currentCube.m_mins[2]-1,
+                                               currentCube.m_lens[0]+1,
+                                               currentCube.m_lens[1]+1,
+                                               currentCube.m_lens[2]+1
+                                               )>integralIsolevel)
       {
-         if((currentCube.m_mins[0]>=m_numOfCubsX-1 || m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]+1,currentCube.m_mins[1]  ,currentCube.m_mins[2]  ,1                      ,currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)>0.0f) ||
-            (currentCube.m_mins[1]>=m_numOfCubsY-1 || m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]  ,currentCube.m_mins[1]+1,currentCube.m_mins[2]  ,currentCube.m_lens[0]-1,1                      ,currentCube.m_lens[2]-1)>0.0f) ||
-            (currentCube.m_mins[2]>=m_numOfCubsZ-1 || m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]  ,currentCube.m_mins[1]  ,currentCube.m_mins[2]+1,currentCube.m_lens[0]-1,currentCube.m_lens[1]-1,1                      )>0.0f))
-         {
-         }
-         else
-         {
-            // the volume is empty => no more process is required
-            continue;
-         }
+      }
+      else
+      {
+        // the volume is empty => no more process is required
+         continue;
       }
 
       // else divide current cube and push the new cubes into the stack
-
       if(int(currentCube.m_divisibles&(unsigned int)(pow(2.0,(double)currentCube.m_nextSide)))==0)
       {
          // current side is not divisible, but at least one is,
@@ -155,9 +151,8 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
       }
       // else current side is divisible, so divide it and push the cubes to the
       // stack if they are not empty.
-
-      IntegralVolumeBox cube1(currentCube);
-      IntegralVolumeBox cube2(currentCube);
+      Cube cube1(currentCube);
+      Cube cube2(currentCube);
       cube1.m_lens[currentCube.m_nextSide] = currentCube.m_lens[currentCube.m_nextSide]/2;
       cube2.m_lens[currentCube.m_nextSide] = currentCube.m_lens[currentCube.m_nextSide] -
                                          cube1.m_lens[currentCube.m_nextSide];
@@ -177,33 +172,6 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
 
       cubes.push(cube1);
       cubes.push(cube2);
-//      if(m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0],
-//                 cube1.m_mins[1],cube1.m_mins[2],cube1.m_lens[1]-1,
-//                 cube1.m_lens[1]-1,cube1.m_lens[2]-1)>0.000001f)
-//      {
-//         cubes.push(cube1);
-//      }
-//      else if((cube1.m_mins[0]<=m_numOfCubsX-1 || m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0]+1,cube1.m_mins[1],cube1.m_mins[2],1,cube1.m_lens[1]-1,cube1.m_lens[2]-1)>0.0f) ||
-//              (cube1.m_mins[1]<=m_numOfCubsY-1 || m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0],cube1.m_mins[1]+1,cube1.m_mins[2],cube1.m_lens[0]-1,1,cube1.m_lens[2]-1)>0.0f) ||
-//              (cube1.m_mins[2]<=m_numOfCubsZ-1 || m_obj->m_integralVolume->getSumOfArea(cube1.m_mins[0],cube1.m_mins[1],cube1.m_mins[2]+1,cube1.m_lens[0]-1,cube1.m_lens[1]-1,1)>0.0f))
-//      {
-//          cubes.push(cube1);
-//      }
-
-
-//      if(m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0],
-//                 cube2.m_mins[1],cube2.m_mins[2],cube2.m_lens[1]-1,
-//                 cube2.m_lens[1]-1,cube2.m_lens[2]-1)>0.000001f)
-//      {
-//         cubes.push(cube2);
-//      }
-//      else if((cube2.m_mins[0]<=m_numOfCubsX-1 || m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0]+1,cube2.m_mins[1],cube2.m_mins[2],1,cube2.m_lens[1]-1,cube2.m_lens[2]-1)>0.0f) ||
-//              (cube2.m_mins[1]<=m_numOfCubsY-1 || m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0],cube2.m_mins[1]+1,cube2.m_mins[2],cube2.m_lens[0]-1,1,cube2.m_lens[2]-1)>0.0f) ||
-//              (cube2.m_mins[2]<=m_numOfCubsZ-1 || m_obj->m_integralVolume->getSumOfArea(cube2.m_mins[0],cube2.m_mins[1],cube2.m_mins[2]+1,cube2.m_lens[0]-1,cube2.m_lens[1]-1,1)>0.0f))
-//      {
-//          cubes.push(cube2);
-//      }
-
    }
 }
 
