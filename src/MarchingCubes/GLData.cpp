@@ -122,60 +122,295 @@ ngl::Vec3 GLData::getVertex(unsigned int i_index)
 }
 
 //-----------------------------------------------------------------------------
+void GLData::exportHyperToImage(
+        const std::string &i_fName,
+        std::string i_name,
+        const std::vector<unsigned short> &i_bands
+        )
+{
+   const std::string extension = ".png";
+   if (i_name.find(extension)!=std::string::npos)
+   {
+     std::size_t pos = i_name.find_last_of(extension);
+     if (pos!=i_name.size()-1)
+     {
+       i_name+=extension;
+     }
+   }
+   else
+   {
+     i_name+=extension;
+   }
+
+   try
+   {
+      bilLib::BinFile file(i_fName);
+      unsigned char dataType = bilLib::StringToUINT(
+                  file.FromHeader("data type"));
+      unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
+      unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
+
+      unsigned int gLsamples = nsamps+((4-(nsamps%4))%4);
+
+
+      if (dataType == 4)// 32-bit floating point
+      {
+         float *data0 = new float[nlines*nsamps];
+         file.Readband((char *)data0,i_bands[0]);
+         float *data1 = new float[nlines*nsamps];
+         file.Readband((char *)data1,i_bands[1]);
+         float *data2 = new float[nlines*nsamps];
+         file.Readband((char *)data2,i_bands[2]);
+         QImage *img = new QImage(gLsamples, nlines,QImage::Format_RGB16);
+
+         unsigned int k=0;
+         while(data1[k]==0 && k!=nsamps*nlines-1)
+         {
+            k++;
+         }
+         float max1 = data1[k];
+         float min1 = data1[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max1<data1[i])
+            {
+               max1 = data1[i];
+            }else if (min1>data1[i] && data1[i]!=0)
+            {
+               min1 = data1[i];
+            }
+         }
+         k=0;
+         while(data2[k]==0 && k!=nsamps*nlines-1)
+         {
+            k++;
+         }
+         float max2 = data2[k];
+         float min2 = data2[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max2<data2[i])
+            {
+               max2 = data2[i];
+            }else if (min2>data1[i] && data2[i]!=0)
+            {
+               min2 = data2[i];
+            }
+         }
+         k=0;
+         while(data0[k]==0 && k!=nsamps*nlines-1)
+         {
+            k++;
+         }
+         float max0 = data0[k];
+         float min0 = data0[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max0<data0[i])
+            {
+               max0 = data0[i];
+            }else if (min1>data0[i] && data0[i]!=0)
+            {
+               min0 = data0[i];
+            }
+         }
+         img->fill(qRgb(0,0,0));
+         for(unsigned int x=0; x<nsamps; ++x)
+         {
+            for(unsigned int y=0; y<nlines; ++y)
+            {
+               img->setPixel(x,y,qRgb(floor(double(data0[y*nsamps+x]-min0)/(max0-min0)*255.0),
+                                      floor(double(data1[y*nsamps+x]-min1)/(max1-min1)*255.0),
+                                      floor(double(data2[y*nsamps+x]-min2)/(max2-min2)*255.0)));
+            }
+         }
+         img->save(i_name.c_str());
+         delete img;
+         std::cout << "IMG4\n";
+
+      } else if (dataType == 12)// 16-bit unsigned integer (short)
+      {
+         unsigned short int *data0 = new unsigned short int[nlines*nsamps];
+         file.Readband((char *)data0,i_bands[0]);
+         unsigned short int *data1 = new unsigned short int[nlines*nsamps];
+         file.Readband((char *)data1,i_bands[1]);
+         unsigned short int *data2 = new unsigned short int[nlines*nsamps];
+         file.Readband((char *)data2,i_bands[2]);
+         QImage *img = new QImage(gLsamples, nlines,QImage::Format_RGB16);
+         unsigned int k=0;
+         while(data1[k]==0 && k!=nsamps*nlines-1)
+         {
+            k++;
+         }
+         unsigned short int max1 = data1[k];
+         unsigned short int min1 = data1[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max1<data1[i])
+            {
+               max1 = data1[i];
+            }else if (min1>data1[i] && data1[i]!=0)
+            {
+               min1 = data1[i];
+            }
+         }
+         k=0;
+         while(data2[k]==0 && k!=nsamps*nlines-1)
+         {
+            k++;
+         }
+         unsigned short int max2 = data2[k];
+         unsigned short int min2 = data2[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max2<data2[i])
+            {
+               max2 = data2[i];
+            }else if (min2>data1[i] && data2[i]!=0)
+            {
+               min2 = data2[i];
+            }
+         }
+         k=0;
+         while(data0[k]==0 && k!=nsamps*nlines-1)
+         {
+            k++;
+         }
+         unsigned short int max0 = data0[k];
+         unsigned short int min0 = data0[k];
+         for(unsigned int i=0;i<nlines*nsamps;++i)
+         {
+            if(max0<data0[i])
+            {
+               max0 = data0[i];
+            }else if (min1>data0[i] && data0[i]!=0)
+            {
+               min0 = data0[i];
+            }
+         }
+         img->fill(qRgb(0,0,0));
+         for(unsigned int x=0; x<nsamps; ++x)
+         {
+            for(unsigned int y=0; y<nlines; ++y)
+            {
+               img->setPixel(x,y,qRgb(std::max(0.0,floor(double(data0[y*nsamps+x]-min0)/(max0-min0)*255.0)),
+                                      std::max(0.0,floor(double(data1[y*nsamps+x]-min1)/(max1-min1)*255.0)),
+                                      std::max(0.0,floor(double(data2[y*nsamps+x]-min2)/(max2-min2)*255.0))));
+            }
+         }
+         img->save(i_name.c_str());
+         delete img;
+
+      } else
+      {
+         std::cout << "bil data type not accepted\n";
+         return;
+      }
+
+
+
+      file.Close();
+   }
+   catch(bilLib::BinaryReader::BRexception e)
+   {
+      std::cout<<e.what()<<std::endl;
+      std::cout<<e.info<<std::endl;
+   }
+}
+
+
+//-----------------------------------------------------------------------------
 void GLData::exportToObj(std::string i_name)const
 {
-    std::ofstream myfile;
-    const std::string extension = ".obj";
-    if (i_name.find(extension)!=std::string::npos)
-    {
-      std::size_t pos = i_name.find_last_of(extension);
-      if (pos!=i_name.size()-1)
-      {
-        i_name+=extension;
-      }
-    }
-    else
-    {
-      i_name+=extension;
-    }
-    myfile.open(i_name.c_str());
-      if (myfile.is_open())
-      {
-        int vsize = m_vertices.size();
-        int nsize = m_normals.size();
-        int isize = m_indices.size();
-        for(int i=0; i<vsize; i+=3)
-        {
-          myfile <<"v "<<m_vertices[i]<<" "<< m_vertices[i+1]
-                 << " "<<m_vertices[i+2] << "\n";
-        }
-        myfile <<"\n\n";
-        for(int i=0; i<nsize; i+=3)
-        {
-          myfile <<"vn "<< m_normals[i]<<" "<< m_normals[i+1]
-                 << " "<< m_normals[i+2] << "\n";
-        }
-        myfile <<"\n\n";
-        for(int i=0; i<isize; i+=3)
-        {
-          int x = (int)m_indices[i];
-          int y = (int)m_indices[i+1];
-          int z = (int)m_indices[i+2];
-          if(x!=y && y!=z && x!=z)
+   std::cout << "No of Vertices: " << m_vertices.size()/3 << "\n";
+   //  find offset that will move object to the centre
+   // for animation software packages if the object is very far away from the
+   // centre then it will not be visible
+
+   ngl::Vec3 offset;
+   if(m_vertices.size()>=3)
+   {
+      offset.m_x = (m_vertices[0]+m_vertices[m_vertices.size()-3]) / 2;
+      offset.m_y = (m_vertices[1]+m_vertices[m_vertices.size()-2]) / 2;
+      offset.m_z = (m_vertices[2]+m_vertices[m_vertices.size()-1]) / 2;
+   }
+
+
+   std::ofstream myfile;
+   const std::string extension = ".obj";
+   if (i_name.find(extension)!=std::string::npos)
+   {
+     std::size_t pos = i_name.find_last_of(extension);
+     if (pos!=i_name.size()-1)
+     {
+       i_name+=extension;
+     }
+   }
+   else
+   {
+     i_name+=extension;
+   }
+   myfile.open(i_name.c_str());
+     if (myfile.is_open())
+     {
+       int vsize = m_vertices.size();
+       int nsize = m_normals.size();
+       int isize = m_indices.size();
+       for(int i=0; i<vsize; i+=3)
+       {
+         myfile << "v "<< m_vertices[i  ] - offset.m_x
+                << " " << m_vertices[i+1] - offset.m_y
+                << " " << m_vertices[i+2] - offset.m_z << "\n";
+       }
+       myfile <<"\n\n";
+
+       if(m_vertices.size()/3*2+1 == m_UVs.size())
+       {
+          // UVs has been calculated and better be saved into the file
+          for(unsigned int i=0; i<m_UVs.size(); i+=2)
           {
-            x++;y++;z++;
-            myfile << "f "<< x <<
-                    "//" << x <<
-                    " " << y <<
-                    "//" << y <<
-                    " " << z <<
-                    "//" << z <<
-                    "\n";
+             myfile << "vt " << m_UVs[i] << " " << m_UVs[i+1] << "\n";
           }
-        }
-        myfile.close();
-      }
-      std::cout << "File saved\n";
+       }
+       for(int i=0; i<nsize; i+=3)
+       {
+         myfile <<"vn "<< -m_normals[i]<<" "<< -m_normals[i+1]
+                << " "<< -m_normals[i+2] << "\n";
+       }
+       myfile <<"\n\n";
+       for(int i=0; i<isize; i+=3)
+       {
+         int x = (int)m_indices[i];
+         int y = (int)m_indices[i+1];
+         int z = (int)m_indices[i+2];
+         if(x!=y && y!=z && x!=z)
+         {
+           x++;y++;z++;
+           if(m_UVs.size()==0)
+           {
+              myfile << "f "<< x <<
+                   "//" << x <<
+                   " " << y <<
+                   "//" << y <<
+                   " " << z <<
+                   "//" << z <<
+                   "\n";
+           }
+           else
+           {
+              myfile << "f "<< x <<
+                   "/"<< x <<"/" << x <<
+                   " " << y <<
+                   "/"<< y <<"/" << y <<
+                   " " << z <<
+                   "/"<< y <<"/" << z <<
+                   "\n";
+           }
+         }
+       }
+       myfile.close();
+     }
+     std::cout << "File saved\n";
 }
 
 

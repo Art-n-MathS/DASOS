@@ -45,9 +45,7 @@ GLWindow::GLWindow(
 //----------------------------------------------------------------------------------------------------------------------
 void GLWindow::initializeGL()
 {
-  glClearColor(0.4f, 0.4f, 0.4f, 1.4f);			   // Grey Background
-  // enable depth testing for drawing
-  glEnable(GL_DEPTH_TEST);
+
 
   ngl::NGLInit *Init = ngl::NGLInit::instance();
   Init->initGlew();
@@ -55,6 +53,10 @@ void GLWindow::initializeGL()
   #ifdef WIN32
     glewInit(); // need a local glew init as well as lib one for windows
   #endif
+
+  glClearColor(0.4f, 0.4f, 0.4f, 1.4f);			   // Grey Background
+  // enable depth testing for drawing
+  glEnable(GL_DEPTH_TEST);
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();
   shader->createShaderProgram("Phong");
   shader->attachShader("PhongVertex",ngl::VERTEX);
@@ -285,11 +287,11 @@ void GLWindow::buildVAO(const GLData *i_glData)
 
     m_vao = ngl::VertexArrayObject::createVOA(GL_TRIANGLES);
     m_vao->bind();
-    m_vao->setIndexedData(sizeof(GLfloat)*vertices.size(),vertices[0],indices.size(),&indices[0],GL_UNSIGNED_INT);
+    m_vao->setIndexedData(sizeof(GLfloat)*vertices.size(),vertices[0],indices.size(),&indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-    m_vao->setIndexedData(normals.size()*sizeof(GLfloat),normals[0],indices.size(),&indices[0],GL_UNSIGNED_INT);
+    m_vao->setIndexedData(normals.size()*sizeof(GLfloat),normals[0],indices.size(),&indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
     m_vao->setVertexAttributePointer(2,3,GL_FLOAT,0,0);
-    m_vao->setIndexedData(sizeof(GLfloat*)*uvs.size(),uvs[0],indices.size(), &indices[0],GL_UNSIGNED_INT);
+    m_vao->setIndexedData(sizeof(GLfloat*)*uvs.size(),uvs[0],indices.size(), &indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
     m_vao->setVertexAttributePointer(1,2,GL_FLOAT,0,0);
     m_vao->setNumIndices(indices.size());
     m_vao->unbind();

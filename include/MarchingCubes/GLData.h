@@ -104,6 +104,20 @@ public:
    /// @brief the higher limits of the hyperspectral data
    //-------------------------------------------------------------------------
    ngl::Vec2 m_hyperMaxLimits;
+
+
+   //---------------------------------------------------------------------------
+   /// @brief method that exports the given 3 bands into an image that can be
+   /// used as a texture that matches the UVs of the .obj file
+   /// @param[in] i_fName the name of the bil file
+   /// @param[in] i_name the name of the image to be saved
+   /// @param[in] i_bands the bands of our interest
+   //---------------------------------------------------------------------------
+   void exportHyperToImage(const std::string &i_fName,
+                      std::string i_name,
+                      const std::vector<unsigned short int> &i_bands);
+
+
 };
 
 #endif // GLDATA_H

@@ -13,7 +13,7 @@
 
 #include <QMainWindow>
 #include <ngl/Vec4.h>
-#include "GLWindow.h"
+#include "GLWindow2.h"
 #include "GLData.h"
 #include "Object.h"
 #include "PulseManager.h"
@@ -103,9 +103,7 @@ public slots:
     /// @brief method that loads an IGM file
     //-------------------------------------------------------------------------
     void loadIGM();
-    //-------------------------------------------------------------------------
-    /// @brief method that recalculates the UVs of the object
-    //-------------------------------------------------------------------------
+
 
 
 private:
@@ -130,7 +128,7 @@ private:
     //-------------------------------------------------------------------------
     /// @brief the openGL widget
     //-------------------------------------------------------------------------
-    GLWindow *m_gl;
+    GLWindow2 *m_gl;
     //-------------------------------------------------------------------------
     /// @brief the pulse manager where all the info of the LAS file are saved
     //-------------------------------------------------------------------------

@@ -99,13 +99,13 @@ void MCwithIntegralImages::divideVolume(
 void MCwithIntegralImages::computeVertices(GLData *i_glData)
 {
    Cube currentCube = {{0,0,0},{m_numOfCubsX-2,m_numOfCubsY-2,m_numOfCubsZ-2},7,0};
-   if(m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0],
-           currentCube.m_mins[1],currentCube.m_mins[2],currentCube.m_lens[1]-1,
-           currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)<0.000001f)
-   {
-      // the volume is empty => no more process is required
-      return;
-   }
+//   if(m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0],
+//           currentCube.m_mins[1],currentCube.m_mins[2],currentCube.m_lens[1]-1,
+//           currentCube.m_lens[1]-1,currentCube.m_lens[2]-1)<0.000001f)
+//   {
+//      // the volume is empty => no more process is required
+//      return;
+//   }
    double integralIsolevel = (m_obj->getIsolevel()+100.0)/2.0;
    std::stack<Cube> cubes;
    cubes.push(currentCube);
@@ -120,18 +120,8 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
                         currentCube.m_mins[2],m_obj->getIsolevel(),i_glData);
          continue;
       }
-
       // check if area is empty and discard if it is
-      if(currentCube.m_mins[2]==0 ||
-         currentCube.m_mins[1]==0 ||
-         currentCube.m_mins[0]==0 ||
-         m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]-1,
-                                               currentCube.m_mins[1]-1,
-                                               currentCube.m_mins[2]-1,
-                                               currentCube.m_lens[0]+1,
-                                               currentCube.m_lens[1]+1,
-                                               currentCube.m_lens[2]+1
-                                               )>integralIsolevel)
+      if(currentCube.m_mins[2]==0 || currentCube.m_mins[1]==0 || currentCube.m_mins[0]==0 ||m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]-1,currentCube.m_mins[1]-1,currentCube.m_mins[2]-1,currentCube.m_lens[0]+1,currentCube.m_lens[1]+1,currentCube.m_lens[2]+1)>integralIsolevel)
       {
       }
       else
@@ -140,7 +130,6 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
          continue;
       }
 
-      // else divide current cube and push the new cubes into the stack
       if(int(currentCube.m_divisibles&(unsigned int)(pow(2.0,(double)currentCube.m_nextSide)))==0)
       {
          // current side is not divisible, but at least one is,

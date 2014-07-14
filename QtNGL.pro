@@ -44,7 +44,9 @@ SOURCES += \
     src/Maps/NonEmptyVoxelsMap.cpp \
     src/Maps/ThicknessMap.cpp \
     src/Maps/HyperMap.cpp \
-    src/MarchingCubes/IntegralVolumeBox.cpp
+    src/MarchingCubes/IntegralVolumeBox.cpp \
+    src/GLWindow1.cpp \
+    src/GLWindow2.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -80,7 +82,9 @@ HEADERS += \
     include/Maps/NonEmptyVoxelsMap.h \
     include/Maps/ThicknessMap.h \
     include/Maps/HyperMap.h \
-    include/MarchingCubes/IntegralVolumeBox.h
+    include/MarchingCubes/IntegralVolumeBox.h \
+    include/GLWindow1.h \
+    include/GLWindow2.h
 
 FORMS += \
     ui/MainWindow.ui
@@ -99,8 +103,6 @@ INCLUDEPATH +=   "/usr/include/eigen3/" \
                  "/usr/include/gtkmm-2.4/" \
                  "/usr/include/glibmm-2.4/" \
                  "/usr/include/sigc++-2.0/"
-
-
 
 LIBS += -lQtGui -lQtCore -lQtOpenGL \
         -L/usr/lib64/vtk -lvtkCommon -lvtksys -lvtkViews -lvtkWidgets  -lvtkRendering -lvtkGraphics -lvtkImaging -lvtkIO -lvtkFiltering -lvtkDICOMParser -lvtkmetaio -lvtkexoIIc -lvtkHybrid \

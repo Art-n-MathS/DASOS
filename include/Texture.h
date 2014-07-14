@@ -14,8 +14,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef TEXTURE_H__
-#define TEXTURE_H__
+#ifndef TEXTURE1_H__
+#define TEXTURE1_H__
 /// @file Texture.h
 /// @brief a simple texture loader / GL texture object
 // must include types.h first for Real and GLEW if required

@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_type(false)
 {
    m_ui->setupUi(this);
-   m_gl=new  GLWindow(this);
+   m_gl=new  GLWindow2(this);
    m_ui->s_mainWindowGridLayout->addWidget(m_gl,0,0,1,3);
    connect(m_ui->m_pbLoadLAS,SIGNAL(clicked()),this,SLOT(loadLASfile()));
    connect(m_ui->m_pbCalculate,SIGNAL(clicked()),this,SLOT(polygonise()));
@@ -115,10 +115,12 @@ void MainWindow::updateHyperspectral()
     bands[0] = m_ui->m_sbBand1->value();
     bands[1] = m_ui->m_sbBand2->value();
     bands[2] = m_ui->m_sbBand3->value();
-    m_gl->loadHyperspectral(m_bilFilename,bands);
+//    m_gl->loadHyperspectral(m_bilFilename,bands);
     if(m_glData!=NULL)
     {
-       m_gl->buildVAO(m_glData);
+//       m_gl->buildVAO(m_glData);
+        m_gl->buildVAOSphere(m_glData);
+
     }
     else
     {
@@ -142,7 +144,7 @@ void MainWindow::hideOrRevealIGMButton(bool i_reveal)
 //-----------------------------------------------------------------------------
 void MainWindow::changeShaderType(bool i_type)
 {
-   m_gl->changeShaderMode(i_type);
+//   m_gl->changeShaderMode(i_type);
 }
 
 //-----------------------------------------------------------------------------
@@ -160,9 +162,9 @@ void MainWindow::createHist()
 void MainWindow::loadLASfile()
 {
 //    QString file("/local/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009806.LAS");
-    QString file("/local/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
-//    QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
-//                                                "",tr("Files (*.*)"));
+//    QString file("/local/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
+    QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                                "",tr("Files (*.*)"));
    if(!file.isEmpty())
    {
       clock_t t1,t2;
@@ -221,13 +223,13 @@ void MainWindow::keyPressEvent(QKeyEvent *i_event)
     {
     case Qt::Key_F :
     case Qt::Key_B :
-        m_gl->processKeyPress(i_event,m_ui->m_sbMoveStep->value());
+//        m_gl->processKeyPress(i_event,m_ui->m_sbMoveStep->value());
         break;
     case Qt::Key_R :
     case Qt::Key_L :
     case Qt::Key_U :
     case Qt::Key_D :
-        m_gl->processKeyPress(i_event,m_ui->m_sbRotDeg->value());
+//        m_gl->processKeyPress(i_event,m_ui->m_sbRotDeg->value());
         break;
     default : break;
     }
@@ -334,7 +336,8 @@ void MainWindow::polygonise()
          m_glData->createUVsIGM(m_IGMFilename);
       }
 
-      m_gl->buildVAO(m_glData);
+//      m_gl->buildVAO(m_glData);
+      m_gl->buildVAOSphere(m_glData);
       std::cout << "Object has been polygonised!\n";
    }
    else
@@ -356,6 +359,16 @@ void MainWindow::exportOBJ()
       QString file = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                        "",tr("Files (*.*)"));
       m_glData->exportToObj(file.toStdString());
+      if(m_bilFilename!="")
+      {
+          std::vector<short unsigned int > bands(3);
+          bands[0] = m_ui->m_sbBand1->value();
+          bands[1] = m_ui->m_sbBand2->value();
+          bands[2] = m_ui->m_sbBand3->value();
+         //save texture as well
+         m_glData->exportHyperToImage(m_bilFilename,file.toStdString(),bands);
+         std::cout << "Texture saved as well\n";
+      }
    }
 }
 
