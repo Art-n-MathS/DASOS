@@ -24,7 +24,7 @@ GLWindow2::GLWindow2(
                    QWidget *_parent
                   )   :
     QGLWidget( new CreateCoreGLContext(QGLFormat::defaultFormat()), _parent ),
-    m_vaoSphere(0), m_light(0)
+    m_vaoSphere(0), m_light(0), m_glData(NULL)
 
 {
 
@@ -144,7 +144,8 @@ struct vertData
   GLfloat z;
 };
 
-void GLWindow2::buildVAOSphere(const GLData *i_glData)
+
+void GLWindow2::buildVAOSphere(GLData *i_glData)
 {
 
     if (m_vaoSphere!=0)
@@ -152,150 +153,45 @@ void GLWindow2::buildVAOSphere(const GLData *i_glData)
         m_vaoSphere->unbind();
         m_vaoSphere->removeVOA();
     }
-    //  Sphere code based on a function Written by Paul Bourke.
-    //  http://astronomy.swin.edu.au/~pbourke/opengl/sphere/
-    // first we grab an instance of our VOA class as a TRIANGLE_STRIP
+
     m_vaoSphere= ngl::VertexArrayObject::createVOA(GL_TRIANGLES);
-//    // next we bind it so it's active for setting data
     m_vaoSphere->bind();
-//    // the next part of the code calculates the P,N,UV of the sphere for tri_strips
-//    int buffSize;
 
-//    float theta1 = 0.0;
-//    float theta2 = 0.0;
-//    float theta3 = 0.0;
+    m_glData = i_glData;
 
+    ngl::Vec3 offset;
+    if(m_glData!=NULL)
+    {
+       if(m_glData->m_vertices.size()>=3)
+       {
+          offset.m_x = (m_glData->m_vertices[0]+m_glData->m_vertices[m_glData->m_vertices.size()-3]) / 2;
+          offset.m_y = (m_glData->m_vertices[1]+m_glData->m_vertices[m_glData->m_vertices.size()-2]) / 2;
+          offset.m_z = (m_glData->m_vertices[2]+m_glData->m_vertices[m_glData->m_vertices.size()-1]) / 2;
+       }
+    }
 
-//    float radius=1.0;
-//  float precision=40;
-//    // a std::vector to store our verts, remember vector packs contiguously so we can use it
-//  buffSize = (precision/2) * ((precision+1)*2);
-
-//  std::vector <vertData> data(buffSize);
-//    // calculate how big our buffer is
-//    // Disallow a negative number for radius.
-//    if( radius < 0 )
-//    {
-//    radius = -radius;
-//    }
-//    // Disallow a negative number for _precision.
-//    if( precision < 4 )
-//    {
-//    precision = 4;
-//    }
-//    // now fill in a vertData structure and add to the data list for our sphere
-//    vertData d;
-//  unsigned int index=0;
-//    for( int i = 0; i < precision/2; ++i )
-//    {
-//        theta1 = i * ngl::TWO_PI / precision - ngl::PI2;
-//        theta2 = (i + 1) * ngl::TWO_PI / precision - ngl::PI2;
-
-//        for( int j = 0; j <= precision; ++j )
-//        {
-//            theta3 = j * ngl::TWO_PI / precision;
-
-//            d.nx = cosf(theta2) * cosf(theta3);
-//            d.ny = sinf(theta2);
-//            d.nz = cosf(theta2) * sinf(theta3);
-//            d.x = radius * d.nx;
-//            d.y = radius * d.ny;
-//            d.z = radius * d.nz;
-
-//            d.u  = (j/(float)precision);
-//            d.v  = 2*(i+1)/(float)precision;
-
-//      data[index++]=d;
-
-//            d.nx = cosf(theta1) * cosf(theta3);
-//            d.ny = sinf(theta1);
-//            d.nz = cosf(theta1) * sinf(theta3);
-//            d.x = radius * d.nx;
-//            d.y = radius * d.ny;
-//            d.z = radius * d.nz;
-
-//            d.u  = (j/(float)precision);
-//            d.v  = 2*i/(float)precision;
-//      data[index++]=d;
-//        } // end inner loop
-//    }// end outer loop
+   std::vector<GLfloat> tvert;
+   tvert.resize(m_glData->m_vertices.size());
+   for(unsigned int i=0; i<tvert.size(); i+=3)
+   {
+      tvert[i  ] = m_glData->m_vertices[i  ] - offset.m_x;
+      tvert[i+1] = m_glData->m_vertices[i+1] - offset.m_y;
+      tvert[i+2] = m_glData->m_vertices[i+2] - offset.m_z;
+   }
 
 
-//    m_vaoSphere->setData(buffSize*sizeof(vertData),data[0].u);
-//    m_vaoSphere->setVertexAttributePointer(0,3,GL_FLOAT,sizeof(vertData),5);
-//    m_vaoSphere->setVertexAttributePointer(1,2,GL_FLOAT,sizeof(vertData),0);
-//    m_vaoSphere->setVertexAttributePointer(2,3,GL_FLOAT,sizeof(vertData),2);
-//    m_vaoSphere->setNumIndices(buffSize);
-//    m_vaoSphere->unbind();
-
-
-
-//    const std::vector <GLfloat> &vertices = i_glData->m_vertices;
-//    const std::vector <GLuint> &indices = i_glData->m_indices;
-//    const std::vector <GLfloat> &normals = i_glData->m_normals;
-//    const std::vector <GLfloat> &uvs = i_glData->m_UVs;
-//    std::cout<< "num of vertices = " << vertices.size() << "\n";
-//    std::cout<< "num of indices = " << indices.size() << "\n";
-//    m_vaoSphere = ngl::VertexArrayObject::createVOA(GL_TRIANGLES);
-//    m_vaoSphere->bind();
-//    m_vaoSphere->setIndexedData(sizeof(GLfloat)*vertices.size(),vertices[0],indices.size(),&indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
-//    m_vaoSphere->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-//    m_vaoSphere->setIndexedData(normals.size()*sizeof(GLfloat),normals[0],indices.size(),&indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
-//    m_vaoSphere->setVertexAttributePointer(2,3,GL_FLOAT,0,0);
-//    m_vaoSphere->setIndexedData(sizeof(GLfloat*)*uvs.size(),uvs[0],indices.size(), &indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
-//    m_vaoSphere->setVertexAttributePointer(1,2,GL_FLOAT,0,0);
-//    m_vaoSphere->setNumIndices(indices.size());
-//    m_vaoSphere->unbind();
-
-
-
-
-    const static GLubyte indices[]=  {
-                                        0,1,5,0,4,5, // back
-                                        3,2,6,7,6,3, // front
-                                        0,1,2,3,2,0, // top
-                                        4,5,6,7,6,4, // bottom
-                                        0,3,4,4,7,3,
-                                        1,5,2,2,6,5
-                                     };
-
-     GLfloat vertices[] = {-1,1,-1,
-                           1,1,-1,
-                           1,1,1,
-                           -1,1,1,
-                           -1,-1,-1,
-                           1,-1,-1,
-                           1,-1,1,
-                           -1,-1,1
-                          };
-
-     GLfloat colours[]={
-                          1,0,0,
-                          0,1,0,
-                          0,0,1,
-                          1,1,1,
-                          0,0,1,
-                          0,1,0,
-                          1,0,0,
-                          1,1,1
-                        };
-       // in this case we are going to set our data as the vertices above
-
-     m_vaoSphere->setIndexedData(24*sizeof(GLfloat),vertices[0],sizeof(indices),&indices[0],GL_UNSIGNED_BYTE,GL_STATIC_DRAW);
-     // now we set the attribute pointer to be 0 (as this matches vertIn in our shader)
+     m_vaoSphere->setIndexedData(tvert.size()*sizeof(GLfloat),tvert[0],sizeof(GLuint)*i_glData->m_indices.size()/3,&i_glData->m_indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
 
      m_vaoSphere->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
 
-     m_vaoSphere->setIndexedData(24*sizeof(GLfloat),colours[0],sizeof(indices),&indices[0],GL_UNSIGNED_BYTE,GL_STATIC_DRAW);
-     // now we set the attribute pointer to be 0 (as this matches vertIn in our shader)
+     m_vaoSphere->setIndexedData(i_glData->m_normals.size()*sizeof(GLfloat),i_glData->m_normals[0],sizeof(GLuint)*i_glData->m_indices.size()/3,&i_glData->m_indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
+     m_vaoSphere->setVertexAttributePointer(2,3,GL_FLOAT,0,0);
 
-     m_vaoSphere->setVertexAttributePointer(1,3,GL_FLOAT,0,0);
+     m_vaoSphere->setNumIndices(sizeof(GLuint)*i_glData->m_indices.size()/3);
 
-     m_vaoSphere->setNumIndices(sizeof(indices));
-
+    m_vaoSphere->unbind();
     updateGL();
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------
 //This virtual function is called whenever the widget needs to be painted.
@@ -316,9 +212,27 @@ void GLWindow2::paintGL()
   // multiply the rotations
   ngl::Mat4 final=rotY*rotX;
   // add the translations
+  ngl::Vec3 offset;
+  if(m_glData!=NULL)
+  {
+     if(m_glData->m_vertices.size()>=3)
+     {
+        offset.m_x = (m_glData->m_vertices[0]+m_glData->m_vertices[m_glData->m_vertices.size()-3]) / 2;
+        offset.m_y = (m_glData->m_vertices[1]+m_glData->m_vertices[m_glData->m_vertices.size()-2]) / 2;
+        offset.m_z = (m_glData->m_vertices[2]+m_glData->m_vertices[m_glData->m_vertices.size()-1]) / 2;
+     }
+  }
   final.m_m[3][0] = m_modelPos.m_x;
   final.m_m[3][1] = m_modelPos.m_y;
   final.m_m[3][2] = m_modelPos.m_z;
+  ngl::Mat4 scale;
+  scale.m_m[0][0] = 0.005;
+  scale.m_m[1][1] = 0.005;
+  scale.m_m[2][2] = 0.005;
+  scale.m_m[3][3] = 1.0;
+
+
+  final = final * scale;
   // set this in the TX stack
   trans.setMatrix(final);
   m_transformStack.setGlobal(trans);

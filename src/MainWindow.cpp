@@ -310,6 +310,8 @@ void MainWindow::createMap()
 //-----------------------------------------------------------------------------
 void MainWindow::polygonise()
 {
+//   m_gl->buildVAOSphere(m_glData);
+
    if(m_pulseManager==0)
    {
       std::cout << "File have not been loaded yet\n";

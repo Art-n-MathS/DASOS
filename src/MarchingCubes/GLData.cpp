@@ -328,12 +328,12 @@ void GLData::exportToObj(std::string i_name)const
    // centre then it will not be visible
 
    ngl::Vec3 offset;
-   if(m_vertices.size()>=3)
-   {
-      offset.m_x = (m_vertices[0]+m_vertices[m_vertices.size()-3]) / 2;
-      offset.m_y = (m_vertices[1]+m_vertices[m_vertices.size()-2]) / 2;
-      offset.m_z = (m_vertices[2]+m_vertices[m_vertices.size()-1]) / 2;
-   }
+//   if(m_vertices.size()>=3)
+//   {
+//      offset.m_x = (m_vertices[0]+m_vertices[m_vertices.size()-3]) / 2;
+//      offset.m_y = (m_vertices[1]+m_vertices[m_vertices.size()-2]) / 2;
+//      offset.m_z = (m_vertices[2]+m_vertices[m_vertices.size()-1]) / 2;
+//   }
 
 
    std::ofstream myfile;

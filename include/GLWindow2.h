@@ -21,7 +21,7 @@ public :
            QWidget *_parent
           );
 
-  void buildVAOSphere(const GLData *i_glData);
+  void buildVAOSphere(GLData *i_glData);
 
   ~GLWindow2();
 private :
@@ -70,8 +70,11 @@ private :
   /// @brief a simple light use to illuminate the screen
   //----------------------------------------------------------------------------------------------------------------------
   ngl::Light *m_light;
-
-
+  //----------------------------------------------------------------------------------------------------------------------
+  /// @brief a pointer to the GL data (vertices, normals etc) of the mesh
+  /// @note memory is not managed by this class. So you should not try to free memory here
+  //----------------------------------------------------------------------------------------------------------------------
+  GLData *m_glData;
 
 protected:
 
