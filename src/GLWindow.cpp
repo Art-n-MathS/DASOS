@@ -273,13 +273,8 @@ void GLWindow::buildVAO(const GLData *i_glData)
         m_vao->unbind();
         m_vao->removeVOA();
     }
-    const std::vector <GLfloat> &vertices = i_glData->m_vertices;
-    const std::vector <GLuint> &indices = i_glData->m_indices;
-    const std::vector <GLfloat> &normals = i_glData->m_normals;
-    const std::vector <GLfloat> &uvs = i_glData->m_UVs;
-    std::cout<< "num of vertices = " << vertices.size() << "\n";
-    std::cout<< "num of indices = " << indices.size() << "\n";
-
+    std::cout<< "num of vertices = " <<  i_glData->m_vertices.size() << "\n";
+    std::cout<< "num of indices = " << i_glData->m_indices.size() << "\n";
 
     // move the object into the middle of the GLWindow.
     ngl::Vec3 translation = i_glData->m_maxLimits + i_glData->m_minLimits;
@@ -287,15 +282,18 @@ void GLWindow::buildVAO(const GLData *i_glData)
 
     m_vao = ngl::VertexArrayObject::createVOA(GL_TRIANGLES);
     m_vao->bind();
-    m_vao->setIndexedData(sizeof(GLfloat)*vertices.size(),vertices[0],indices.size(),&indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
+    m_vao->setIndexedData(i_glData->m_vertices.size()*sizeof(GLfloat),i_glData->m_vertices[0],sizeof(GLuint)*i_glData->m_indices.size()/3,&i_glData->m_indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
     m_vao->setVertexAttributePointer(0,3,GL_FLOAT,0,0);
-    m_vao->setIndexedData(normals.size()*sizeof(GLfloat),normals[0],indices.size(),&indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
+    m_vao->setIndexedData(i_glData->m_normals.size()*sizeof(GLfloat),i_glData->m_normals[0],sizeof(GLuint)*i_glData->m_indices.size()/3,&i_glData->m_indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
     m_vao->setVertexAttributePointer(2,3,GL_FLOAT,0,0);
-    m_vao->setIndexedData(sizeof(GLfloat*)*uvs.size(),uvs[0],indices.size(), &indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
-    m_vao->setVertexAttributePointer(1,2,GL_FLOAT,0,0);
-    m_vao->setNumIndices(indices.size());
-    m_vao->unbind();
 
+    if(i_glData->m_UVs.size()>0)
+    {
+        m_vao->setIndexedData(i_glData->m_UVs.size()*sizeof(GLfloat*),i_glData->m_UVs[0],sizeof(GLuint)*i_glData->m_indices.size()/3,&i_glData->m_indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);
+        m_vao->setVertexAttributePointer(1,2,GL_FLOAT,0,0);
+    }
+    m_vao->setNumIndices(sizeof(GLuint)*i_glData->m_indices.size()/3);
+    m_vao->unbind();
     updateGL();
 }
 

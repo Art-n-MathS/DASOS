@@ -6,6 +6,18 @@
 class MapsManager
 {
 public:
+    struct mapInfo
+    {
+       std::string type;
+       std::string name;
+       Object *obj;
+       unsigned int band;
+       std::string bilFileName;
+       std::string IGMfileName;
+       unsigned int thres;
+       unsigned int samp;
+    };
+
     //-------------------------------------------------------------------------
     /// @brief default constructor
     //-------------------------------------------------------------------------
@@ -14,16 +26,7 @@ public:
     /// @brief method that creates a map of a given type
     /// @param[in] i_type the type of the map to be created
     //-------------------------------------------------------------------------
-    void createMap(
-            const std::string &i_type,
-            const std::string &i_name,
-            Object *i_obj,
-            const unsigned int &i_band,
-            const std::string &i_bilFileName,
-            const std::string &i_IGMfileName,
-            const unsigned int i_thres,
-            const unsigned int i_samp
-            );
+    void createMap(mapInfo *m_infoOfMap);
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------

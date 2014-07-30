@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_type(false)
 {
    m_ui->setupUi(this);
-   m_gl=new  GLWindow2(this);
+   m_gl=new  GLWindow(this);
    m_ui->s_mainWindowGridLayout->addWidget(m_gl,0,0,1,3);
    connect(m_ui->m_pbLoadLAS,SIGNAL(clicked()),this,SLOT(loadLASfile()));
    connect(m_ui->m_pbCalculate,SIGNAL(clicked()),this,SLOT(polygonise()));
@@ -45,7 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
 //		connect(m_ui->m_objectSelection,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setObjectMode(int)));
 
    QStringList maps;
-   maps << "Non-Empty Voxels" << "Density" << "Thickness"  << "Hyperspectral";
+   maps << "Non-Empty Voxels" << "Density" << "Thickness"  << "Hyperspectral" << "Hyperspectral Mean";
    m_ui->m_cbMaps->insertItems(0,maps);
    QStringList types;
    types << "Full-wavefrom" << "Discrete";
@@ -65,9 +65,6 @@ void MainWindow::loadHyperspectraldata()
    if(!file.isEmpty())
    {
       m_bilFilename = file.toStdString();
-  //    min = ngl::Vec2(431564, 104242);
-  //    max = ngl::Vec2(432602, 107940);
-
       if(m_glData!=0 && !m_ui->m_cbUseLevel1Data->isChecked())
       {
          m_glData->createUVsBIL(m_bilFilename);
@@ -77,7 +74,6 @@ void MainWindow::loadHyperspectraldata()
          // create UVs using the igm file provided
          m_glData->createUVsIGM(m_IGMFilename);
       }
-
       updateHyperspectral();
    }
    else
@@ -115,11 +111,10 @@ void MainWindow::updateHyperspectral()
     bands[0] = m_ui->m_sbBand1->value();
     bands[1] = m_ui->m_sbBand2->value();
     bands[2] = m_ui->m_sbBand3->value();
-//    m_gl->loadHyperspectral(m_bilFilename,bands);
+    m_gl->loadHyperspectral(m_bilFilename,bands);
     if(m_glData!=NULL)
     {
-//       m_gl->buildVAO(m_glData);
-        m_gl->buildVAOSphere(m_glData);
+        m_gl->buildVAO(m_glData);
 
     }
     else
@@ -144,7 +139,7 @@ void MainWindow::hideOrRevealIGMButton(bool i_reveal)
 //-----------------------------------------------------------------------------
 void MainWindow::changeShaderType(bool i_type)
 {
-//   m_gl->changeShaderMode(i_type);
+   m_gl->changeShaderMode(i_type);
 }
 
 //-----------------------------------------------------------------------------
@@ -186,7 +181,6 @@ void MainWindow::loadLASfile()
       float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
       std::cout << "Reading LAS1_3 file took " << diff << " SECONDS!!!\n";
       t1 =clock();
-//      m_pulseManager->createQuadtree(10000);
       t2 =clock();
       diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
 //      std::cout << "Creating Quadtree took " << diff << " SECONDS. \n";
@@ -223,13 +217,13 @@ void MainWindow::keyPressEvent(QKeyEvent *i_event)
     {
     case Qt::Key_F :
     case Qt::Key_B :
-//        m_gl->processKeyPress(i_event,m_ui->m_sbMoveStep->value());
+        m_gl->processKeyPress(i_event,m_ui->m_sbMoveStep->value());
         break;
     case Qt::Key_R :
     case Qt::Key_L :
     case Qt::Key_U :
     case Qt::Key_D :
-//        m_gl->processKeyPress(i_event,m_ui->m_sbRotDeg->value());
+        m_gl->processKeyPress(i_event,m_ui->m_sbRotDeg->value());
         break;
     default : break;
     }
@@ -297,21 +291,26 @@ void MainWindow::createMap()
    if(!file.isEmpty())
    {
       m_obj->setIsolevel(m_ui->m_limit->value());
-
       MapsManager m;
       QString mapType = m_ui->m_cbMaps->currentText();
       std::cout << "++++: " << mapType.toStdString() << "\n";
-      m.createMap(mapType.toStdString(),file.toStdString(),m_obj,
-                  m_ui->m_sbBand->value(),m_bilFilename,m_IGMFilename,
-                  m_ui->m_sbThreshold->value(), m_ui->m_sbSampling->value());
+      MapsManager::mapInfo *infoOfMap = new MapsManager::mapInfo;
+      infoOfMap->type = mapType.toStdString();
+      infoOfMap->name = file.toStdString();
+      infoOfMap->obj = m_obj;
+      infoOfMap->band = m_ui->m_sbBand->value();
+      infoOfMap->bilFileName = m_bilFilename;
+      infoOfMap->IGMfileName = m_IGMFilename;
+      infoOfMap->thres = m_ui->m_sbThreshold->value();
+      infoOfMap->samp = m_ui->m_sbSampling->value();
+      m.createMap(infoOfMap);
+      delete infoOfMap;
    }
 }
 
 //-----------------------------------------------------------------------------
 void MainWindow::polygonise()
 {
-//   m_gl->buildVAOSphere(m_glData);
-
    if(m_pulseManager==0)
    {
       std::cout << "File have not been loaded yet\n";
@@ -337,9 +336,7 @@ void MainWindow::polygonise()
       {
          m_glData->createUVsIGM(m_IGMFilename);
       }
-
-//      m_gl->buildVAO(m_glData);
-      m_gl->buildVAOSphere(m_glData);
+      m_gl->buildVAO(m_glData);
       std::cout << "Object has been polygonised!\n";
    }
    else

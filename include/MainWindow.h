@@ -13,7 +13,7 @@
 
 #include <QMainWindow>
 #include <ngl/Vec4.h>
-#include "GLWindow2.h"
+#include "GLWindow.h"
 #include "GLData.h"
 #include "Object.h"
 #include "PulseManager.h"
@@ -128,7 +128,7 @@ private:
     //-------------------------------------------------------------------------
     /// @brief the openGL widget
     //-------------------------------------------------------------------------
-    GLWindow2 *m_gl;
+    GLWindow *m_gl;
     //-------------------------------------------------------------------------
     /// @brief the pulse manager where all the info of the LAS file are saved
     //-------------------------------------------------------------------------

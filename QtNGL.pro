@@ -45,8 +45,8 @@ SOURCES += \
     src/Maps/ThicknessMap.cpp \
     src/Maps/HyperMap.cpp \
     src/MarchingCubes/IntegralVolumeBox.cpp \
-    src/GLWindow1.cpp \
-    src/GLWindow2.cpp
+    src/Maps/HyperMean.cpp \
+    src/Maps/HyperStandardDeviation.cpp
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
@@ -83,8 +83,8 @@ HEADERS += \
     include/Maps/ThicknessMap.h \
     include/Maps/HyperMap.h \
     include/MarchingCubes/IntegralVolumeBox.h \
-    include/GLWindow1.h \
-    include/GLWindow2.h
+    include/Maps/HyperMean.h \
+    include/Maps/HyperStandardDeviation.h
 
 FORMS += \
     ui/MainWindow.ui
