@@ -71,7 +71,7 @@ void HyperMap::createMap()
 {
    Grid *grid = new Grid(m_IGMfileName,m_object->m_lengthOfVoxel,
                          m_object->getMinLimits());
-   const ngl::Vec3 &mins = m_object->getMinLimits();
+   const gmtl::Vec3f &mins = m_object->getMinLimits();
    const float vl(m_object->m_lengthOfVoxel);
 
    const unsigned int noX = m_object->getNoVoxelsX();
@@ -81,7 +81,7 @@ void HyperMap::createMap()
    {
       for(unsigned int y=0; y<noY; ++y)
       {
-         const ngl::Vec2 point(mins.m_x+vl/2+ vl*x,mins.m_y+vl/2+vl*y) ;
+         const gmtl::Vec2f point(mins[0]+vl/2+ vl*x,mins[1]+vl/2+vl*y) ;
          const unsigned int noOfPix = grid->pixIndicesOfSquare(point,&pixPos);
 
          for(unsigned int i=0; i<noOfPix; ++i)

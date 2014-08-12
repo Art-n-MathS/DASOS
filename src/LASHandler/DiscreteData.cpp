@@ -1,5 +1,5 @@
 #include "DiscreteData.h"
-
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 DiscreteData::DiscreteData(unsigned int i_numOfRecords):m_next(0)

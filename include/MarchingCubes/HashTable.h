@@ -2,7 +2,6 @@
 #define HASHTABLE_H
 
 #include <vector>
-#include <ngl/Vec3.h>
 #include "GLData.h"
 #include <unordered_map>
 
@@ -26,7 +25,7 @@ public:
    /// @param[in] _vertex is a vertex of the object
    /// @returns the index of the given vertex
    //--------------------------------------------------------------------------
-   unsigned int getIndex(const ngl::Vec3 &i_vertex);
+   unsigned int getIndex(const gmtl::Vec3f &i_vertex);
    //--------------------------------------------------------------------------
    /// @brief default destructor
    //--------------------------------------------------------------------------

@@ -10,7 +10,6 @@
 /// @brief this class represents an implicit object.
 //-----------------------------------------------------------------------------
 
-#include <ngl/Vec3.h>
 #include <gmtl/Vec.h>
 #include "GLData.h"
 #include "IntegralVolumes.h"
@@ -30,7 +29,7 @@ public:
     /// @brief gets the function value of the object given a point
     /// @param[in] i_point the given point
     //-------------------------------------------------------------------------
-    double functionValue(const ngl::Vec3 &i_point);
+    double functionValue(const gmtl::Vec3f &i_point);
     //-------------------------------------------------------------------------
     /// @brief method that adds the itensity of a point to the voxel area
     /// @param[in] i_point the position of the point
@@ -44,11 +43,11 @@ public:
     //-------------------------------------------------------------------------
     /// @brief method that returns the min Limits of the object
     //-------------------------------------------------------------------------
-    const ngl::Vec3 getMinLimits()const;
+    const gmtl::Vec3f getMinLimits()const;
     //-------------------------------------------------------------------------
     /// @brief method that returns the max Limits of the object
     //-------------------------------------------------------------------------
-    const ngl::Vec3 getMaxLimits()const;
+    const gmtl::Vec3f getMaxLimits()const;
     //-------------------------------------------------------------------------
     /// @brief method that returns the isolevel of the object
     //-------------------------------------------------------------------------
@@ -105,7 +104,7 @@ protected:
     /// @param[in] i_z the z position of the voxel
     //-------------------------------------------------------------------------
     unsigned int getIndex(
-            const ngl::Vec3 &i_point
+            const gmtl::Vec3f &i_point
             ) const;
     //-------------------------------------------------------------------------
     /// @brief method that returns the centre of a voxel given its x y z index
@@ -113,7 +112,7 @@ protected:
     /// @param[in] i_y the position of the voxel of our interest in the y axis
     /// @param[in] i_z the position of the voxel of our interest in the z axis
     //-------------------------------------------------------------------------
-    ngl::Vec3 getCentreOfVoxel(
+    gmtl::Vec3f getCentreOfVoxel(
             int i_x,
             int i_y,
             int i_z
@@ -122,11 +121,11 @@ protected:
     //-------------------------------------------------------------------------
     /// @brief the min limits of the object
     //-------------------------------------------------------------------------
-    ngl::Vec3 m_lowerLimits;
+    gmtl::Vec3f m_lowerLimits;
     //-------------------------------------------------------------------------
     /// @brief the max limits of the object
     //-------------------------------------------------------------------------
-    ngl::Vec3 m_higherLimits;
+    gmtl::Vec3f m_higherLimits;
     //-------------------------------------------------------------------------
     /// @brief the isolevel of the object
     //------------------------------------------------------------------------
@@ -156,7 +155,7 @@ protected:
     //-------------------------------------------------------------------------
     /// @brief the distance between the limits
     //-------------------------------------------------------------------------
-    ngl::Vec3 m_dis;
+    gmtl::Vec3f m_dis;
 
     //-------------------------------------------------------------------------
     /// @brief the noise level

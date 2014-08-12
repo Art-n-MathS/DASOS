@@ -7,6 +7,7 @@
 #include <ngl/ShaderLib.h>
 #include "MarchingCubes.h"
 #include <sstream>
+#include <gmtl/gmtl.h>
 
 /// @brief the increment for x/y translation with mouse movement
 //----------------------------------------------------------------------------------------------------------------------
@@ -277,9 +278,9 @@ void GLWindow::buildVAO(const GLData *i_glData)
     std::cout<< "num of indices = " << i_glData->m_indices.size() << "\n";
 
     // move the object into the middle of the GLWindow.
-    ngl::Vec3 translation = i_glData->m_maxLimits + i_glData->m_minLimits;
-    m_modelPos = translation/(-2);
-
+    gmtl::Vec3f translation = i_glData->m_maxLimits + i_glData->m_minLimits;
+    translation/=(-2);
+    m_modelPos = ngl::Vec3(translation[0],translation[1],translation[2]);
     m_vao = ngl::VertexArrayObject::createVOA(GL_TRIANGLES);
     m_vao->bind();
     m_vao->setIndexedData(i_glData->m_vertices.size()*sizeof(GLfloat),i_glData->m_vertices[0],sizeof(GLuint)*i_glData->m_indices.size()/3,&i_glData->m_indices[0],GL_UNSIGNED_INT,GL_STATIC_DRAW);

@@ -28,12 +28,11 @@ void HashTable::setGLData(GLData *i_glData)
 }
 
 //-----------------------------------------------------------------------------
-unsigned int HashTable::getIndex(
-        const ngl::Vec3 &i_vertex
+unsigned int HashTable::getIndex(const gmtl::Vec3f &i_vertex
         )
 {
-   std::string input = convert(i_vertex.m_x) + " " + convert(i_vertex.m_y)
-           + " " + convert(i_vertex.m_z);
+   std::string input = convert(i_vertex[0]) + " " + convert(i_vertex[1])
+           + " " + convert(i_vertex[2]);
 
    std::unordered_map<std::string,unsigned int>::const_iterator got =
            mymap.find(input);
@@ -43,7 +42,7 @@ unsigned int HashTable::getIndex(
       std::pair<std::string, unsigned int> pair(input,m_currentIndex);
       m_currentIndex++;
       mymap.insert(pair);
-      m_glData->addVertex(i_vertex);
+      m_glData->addVertex(gmtl::Vec3f(i_vertex[0],i_vertex[1],i_vertex[2]));
       return m_currentIndex-1;
    }
    else

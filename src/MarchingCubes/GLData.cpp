@@ -60,19 +60,19 @@ void GLData::createUVsBIL(const std::string &i_bilFilename)
       unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
       unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
 
-      ngl::Vec2 min(atof(bilLib::GetItemFromString(map_info,3,',').c_str()),
+      gmtl::Vec2f min(atof(bilLib::GetItemFromString(map_info,3,',').c_str()),
                      atof(bilLib::GetItemFromString(map_info,4,',').c_str())-
                     nlines*atof(bilLib::GetItemFromString(map_info,6,',').c_str()));
-      ngl::Vec2 max(min.m_x+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
+      gmtl::Vec2f max(min[0]+nsamps*atof(bilLib::GetItemFromString(map_info,5,',').c_str()),
                     atof(bilLib::GetItemFromString(map_info,4,',').c_str()));
-      std::cout << min.m_x << " " << min.m_y << "\n";
-      std::cout << max.m_x << " " << max.m_y << "\n";
+      std::cout << min[0] << " " << min[1] << "\n";
+      std::cout << max[0] << " " << max[1] << "\n";
       file.Close();
       m_UVs.resize(m_vertices.size()/3*2+1);
       for(unsigned int i=0; i<m_vertices.size()/3; ++i)
       {
-         m_UVs[i*2  ] = (m_vertices[i*3  ]-min.m_x)/(max.m_x-min.m_x);
-         m_UVs[i*2+1] = (m_vertices[i*3+1]-min.m_y)/(max.m_y-min.m_y);
+         m_UVs[i*2  ] = (m_vertices[i*3  ]-min[0])/(max[0]-min[0]);
+         m_UVs[i*2+1] = (m_vertices[i*3+1]-min[1])/(max[1]-min[1]);
       }
    }
    catch(bilLib::BinaryReader::BRexception e)
@@ -94,29 +94,29 @@ void GLData::createUVsIGM(const std::string &i_igmFile)
    Grid *grid = new Grid(i_igmFile,30);
    for(unsigned int i=0; i<m_vertices.size()/3; ++i)
    {
-      const ngl::Vec2 nextPixelPos =
+      const gmtl::Vec2f nextPixelPos =
                grid->getPixelPositionScaled0_1(m_vertices[i*3],m_vertices[i*3+1]);
-      m_UVs[i*2  ] = nextPixelPos.m_x;
-      m_UVs[i*2+1] = nextPixelPos.m_y;
+      m_UVs[i*2  ] = nextPixelPos[0];
+      m_UVs[i*2+1] = nextPixelPos[1];
    }
    delete grid;
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GLData::addVertex(const ngl::Vec3 &i_vertex)
+unsigned int GLData::addVertex(const gmtl::Vec3f &i_vertex)
 {
-   m_vertices.push_back(i_vertex.m_x);
-   m_vertices.push_back(i_vertex.m_y);
-   m_vertices.push_back(i_vertex.m_z);
+   m_vertices.push_back(i_vertex[0]);
+   m_vertices.push_back(i_vertex[1]);
+   m_vertices.push_back(i_vertex[2]);
 
    return (m_vertices.size()/3-1);
 }
 
 //-----------------------------------------------------------------------------
-ngl::Vec3 GLData::getVertex(unsigned int i_index)
+gmtl::Vec3f GLData::getVertex(unsigned int i_index)
 {
-    return ngl::Vec3(m_vertices[i_index/3  ],
+    return gmtl::Vec3f(m_vertices[i_index/3  ],
                      m_vertices[i_index/3+1],
                      m_vertices[i_index/3+2]);
 }
@@ -327,12 +327,12 @@ void GLData::exportToObj(std::string i_name)const
    // for animation software packages if the object is very far away from the
    // centre then it will not be visible
 
-   ngl::Vec3 offset;
+   gmtl::Vec3f offset;
 //   if(m_vertices.size()>=3)
 //   {
-//      offset.m_x = (m_vertices[0]+m_vertices[m_vertices.size()-3]) / 2;
-//      offset.m_y = (m_vertices[1]+m_vertices[m_vertices.size()-2]) / 2;
-//      offset.m_z = (m_vertices[2]+m_vertices[m_vertices.size()-1]) / 2;
+//      offset[0] = (m_vertices[0]+m_vertices[m_vertices.size()-3]) / 2;
+//      offset[1] = (m_vertices[1]+m_vertices[m_vertices.size()-2]) / 2;
+//      offset[2] = (m_vertices[2]+m_vertices[m_vertices.size()-1]) / 2;
 //   }
 
 
@@ -358,9 +358,9 @@ void GLData::exportToObj(std::string i_name)const
        int isize = m_indices.size();
        for(int i=0; i<vsize; i+=3)
        {
-         myfile << "v "<< m_vertices[i  ] - offset.m_x
-                << " " << m_vertices[i+1] - offset.m_y
-                << " " << m_vertices[i+2] - offset.m_z << "\n";
+         myfile << "v "<< m_vertices[i  ] - offset[0]
+                << " " << m_vertices[i+1] - offset[1]
+                << " " << m_vertices[i+2] - offset[2] << "\n";
        }
        myfile <<"\n\n";
 

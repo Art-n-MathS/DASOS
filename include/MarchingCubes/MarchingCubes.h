@@ -53,10 +53,10 @@ protected:
    /// @param[in] valp1 the value returned for point 1
    /// @param[in] valp2 the value returned for point 2
    //--------------------------------------------------------------------------
-   ngl::Vec3 VertexInterp(
+   gmtl::Vec3f VertexInterp(
            double isolevel,
-           const ngl::Vec3 &p1,
-           const ngl::Vec3 &p2,
+           const gmtl::Vec3f &p1,
+           const gmtl::Vec3f &p2,
            const double valp1,
            const double valp2
            );
@@ -64,7 +64,7 @@ protected:
    /// @brief
    //--------------------------------------------------------------------------
    void Polygonise(
-           const std::vector<ngl::Vec3> &points,
+           const std::vector<gmtl::Vec3f> &points,
            double isolevel,
            GLData *i_glData
            );
@@ -72,7 +72,7 @@ protected:
    /// @brief method that returns the arithmetic position of a voxel in the
    /// space given its indices
    //--------------------------------------------------------------------------
-   ngl::Vec3 getXYZ(unsigned int i_x, unsigned int i_y, unsigned int i_z);
+   gmtl::Vec3f getXYZ(unsigned int i_x, unsigned int i_y, unsigned int i_z);
    //--------------------------------------------------------------------------
    /// @brief method that polygonises the object and save its vertices into the
    /// gl data
@@ -90,7 +90,7 @@ protected:
    /// @param[in] i_glData where vertices and indices are saved
    /// @param[in] i_vertex the vertex of our interest
    //--------------------------------------------------------------------------
-   unsigned int getIndex(GLData *i_glData, const ngl::Vec3 &i_vertex);
+   unsigned int getIndex(GLData *i_glData, const gmtl::Vec3f &i_vertex);
    //--------------------------------------------------------------------------
    /// @brief object to be polygonised
    //--------------------------------------------------------------------------
@@ -111,11 +111,11 @@ protected:
    /// @brief the min and max values define the bounding box of the object
    /// @brief the max values of the object
    //--------------------------------------------------------------------------
-   ngl::Vec3 m_maxLimits;
+   gmtl::Vec3f m_maxLimits;
    //--------------------------------------------------------------------------
    /// @brief the min values of the object
    //--------------------------------------------------------------------------
-   ngl::Vec3 m_minLimits;
+   gmtl::Vec3f m_minLimits;
 
    HashTable m_hashTable;
 

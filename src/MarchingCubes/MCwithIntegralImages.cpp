@@ -1,7 +1,7 @@
 #include "MCwithIntegralImages.h"
 #include "math.h"
 #include <stack>
-//#include "IntegralVolumeBox.h"
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 MCwithIntegralImages::MCwithIntegralImages(

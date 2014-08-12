@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <Object.h>
-
+#include <iostream>
 
 class Map
 {

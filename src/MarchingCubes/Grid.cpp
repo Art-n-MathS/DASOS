@@ -24,37 +24,37 @@ Grid::Grid(const std::string &i_IGMfileName,
 Grid::Grid(
         const std::string &i_IGMfileName,
         const float i_vl,
-        const ngl::Vec3 i_LiDARmins
+        const gmtl::Vec3f i_LiDARmins
         )
 {
    if(i_IGMfileName!="")
    {
       readIGMandFindMinsMaxs(i_IGMfileName);
       // calculate no of squares in x,y axes
-      float n1x = (i_LiDARmins.m_x-m_min.m_x)/i_vl;
-      float n1y = (i_LiDARmins.m_y-m_min.m_y)/i_vl;
-      float n2x = (m_max.m_x-i_LiDARmins.m_x)/i_vl;
-      float n2y = (m_max.m_y-i_LiDARmins.m_y)/i_vl;
+      float n1x = (i_LiDARmins[0]-m_min[0])/i_vl;
+      float n1y = (i_LiDARmins[1]-m_min[1])/i_vl;
+      float n2x = (m_max[0]-i_LiDARmins[0])/i_vl;
+      float n2y = (m_max[1]-i_LiDARmins[1])/i_vl;
       if(n1x<0.0f)
       {
-         m_min.m_x = i_LiDARmins.m_x;
+         m_min[0] = i_LiDARmins[0];
          n1x = 0.0f;
       }
       else
       {
-         m_min.m_x = i_LiDARmins.m_x - ceil(n1x)*i_vl;
+         m_min[0] = i_LiDARmins[0] - ceil(n1x)*i_vl;
       }
       if(n1y<0.0f)
       {
-         m_min.m_y = i_LiDARmins.m_y;
+         m_min[1] = i_LiDARmins[1];
          n1y = 0.0f;
       }
       else
       {
-         m_min.m_y = i_LiDARmins.m_y - ceil(n1y)*i_vl;
+         m_min[1] = i_LiDARmins[1] - ceil(n1y)*i_vl;
       }
-      m_max.m_x = i_LiDARmins.m_x + ceil(n2x)*i_vl;
-      m_max.m_y = i_LiDARmins.m_y + ceil(n2y)*i_vl;
+      m_max[0] = i_LiDARmins[0] + ceil(n2x)*i_vl;
+      m_max[1] = i_LiDARmins[1] + ceil(n2y)*i_vl;
 
       m_nX = ceil(n1x) + ceil(n2x);
       m_nY = ceil(n1y) + ceil(n2y);
@@ -96,29 +96,29 @@ void Grid::readIGMandFindMinsMaxs(const std::string &i_IGMfileName)
        m_Ys = new double[m_nsamps*m_nlines];
        file.Readband((char *)m_Xs,0);
        file.Readband((char *)m_Ys,1);
-       m_min.m_x = m_Xs[0];
-       m_max.m_x = m_Xs[0];
-       m_min.m_y = m_Ys[0];
-       m_max.m_y = m_Ys[0];
+       m_min[0] = m_Xs[0];
+       m_max[0] = m_Xs[0];
+       m_min[1] = m_Ys[0];
+       m_max[1] = m_Ys[0];
        for(unsigned int i=1; i<m_nsamps*m_nlines; ++i)
        {
-          if (m_min.m_x>m_Xs[i])
+          if (m_min[0]>m_Xs[i])
           {
-             m_min.m_x=m_Xs[i];
-          } else if (m_max.m_x<m_Xs[i])
+             m_min[0]=m_Xs[i];
+          } else if (m_max[0]<m_Xs[i])
           {
-             m_max.m_x=m_Xs[i];
+             m_max[0]=m_Xs[i];
           }
-          if (m_min.m_y>m_Ys[i])
+          if (m_min[1]>m_Ys[i])
           {
-             m_min.m_y=m_Ys[i];
-          } else if (m_max.m_y<m_Ys[i])
+             m_min[1]=m_Ys[i];
+          } else if (m_max[1]<m_Ys[i])
           {
-             m_max.m_y=m_Ys[i];
+             m_max[1]=m_Ys[i];
           }
        }
-       std::cout << "X: " << m_min.m_x << " " << m_max.m_x << "\n";
-       std::cout << "Y: " << m_min.m_y << " " << m_max.m_y << "\n";
+       std::cout << "X: " << m_min[0] << " " << m_max[0] << "\n";
+       std::cout << "Y: " << m_min[1] << " " << m_max[1] << "\n";
        file.Close();
     }
     catch(bilLib::BinaryReader::BRexception e)
@@ -139,10 +139,10 @@ void Grid::fillGrid()
       {
          const unsigned int pixelIndex = getKeyOfPixel(x,y);
          // the geographical position of the pixel
-         unsigned int sqX = double((m_Xs[pixelIndex]-m_min.m_x)/
-                                   (m_max.m_x-m_min.m_x))*m_nX;
-         unsigned int sqY = double((m_Ys[pixelIndex]-m_min.m_y)/
-                                   (m_max.m_y-m_min.m_y))*m_nY;
+         unsigned int sqX = double((m_Xs[pixelIndex]-m_min[0])/
+                                   (m_max[0]-m_min[0]))*m_nX;
+         unsigned int sqY = double((m_Ys[pixelIndex]-m_min[1])/
+                                   (m_max[1]-m_min[1]))*m_nY;
          m_map.emplace(getKeyOfSquare(sqX,sqY),pixelIndex);
       }
    }
@@ -150,7 +150,7 @@ void Grid::fillGrid()
 
 //-----------------------------------------------------------------------------
 unsigned short int Grid::pixIndicesOfSquare(
-        const ngl::Vec2 &i_point,
+        const gmtl::Vec2f &i_point,
         unsigned int **i_pixPos
         ) const
 {
@@ -159,10 +159,10 @@ unsigned short int Grid::pixIndicesOfSquare(
       std::cout << "WARNING: grid haven't been initialised proberly\n";
       return 0;
    }
-   const unsigned int x = float((i_point.m_x-m_min.m_x)/
-                                (m_max.m_x-m_min.m_x)*(float)m_nX);
-   const unsigned int y = float((i_point.m_y-m_min.m_y)/
-                                (m_max.m_y-m_min.m_y)*(float)m_nY);
+   const unsigned int x = float((i_point[0]-m_min[0])/
+                                (m_max[0]-m_min[0])*(float)m_nX);
+   const unsigned int y = float((i_point[1]-m_min[1])/
+                                (m_max[1]-m_min[1])*(float)m_nY);
    unsigned short int noOfPoints = m_map.count(getKeyOfSquare(x,y));
    (*i_pixPos) = new unsigned int [noOfPoints];
    auto itsElements = m_map.equal_range(getKeyOfSquare(x,y));
@@ -176,9 +176,9 @@ unsigned short int Grid::pixIndicesOfSquare(
 }
 
 //-----------------------------------------------------------------------------
-ngl::Vec2 Grid::getPixelPosFromKey(const unsigned int i_a)const
+gmtl::Vec2f Grid::getPixelPosFromKey(const unsigned int i_a)const
 {
-   return ngl::Vec2(i_a%m_nsamps, ((i_a-(i_a%m_nsamps))/m_nsamps));
+   return gmtl::Vec2f(i_a%m_nsamps, ((i_a-(i_a%m_nsamps))/m_nsamps));
 }
 
 //-----------------------------------------------------------------------------
@@ -201,29 +201,24 @@ unsigned int Grid::getKeyOfPixel(
 
 
 //-----------------------------------------------------------------------------
-ngl::Vec2 Grid::getPixelPositionScaled0_1(
+gmtl::Vec2f Grid::getPixelPositionScaled0_1(
         const float i_x,
         const float i_y
         )const
 {
-//   if(m_nX==NULL || m_nY==NULL)
-//   {
-//      std::cout << "WARNING: grid haven't been initialised proberly\n";
-//      return ngl::Vec2(0,0);
-//   }
-   const unsigned int x = float((i_x-m_min.m_x)/
-                                (m_max.m_x-m_min.m_x)*(float)m_nX);
-   const unsigned int y = float((i_y-m_min.m_y)/
-                                (m_max.m_y-m_min.m_y)*(float)m_nY);
-   const ngl::Vec2 point(i_x,i_y);
-   ngl::Vec2 pixelPos(0,0);
+   const unsigned int x = float((i_x-m_min[0])/
+                                (m_max[0]-m_min[0])*(float)m_nX);
+   const unsigned int y = float((i_y-m_min[1])/
+                                (m_max[1]-m_min[1])*(float)m_nY);
+   const gmtl::Vec2f point(i_x,i_y);
+   gmtl::Vec2f pixelPos(0,0);
    unsigned int currentPixelKey = 0;
-   float minDis = sqrt(pow(m_Xs[0]-point.m_x,2.0)+pow(m_Ys[0]-point.m_y,2.0));
+   float minDis = sqrt(pow(m_Xs[0]-point[0],2.0)+pow(m_Ys[0]-point[1],2.0));
    auto itsElements = m_map.equal_range(getKeyOfSquare(x,y));
    for (auto it = itsElements.first; it != itsElements.second; ++it)
    {
-      const float distance = sqrt(pow(m_Xs[it->second]-point.m_x,2.0)+
-                                  pow(m_Ys[it->second]-point.m_y,2.0));
+      const float distance = sqrt(pow(m_Xs[it->second]-point[0],2.0)+
+                                  pow(m_Ys[it->second]-point[1],2.0));
       if(distance<minDis)
       {
          currentPixelKey = it->second;
@@ -231,10 +226,11 @@ ngl::Vec2 Grid::getPixelPositionScaled0_1(
       }
    }
    pixelPos = getPixelPosFromKey(currentPixelKey);
-   pixelPos.m_x/=m_nsamps;
-   pixelPos.m_y/=m_nlines;
-   pixelPos.m_y = -pixelPos.m_y;
-   return pixelPos;
+   pixelPos[0]/=m_nsamps;
+   pixelPos[1]/=m_nlines;
+   pixelPos[1] = -pixelPos[1];
+   return gmtl::Vec2f(pixelPos[0],pixelPos[1]);
+
 }
 
 

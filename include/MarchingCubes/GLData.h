@@ -12,8 +12,7 @@
 //-----------------------------------------------------------------------------
 
 #include <ngl/Types.h>
-#include <ngl/Vec3.h>
-#include <ngl/Vec2.h>
+#include <gmtl/Vec.h>
 #include <vector>
 
 class GLData
@@ -44,13 +43,13 @@ public:
    /// @param[in] i_vertex vertex to be added
    /// @return the index of the vertex
    //------------------------------------------------------------------------
-   unsigned int addVertex(const ngl::Vec3 &i_vertex);
+   unsigned int addVertex(const gmtl::Vec3f &i_vertex);
    //------------------------------------------------------------------------
    /// @brief method that returns a vertex given its index
    /// @param[in] i_index the index of the vertex
    /// @return the vertex of our interest
    //------------------------------------------------------------------------
-   ngl::Vec3 getVertex(unsigned int i_index);
+   gmtl::Vec3f getVertex(unsigned int i_index);
    //------------------------------------------------------------------------
    /// @brief method that creates UVs for the model the name of the bil file
    /// @note please note that this method is for raster data
@@ -89,21 +88,21 @@ public:
    //-------------------------------------------------------------------------
    /// @brief lower limits
    //-------------------------------------------------------------------------
-   ngl::Vec3 m_minLimits;
+   gmtl::Vec3f m_minLimits;
    //-------------------------------------------------------------------------
    /// @brief max Limits
    //-------------------------------------------------------------------------
-   ngl::Vec3 m_maxLimits;
+   gmtl::Vec3f m_maxLimits;
 
 
    //-------------------------------------------------------------------------
    /// @brief the lower limits of the hyperspectral data
    //-------------------------------------------------------------------------
-   ngl::Vec2 m_hyperMinLimits;
+   gmtl::Vec2f m_hyperMinLimits;
    //-------------------------------------------------------------------------
    /// @brief the higher limits of the hyperspectral data
    //-------------------------------------------------------------------------
-   ngl::Vec2 m_hyperMaxLimits;
+   gmtl::Vec2f m_hyperMaxLimits;
 
 
    //---------------------------------------------------------------------------

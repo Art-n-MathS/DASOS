@@ -13,8 +13,8 @@
 /// the closer pixel to a given point.
 //-------------------------------------------------------------------------
 
-#include <ngl/Vec3.h>
-#include <ngl/Vec2.h>
+
+#include <gmtl/Vec.h>
 #include <string>
 #include <unordered_map>
 
@@ -41,7 +41,7 @@ public:
    Grid(
            const std::string &i_IGMfileName,
            const float i_vl,
-           const ngl::Vec3 i_LiDARmins
+           const gmtl::Vec3f i_LiDARmins
            );
    //--------------------------------------------------------------------------
    /// @brief method that takes as input a point and returns the position of
@@ -50,7 +50,7 @@ public:
    /// @param[in] i_y the y position of the vertex of our interest
    /// @returns the position of its closest pixel on the image
    //--------------------------------------------------------------------------
-   ngl::Vec2 getPixelPositionScaled0_1(
+   gmtl::Vec2f getPixelPositionScaled0_1(
            const float i_x,
            const float i_y
            ) const;
@@ -66,7 +66,7 @@ public:
    /// memory leaks
    //--------------------------------------------------------------------------
    unsigned short int pixIndicesOfSquare(
-           const ngl::Vec2 &i_point,
+           const gmtl::Vec2f &i_point,
            unsigned int **i_pixPos
            )const;
    //--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ private:
    /// @param[in] i_a = nsamps*y1 + x1, where (x1,y1) the position of the pixel
    /// @returns the position (x1,y1) of the pixel
    //--------------------------------------------------------------------------
-   ngl::Vec2 getPixelPosFromKey(const unsigned int i_a) const;
+   gmtl::Vec2f getPixelPosFromKey(const unsigned int i_a) const;
    //--------------------------------------------------------------------------
    /// @brief method that takes the x,y position of a square and returns the
    /// key of the corresponding container in m_multiMap
@@ -133,11 +133,11 @@ private:
    //--------------------------------------------------------------------------
    /// @brief the min values of the geo positions of the pixels
    //--------------------------------------------------------------------------
-   ngl::Vec2 m_min;
+   gmtl::Vec2f m_min;
    //--------------------------------------------------------------------------
    /// @brief the max values of the geo positions of the pixels
    //--------------------------------------------------------------------------
-   ngl::Vec2 m_max;
+   gmtl::Vec2f m_max;
 
    //--------------------------------------------------------------------------
    std::unordered_multimap<int, int> m_map;
