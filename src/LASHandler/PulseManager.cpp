@@ -83,28 +83,6 @@ void PulseManager::addPoint(
    }
 }
 
-
-////-----------------------------------------------------------------------------
-//pcl::PointCloud<pcl::PointXYZI>::Ptr PulseManager::getPeakPointsCloud(
-//        const std::vector<double> &i_user_limits
-//        )
-//{
-//   std::cout << "kernel values = " << Pulse::s_kernel[0] << " "
-//             << Pulse::s_kernel[1] << " " << Pulse::s_kernel[2] << " "
-//             << Pulse::s_kernel[3] << " " << Pulse::s_kernel[4] << "\n";
-
-//   pcl::PointCloud<pcl::PointXYZI>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZI>);
-
-//   for(unsigned int i=0; i<m_pulses.size(); ++i)
-//   {
-//       if(m_pulses[i]->isInsideLimits(i_user_limits))
-//       {
-//           /// TO DO: addPeaksTOCloud
-//       }
-//   }
-//   return cloud;
-//}
-
 //-----------------------------------------------------------------------------
 void PulseManager::setKernel(const std::vector<double> &i_kernel)
 {
@@ -115,15 +93,6 @@ void PulseManager::setKernel(const std::vector<double> &i_kernel)
    }
 }
 
-
-////-----------------------------------------------------------------------------
-//void PulseManager::clearPeaks()
-//{
-//   for (unsigned int i=0; i< m_pulses.size(); ++i)
-//   {
-//      m_pulses[i]->clearPeaks();
-//   }
-//}
 
 //-----------------------------------------------------------------------------
 void PulseManager::createQuadtree(unsigned int i_stopLimit)
@@ -260,30 +229,6 @@ double PulseManager::getMinZ()const
 }
 
 
-////-----------------------------------------------------------------------------
-//void PulseManager::addToCloud(
-//        pcl::PointCloud<pcl::PointXYZI>::Ptr  &cloud,
-//        const std::vector<double> &i_user_limits
-//        )
-//{
-//    Pulse::count = 0;
-
-
-//    std::cout << "File Limits = " << m_public_header.max_y <<" "<< m_public_header.min_y
-//              <<" "<<m_public_header.max_x << " " << m_public_header.min_x << "\n";
-//    std::cout << "user defined limits: " << i_user_limits[0] << " "
-//              <<i_user_limits[1] <<" "<< i_user_limits[2] << " " << i_user_limits[3];
-
-//    for(unsigned int i=0; i< m_pulses.size(); ++i)
-//    {
-//       if(m_pulses[i]->isInsideLimits(i_user_limits))
-//       {
-//          m_pulses[i]->addAllReturnsToCloud(cloud);
-//       }
-//    }
-//    std::cout << Pulse::count << " pulses has been added to the cloud\n";
-//}
-
 //-----------------------------------------------------------------------------
 PulseManager::~PulseManager()
 {
@@ -291,10 +236,4 @@ PulseManager::~PulseManager()
    {
       delete m_pulses[i];
    }
-//   if(m_quadTree!=0)
-//   {
-//       delete m_quadTree;
-//       // no need to delete its children because every node deletes each
-//       // children
-//   }
 }

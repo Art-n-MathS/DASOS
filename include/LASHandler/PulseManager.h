@@ -7,8 +7,7 @@
 #include "Object.h"
 
 #include <vector>
-//#include <pcl/point_cloud.h>
-#include <ngl/Vec2.h>
+#include <gmtl/Vec.h>
 
 class PulseManager
 {
@@ -41,13 +40,6 @@ public:
    /// condition does not apply anymore.
    //-------------------------------------------------------------------------
    void createQuadtree(unsigned int i_stopLimit);
-//   //-------------------------------------------------------------------------
-//   /// @brief method that creates a Points cloud with all the peak points
-//   /// @param[in] i_user_limits the limits of the area of our interest
-//   //-------------------------------------------------------------------------
-//   pcl::PointCloud<pcl::PointXYZI>::Ptr getPeakPointsCloud(
-//           const std::vector<double> &i_user_limits
-//           );
    //-------------------------------------------------------------------------
    /// @brief method that returns the max x coordinates as specified in
    /// the header file
@@ -84,25 +76,11 @@ public:
    /// @returns the min z coordinates of the las file
    //-------------------------------------------------------------------------
    double getMinZ()const;
-//   //-------------------------------------------------------------------------
-//   /// @brief method that clears the peak values
-//   //-------------------------------------------------------------------------
-//   void clearPeaks();
    //-------------------------------------------------------------------------
    /// @brief method that sets the kernel that is used to smooth the waves
    /// @param[in] i_kernel the new kernel
    //-------------------------------------------------------------------------
    void setKernel(const std::vector<double> &i_kernel);
-//   //-------------------------------------------------------------------------
-//   /// @brief method that adds the waves to the given points cloud
-//   /// @param[in] i_cloud the given cloud that the points will be added to
-//   /// @param[in] i_user_limits the limits that define the area that the user
-//   /// would like to extract
-//   //-------------------------------------------------------------------------
-//   void addToCloud(
-//           pcl::PointCloud<pcl::PointXYZI>::Ptr &cloud,
-//           const std::vector<double> &i_user_limits
-//           );
    //-------------------------------------------------------------------------
    /// @brief method that voxelised the given area and returns an implicit
    /// object. Please note that the object is dynamically allocated

@@ -18,7 +18,7 @@ public:
     /// @param[in] i_intensity the intensity of the point
     /// @param[in] i_point the position of the point
     //-------------------------------------------------------------------------
-    void addPoint(unsigned short i_intensity, ngl::Vec3 i_point);
+    void addPoint(unsigned short i_intensity, gmtl::Vec3f i_point);
     //-------------------------------------------------------------------------
     /// @brief method that voxelised the given area and returns an implicit
     /// object.
@@ -40,7 +40,7 @@ public:
     //--------------------------------------------------------------------------
     bool isInsideLimits(
             const std::vector<double> &i_user_limits,
-            const ngl::Vec3 &i_point
+            const gmtl::Vec3f &i_point
             )const;
     //-------------------------------------------------------------------------
     /// @brief default destructor
@@ -52,7 +52,7 @@ private:
     //-------------------------------------------------------------------------
     /// @brief the position of all the points
     //-------------------------------------------------------------------------
-    std::vector<ngl::Vec3> m_positions;
+    std::vector<gmtl::Vec3f> m_positions;
     //-------------------------------------------------------------------------
     /// @brief the corresponding intensities of the points
     //-------------------------------------------------------------------------

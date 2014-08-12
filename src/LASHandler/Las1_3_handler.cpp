@@ -62,7 +62,7 @@ void Las1_3_handler::readFileAndGetPulseManager(
                  (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
            {
              (*i_discreteData)->addPoint(point_info.itensity,
-                                         ngl::Vec3(point_info.X*public_header.x_scale_factor,
+                                         gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
                                                    point_info.Y*public_header.y_scale_factor,
                                                    point_info.Z*public_header.z_scale_factor));
               count++;
@@ -85,7 +85,7 @@ void Las1_3_handler::readFileAndGetPulseManager(
         else
         {
             (*i_discreteData)->addPoint(point_info.itensity,
-                                        ngl::Vec3(point_info.X*public_header.x_scale_factor,
+                                        gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
                                                   point_info.Y*public_header.y_scale_factor,
                                                   point_info.Z*public_header.z_scale_factor));
             countDiscrete++;
