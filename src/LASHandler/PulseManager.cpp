@@ -1,5 +1,6 @@
 #include "PulseManager.h"
 #include <string.h>
+#include <gmtl/gmtl.h>
 
 //-----------------------------------------------------------------------------
 PulseManager::PulseManager(
@@ -68,16 +69,17 @@ void PulseManager::addPoint(
    {
       Pulse *pulse = new Pulse(m_public_header,m_wfInfo,i_point,wave_data);
       m_pulses.push_back(pulse);
-      ngl::Vec3 &origin = m_pulses[m_pulses.size()-1]->getOrigin();
-      ngl::Vec3 &offset = m_pulses[m_pulses.size()-1]->getOffset();
-      ngl::Vec3 endPoint = m_wfInfo.number_of_samples * offset;
+      gmtl::Vec3f &origin = m_pulses[m_pulses.size()-1]->getOrigin();
+      gmtl::Vec3f &offset = m_pulses[m_pulses.size()-1]->getOffset();
+      gmtl::Vec3f endPoint(offset);
+      endPoint*=(m_wfInfo.number_of_samples);
       endPoint+=origin;
-      m_public_header.max_x = std::max((double)origin.m_x,m_public_header.max_x);
-      m_public_header.max_x = std::max((double)endPoint.m_x,m_public_header.max_x);
-      m_public_header.max_y = std::max((double)origin.m_y,m_public_header.max_y);
-      m_public_header.max_y = std::max((double)endPoint.m_y,m_public_header.max_y);
-      m_public_header.max_z = std::max((double)origin.m_z,m_public_header.max_z);
-      m_public_header.max_z = std::max((double)endPoint.m_z,m_public_header.max_z);
+      m_public_header.max_x = std::max((double)origin[0],m_public_header.max_x);
+      m_public_header.max_x = std::max((double)endPoint[0],m_public_header.max_x);
+      m_public_header.max_y = std::max((double)origin[1],m_public_header.max_y);
+      m_public_header.max_y = std::max((double)endPoint[1],m_public_header.max_y);
+      m_public_header.max_z = std::max((double)origin[2],m_public_header.max_z);
+      m_public_header.max_z = std::max((double)endPoint[2],m_public_header.max_z);
    }
 }
 
@@ -193,7 +195,7 @@ void PulseManager::sortPulseWithRespectToY()
           unsigned int tempIndex=0;
           while(t1 < i+step/2 && t2 < endOfT2)
           {
-             if(m_pulses[t1]->m_origin.m_y>m_pulses[t2]->m_origin.m_y)
+             if(m_pulses[t1]->m_origin[1]>m_pulses[t2]->m_origin[1])
              {
                 tempValues[tempIndex]=m_pulses[t1];
                 t1++;

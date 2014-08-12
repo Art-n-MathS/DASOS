@@ -1,5 +1,6 @@
 #include "Pulse.h"
 #include <iostream>
+#include <gmtl/gmtl.h>
 
 int Pulse::count = 0;
 std::vector<float> Pulse::s_kernel;
@@ -14,18 +15,19 @@ Pulse::Pulse(
 {
    // sampling frequency in nanoseconds
 
-   ngl::Vec3 point_scale_factors(i_publicHeader.x_scale_factor,
+   gmtl::Vec3f point_scale_factors(i_publicHeader.x_scale_factor,
                                 i_publicHeader.y_scale_factor,
                                 i_publicHeader.z_scale_factor);
-   ngl::Vec3 point_offsets(i_publicHeader.x_offset,
+   gmtl::Vec3f point_offsets(i_publicHeader.x_offset,
                           i_publicHeader.y_offset,
                           i_publicHeader.z_offset);
-   m_origin = ngl::Vec3(i_point_info.X*i_publicHeader.x_scale_factor,
+   m_origin = gmtl::Vec3f(i_point_info.X*i_publicHeader.x_scale_factor,
                      i_point_info.Y*i_publicHeader.y_scale_factor,
                      i_point_info.Z*i_publicHeader.z_scale_factor);
    m_origin+=point_offsets;
-   m_point = ngl::Vec3(i_point_info.X,i_point_info.Y,i_point_info.Z)
-           *point_scale_factors;
+   m_point = gmtl::Vec3f(i_point_info.X*point_scale_factors[0],
+                         i_point_info.Y*point_scale_factors[1],
+                         i_point_info.Z*point_scale_factors[2]);
    m_numberOfReturnsForThisPulse =(int)
            (i_point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7);
    m_time = i_point_info.GBS_time;
@@ -44,14 +46,14 @@ Pulse::Pulse(
    m_pointInWaveform = i_point_info.return_point_wf_location
            *c_light_speed/2/1000;
 
-   m_offset= ngl::Vec3(i_point_info.X_t, i_point_info.Y_t, i_point_info.Z_t);
+   m_offset= gmtl::Vec3f(i_point_info.X_t, i_point_info.Y_t, i_point_info.Z_t);
    m_offset *= (1000 * m_temporalSampleSpacing);
 
-   m_origin.m_x = m_origin.m_x + (double )i_point_info.X_t*
+   m_origin[0] = m_origin[0] + (double )i_point_info.X_t*
            (double )i_point_info.return_point_wf_location;
-   m_origin.m_y = m_origin.m_y + (double )i_point_info.Y_t*
+   m_origin[1] = m_origin[1] + (double )i_point_info.Y_t*
            (double )i_point_info.return_point_wf_location;
-   m_origin.m_z = m_origin.m_z + (double )i_point_info.Z_t*
+   m_origin[2] = m_origin[2] + (double )i_point_info.Z_t*
            (double )i_point_info.return_point_wf_location;
    m_returns = new (std::nothrow) char[m_noOfSamples];
    if(m_returns==0)
@@ -91,53 +93,15 @@ Pulse::Pulse(
       exit(EXIT_FAILURE);
    }
    memcpy(m_returns,i_pulse.m_returns,m_noOfSamples);
-//   m_peakPoints.resize(i_pulse.m_peakPoints.size());
-//   for(unsigned int i=0; i<i_pulse.m_peakPoints.size();++i)
-//   {
-//      m_peakPoints[i] = i_pulse.m_peakPoints[i];
-//   }
 }
 
-////-----------------------------------------------------------------------------
-//void Pulse::clearPeaks()
-//{
-//   m_peakPoints.clear();
-//}
 
-////-----------------------------------------------------------------------------
-//const std::vector<Peak *> &Pulse::getPeakPoints(
-
-//        )
-//{
-//   // check if points has already been detected
-//   if(m_peakPoints.size()!=0)
-//   {
-//      return m_peakPoints;
-//   }
-//   else
-//   {
-//      detectPeaks();
-//      return m_peakPoints;
-//   }
-//}
-
-////-----------------------------------------------------------------------------
-//void Pulse::detectPeaks()
-//{
-//   // first smooth the wave
-//   float kernelNormalisedFactor = 0;
-//   for(unsigned int i=0; i<s_kernel.size(); ++i)
-//   {
-//       kernelNormalisedFactor+=s_kernel[i];
-//   }
-//   // then use gradient to find the peak points
-//}
 
 
 //-----------------------------------------------------------------------------
 void Pulse::print()const
 {
-   std::cout << "Point                            " << m_point.m_x << " " << m_point.m_y << " " << m_point.m_z << "\n";
+   std::cout << "Point                            " << m_point[0] << " " << m_point[1] << " " << m_point[2] << "\n";
    std::cout << "Return Number                    " << m_returnNumber<< "\n";
    std::cout << "Number of returns for this pulse " << m_numberOfReturnsForThisPulse<< "\n";
    std::cout << "Time                             " << m_time<< "\n";
@@ -151,8 +115,8 @@ void Pulse::print()const
    std::cout << "Sample Length                    " << m_sampleLength << "\n";
    std::cout << "Return Point Location            " << m_returnPointLocation << "\n";
    std::cout << "Point in Waveform                " << m_pointInWaveform << "\n";
-   std::cout << "Offset                           " << m_offset.m_x << " " << m_offset.m_y << " " << m_offset.m_z << "\n";
-   std::cout << "Origin                           " << m_origin.m_x << " " << m_origin.m_y << " " << m_origin.m_z << "\n";
+   std::cout << "Offset                           " << m_offset[0] << " " << m_offset[1] << " " << m_offset[2] << "\n";
+   std::cout << "Origin                           " << m_origin[0] << " " << m_origin[1] << " " << m_origin[2] << "\n";
    std::cout << "Intensities\n";
    if(m_returns!=0)
    {
@@ -167,8 +131,8 @@ void Pulse::print()const
 //-----------------------------------------------------------------------------
 bool Pulse::isInsideLimits(const std::vector<double> &i_user_limits)const
 {
-   return m_point.m_y<i_user_limits[0] && m_point.m_y>i_user_limits[1] &&
-          m_point.m_x<i_user_limits[2] && m_point.m_x>i_user_limits[3];
+   return m_point[1]<i_user_limits[0] && m_point[1]>i_user_limits[1] &&
+          m_point[0]<i_user_limits[2] && m_point[0]>i_user_limits[3];
 }
 
 //-----------------------------------------------------------------------------
@@ -176,7 +140,7 @@ void Pulse::addIntensitiesToObject(
         Object *obj
         )
 {
-   ngl::Vec3 tempPosition = m_origin;
+   gmtl::Vec3f tempPosition = m_origin;
    for(unsigned int i=0; i< m_noOfSamples; ++i)
    {
      obj->addItensity(tempPosition,m_returns[i]);
@@ -191,8 +155,4 @@ Pulse::~Pulse()
    {
        delete []m_returns;
    }
-//   for(unsigned int i=0; i<m_peakPoints.size(); ++i)
-//   {
-//       delete m_peakPoints[i];
-//   }
 }

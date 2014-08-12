@@ -11,6 +11,7 @@
 //-----------------------------------------------------------------------------
 
 #include <ngl/Vec3.h>
+#include <gmtl/Vec.h>
 #include "GLData.h"
 #include "IntegralVolumes.h"
 
@@ -37,8 +38,7 @@ public:
     /// @note please note that after calling normalise you should not add any
     /// more itensities to the voxel area
     //-------------------------------------------------------------------------
-    void addItensity(
-            const ngl::Vec3 &i_point,
+    void addItensity(const gmtl::Vec3f &i_point,
             float i_intensity
             );
     //-------------------------------------------------------------------------

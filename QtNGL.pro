@@ -91,17 +91,8 @@ OTHER_FILES+= shaders/Phong.fs \
     shaders/Vertex.vs \
     shaders/Fragment.fs
 
-#INCLUDEPATH +=   "/usr/include/eigen3/" \
-#                 "/usr/include/vtk/" \
 INCLUDEPATH +=    "/usr/include/boost/" \
                   "/users/rsg/mmi/gmtl-0.6.1/build/include/gmtl-0.6.1/"
-#                 "/usr/include/flann" \
-#                 "/usr/include/gtkmm-2.4/" \
-#                 "/usr/include/glibmm-2.4/" \
-#                 "/usr/include/sigc++-2.0/"
-
-#LIBS += -lQtGui -lQtCore -lQtOpenGL
-#        -L/usr/lib64/vtk -lvtkCommon -lvtksys -lvtkViews -lvtkWidgets  -lvtkRendering -lvtkGraphics -lvtkImaging -lvtkIO -lvtkFiltering -lvtkDICOMParser -lvtkmetaio -lvtkexoIIc -lvtkHybrid \
 
 
 QMAKE_CXXFLAGS+= -msse -msse2 -msse3

@@ -95,8 +95,10 @@ ngl::Vec3 Object::getCentreOfVoxel(
 }
 
 //-----------------------------------------------------------------------------
-void Object::addItensity(const ngl::Vec3 &i_point, float i_intensity)
+void Object::addItensity(const gmtl::Vec3f &point, float i_intensity)
 {
+   ngl::Vec3 i_point(point[0],point[1],point[2]);
+
    if(i_intensity>m_noiseLevel)
    {
 //      int index_x, index_y, index_z;

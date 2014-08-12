@@ -30,7 +30,7 @@ Object *DiscreteData::fillObject(
    {
       if(isInsideLimits(user_limits,m_positions[i]))
       {
-         i_obj->addItensity(m_positions[i],m_intensities[i]);
+         i_obj->addItensity(gmtl::Vec3f(m_positions[i].m_x,m_positions[i].m_y,m_positions[i].m_z),m_intensities[i]);
       }
    }
    i_obj->normalise();

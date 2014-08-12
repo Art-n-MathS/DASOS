@@ -1,6 +1,6 @@
 #ifndef PULSE_H
 #define PULSE_H
-#include <ngl/Vec3.h>
+#include <gmtl/Vec.h>
 #include "Types.h"
 #include "Object.h"
 #include "Peak.h"
@@ -37,11 +37,11 @@ public:
    //--------------------------------------------------------------------------
    /// @brief method that returns the origin of the point
    //--------------------------------------------------------------------------
-   ngl::Vec3 &getOrigin(){return m_origin;}
+   gmtl::Vec3f &getOrigin(){return m_origin;}
    //--------------------------------------------------------------------------
    /// @brief method that returns the offset of the point
    //--------------------------------------------------------------------------
-   ngl::Vec3 &getOffset(){return m_offset;}
+   gmtl::Vec3f &getOffset(){return m_offset;}
    //--------------------------------------------------------------------------
    /// @brief method that add the intensities return to a given object
    /// @param[in] i_obj the input obj of time LASVoxels
@@ -74,7 +74,7 @@ private:
    //--------------------------------------------------------------------------
    char *m_returns;
 
-   ngl::Vec3 m_point;
+   gmtl::Vec3f m_point;
 
    char m_returnNumber;
 
@@ -116,9 +116,9 @@ private:
 
    float m_pointInWaveform;
 
-   ngl::Vec3 m_offset;
+   gmtl::Vec3f m_offset;
 
-   ngl::Vec3 m_origin;
+   gmtl::Vec3f m_origin;
    //-------------------------------------------------------------------------
    /// @brief meters per nanosecond
    //-------------------------------------------------------------------------
