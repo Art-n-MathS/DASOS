@@ -23,9 +23,6 @@
 #include <QtGui/QImage>
 #include <bilLib/binfile.h>
 
-
-
-
 //----------------------------------------------------------------------------------------------------------------------
 bool Texture::loadImage(
                         const std::string &i_fName,

@@ -8,7 +8,6 @@
 #include <time.h>
 #include <QFileDialog>
 
-
 //-----------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

@@ -38,7 +38,7 @@ QuadTreeNode::QuadTreeNode(
       {
          lengthOf1stGroup = ceil((min+max)/2);
 
-         if(m_pulses[lengthOf1stGroup-1]->getOrigin().m_y>yThres)
+         if(m_pulses[lengthOf1stGroup-1]->getOrigin()[1]>yThres)
          {
              // thres inside the 2nd half
              max = lengthOf1stGroup;

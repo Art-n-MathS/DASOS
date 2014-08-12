@@ -1,8 +1,8 @@
 QT+=opengl \
-		gui \
-		core
+      gui \
+      core
 INCLUDEPATH+=include \
-					 +=ui
+                +=ui
 
 INCLUDEPATH+=./include \
              ./include/Objects \
@@ -13,12 +13,9 @@ INCLUDEPATH+=./include \
 
 OBJECTS_DIR=obj/
 MOC_DIR=moc/
-TARGET=QtNGL
-#QMAKE_CXX=clang++ -fdiagnostics-fixit-info
+TARGET=Las1.3Vis
 
 CONFIG += console
-#CONFIG += staticlib link_pkgconfig
-#PKGCONFIG += glib-2.0 gupnp-1.0 libxml-2.0
 
 CONFIG -= app_bundle
 UI_HEADERS_DIR=ui
@@ -51,7 +48,6 @@ SOURCES += \
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
     src/LASHandler/Las1_3_handler.cpp \
-    src/LASHandler/Peak.cpp \
     src/LASHandler/QuadTreeNode.cpp
 
 HEADERS += \
@@ -61,7 +57,6 @@ HEADERS += \
     include/LASHandler/PulseManager.h \
     include/LASHandler/Pulse.h \
     include/LASHandler/Las1_3_handler.h \
-    include/LASHandler/Peak.h \
     include/LASHandler/QuadTreeNode.h \
     include/Manager.h \
     include/MarchingCubes/GLData.h \
@@ -96,16 +91,17 @@ OTHER_FILES+= shaders/Phong.fs \
     shaders/Vertex.vs \
     shaders/Fragment.fs
 
-INCLUDEPATH +=   "/usr/include/eigen3/" \
-                 "/usr/include/vtk/" \
-                 "/usr/include/boost/" \
-                 "/usr/include/flann" \
-                 "/usr/include/gtkmm-2.4/" \
-                 "/usr/include/glibmm-2.4/" \
-                 "/usr/include/sigc++-2.0/"
+#INCLUDEPATH +=   "/usr/include/eigen3/" \
+#                 "/usr/include/vtk/" \
+INCLUDEPATH +=    "/usr/include/boost/" \
+                  "/users/rsg/mmi/gmtl-0.6.1/build/include/gmtl-0.6.1/"
+#                 "/usr/include/flann" \
+#                 "/usr/include/gtkmm-2.4/" \
+#                 "/usr/include/glibmm-2.4/" \
+#                 "/usr/include/sigc++-2.0/"
 
-LIBS += -lQtGui -lQtCore -lQtOpenGL \
-        -L/usr/lib64/vtk -lvtkCommon -lvtksys -lvtkViews -lvtkWidgets  -lvtkRendering -lvtkGraphics -lvtkImaging -lvtkIO -lvtkFiltering -lvtkDICOMParser -lvtkmetaio -lvtkexoIIc -lvtkHybrid \
+#LIBS += -lQtGui -lQtCore -lQtOpenGL
+#        -L/usr/lib64/vtk -lvtkCommon -lvtksys -lvtkViews -lvtkWidgets  -lvtkRendering -lvtkGraphics -lvtkImaging -lvtkIO -lvtkFiltering -lvtkDICOMParser -lvtkmetaio -lvtkexoIIc -lvtkHybrid \
 
 
 QMAKE_CXXFLAGS+= -msse -msse2 -msse3
@@ -134,6 +130,8 @@ linux-g++ {
 
 QMAKE_CXXFLAGS += -std=gnu++0x
 QMAKE_CXXFLAGS += -std=c++0x
+#QMAKE_CXXFLAGS += -Wno-unknown-pragmas
+
 CONFIG += c++11
 
 DEPENDPATH+=include
@@ -141,24 +139,7 @@ DEPENDPATH+= $HOME/NGL/lib
 DEPENDPATH+= $HOME/BilLibrary/lib
 
 # if we are on a mac define DARWIN
-macx:DEFINES += DARWIN
 # this is where to look for includes
 INCLUDEPATH += $$(HOME)/NGL/include/
 INCLUDEPATH += $$(HOME)/BilLibrary/include/
 
-
-win32: {
-        DEFINES+=USING_GLEW
-        INCLUDEPATH+=-I c:/boost_1_44_0
-        INCLUDEPATH+=-I c:/boost
-
-        INCLUDEPATH+= -I C:/NGL/Support/glew
-        LIBS+= -L C:/NGL/lib
-        LIBS+= -lmingw32
-        DEFINES += WIN32
-        DEFINES += USING_GLEW
-        DEFINES +=GLEW_STATIC
-        DEFINES+=_WIN32
-        SOURCES+=C:/NGL/Support/glew/glew.c
-        INCLUDEPATH+=C:/NGL/Support/glew/
-}
