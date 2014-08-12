@@ -3,7 +3,6 @@
 
 #include "Pulse.h"
 #include "Types.h"
-#include "QuadTreeNode.h"
 #include "Object.h"
 
 #include <vector>
@@ -33,13 +32,6 @@ public:
            const Types::Data_Point_Record_Format_4 &i_point,
            const char *wave_data
            );
-   //-------------------------------------------------------------------------
-   /// @brief method that sorts the pulses into the Quadtree
-   /// @param[in] i_stopLimit if the number of pulses in a node is greater
-   /// than the i_stopLimit then the node will be keep splitting until that
-   /// condition does not apply anymore.
-   //-------------------------------------------------------------------------
-   void createQuadtree(unsigned int i_stopLimit);
    //-------------------------------------------------------------------------
    /// @brief method that returns the max x coordinates as specified in
    /// the header file
@@ -124,15 +116,6 @@ private:
    /// @brief all the pulses are saved into a vector memory can be cleared
    //-------------------------------------------------------------------------
    std::vector<Pulse *> m_pulses;
-   //-------------------------------------------------------------------------
-   /// @brief the pulses are also saved into a quadtree to make search easier
-   /// the every node points to an element of m_pulses and it also knows the
-   /// number of elements it holds. so the the root points to &m_pulses and
-   /// the length is the entire set: m_pulses.size()
-   /// @note please note that there is a function that has to be called for
-   /// the tree to be created
-   //-------------------------------------------------------------------------
-   QuadTreeNode *m_quadTree;
    //-------------------------------------------------------------------------
    /// @brief the noise Level
    //-------------------------------------------------------------------------

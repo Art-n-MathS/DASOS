@@ -47,8 +47,7 @@ SOURCES += \
 
 SOURCES += src/LASHandler/PulseManager.cpp \
     src/LASHandler/Pulse.cpp \
-    src/LASHandler/Las1_3_handler.cpp \
-    src/LASHandler/QuadTreeNode.cpp
+    src/LASHandler/Las1_3_handler.cpp
 
 HEADERS += \
     include/MainWindow.h \
@@ -57,7 +56,6 @@ HEADERS += \
     include/LASHandler/PulseManager.h \
     include/LASHandler/Pulse.h \
     include/LASHandler/Las1_3_handler.h \
-    include/LASHandler/QuadTreeNode.h \
     include/Manager.h \
     include/MarchingCubes/GLData.h \
     include/MarchingCubes/HashTable.h \

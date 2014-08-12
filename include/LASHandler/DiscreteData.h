@@ -1,7 +1,6 @@
 #ifndef DISCRETEDATA_H
 #define DISCRETEDATA_H
 
-#include <ngl/Vec3.h>
 #include <vector>
 #include "Object.h"
 

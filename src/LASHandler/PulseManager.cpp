@@ -6,7 +6,7 @@
 PulseManager::PulseManager(
         const Types::Public_Header_Block &i_publicHeader,
         const Types::WF_packet_Descriptor &i_wv_info
-        ):m_quadTree(0),
+        ):
     m_noiseLevel(30.0)
 {
    memcpy((void*) &m_public_header,(void*)&i_publicHeader,sizeof(m_public_header));
@@ -93,45 +93,6 @@ void PulseManager::setKernel(const std::vector<double> &i_kernel)
    }
 }
 
-
-//-----------------------------------------------------------------------------
-void PulseManager::createQuadtree(unsigned int i_stopLimit)
-{
-    // first free memory if a quadtree has been previously created
-    if(m_quadTree!=0)
-    {
-        delete m_quadTree;
-    }
-
-    // pack the limits of the area
-    std::vector<double> m_areaLimits;
-    m_areaLimits.resize(4);
-
-    // make the limits a square to avoid streched quads
-    double disX = m_public_header.max_x - m_public_header.min_x;
-    double disY = m_public_header.max_y - m_public_header.min_y;
-
-    m_areaLimits[1]=m_public_header.min_y;
-    m_areaLimits[3]=m_public_header.min_x;
-    if(disX>disY)
-    {
-        m_areaLimits[0] = m_areaLimits[1]+disX;
-        m_areaLimits[2] = m_public_header.max_x;
-    }
-    else
-    {
-        m_areaLimits[0] = m_public_header.max_y;
-        m_areaLimits[2] = m_areaLimits[3]+disY;
-    }
-
-    // one of the conditions of creating a Quadtree is that m_pulses should be
-    // sorted in the y axis.
-    sortPulseWithRespectToY();
-
-    // finally create the quadTree
-    m_quadTree = new QuadTreeNode(&m_pulses[0],m_pulses.size(),
-                                  m_areaLimits,i_stopLimit);
-}
 
 //-----------------------------------------------------------------------------
 void PulseManager::sortPulseWithRespectToY()
