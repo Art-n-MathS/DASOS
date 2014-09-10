@@ -257,9 +257,10 @@ void MainWindow::createObject()
                 ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
                 m_user_limits,m_pulseManager,
                 m_ui->m_sbNoiseLevel->value(), m_type);
-
-   m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]-m_user_limits[3])/voxelLength));
-   std::string labelStr("Object Status: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data");
+   m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]
+                                          -m_user_limits[3])/voxelLength));
+   std::string labelStr("Object Status: Object created from " +
+                m_ui->m_cbDataType->currentText().toStdString() + " data");
    m_ui->m_lbObjectType->setText(labelStr.c_str());
    std::cout << "Object created!\n";
 }
