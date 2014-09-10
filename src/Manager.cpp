@@ -27,21 +27,6 @@ Object *Manager::createObject(
    return obj;
 }
 
-//-----------------------------------------------------------------------------
-Object *Manager::createObject(
-        unsigned int i_x,
-        const std::vector <double> user_limits,
-        DiscreteData *i_discreteData,
-        int /*i_type*/
-        )
-{
-   Object *obj = new Object(i_x,user_limits);
-   std::cout << "Start filling object - discrete\n";
-   obj->setNoiseLevel(0.0f);
-   i_discreteData->fillObject(obj,user_limits);
-   obj->insertIntoIntegralVolume();
-   return obj;
-}
 
 //-----------------------------------------------------------------------------
 GLData *Manager::getPolygonisedObject(

@@ -46,7 +46,10 @@ MainWindow::MainWindow(QWidget *parent) :
    maps << "Non-Empty Voxels" << "Density" << "Thickness"  << "Hyperspectral" << "Hyperspectral Mean";
    m_ui->m_cbMaps->insertItems(0,maps);
    QStringList types;
-   types << "Full-wavefrom" << "All Discrete" << "Discrete & Waveforms" << "Discrete";
+   types << /*0*/ "Full-wavefrom"
+         << /*1*/ "All Discrete"
+         << /*2*/ "Discrete & Waveforms"
+         << /*3*/ "Discrete";
    m_ui->m_cbDataType->insertItems(0,types);
    m_ui->m_pbLoadIGM->hide();
    m_user_limits.resize(6);
@@ -249,21 +252,12 @@ void MainWindow::createObject()
    {
        delete m_obj;
    }
-   if(m_type)
-   {
-      std::cout << "discrete\n";
-//      m_obj = Manager::createObject(
-//                   ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
-//                   m_user_limits,m_discreteData);
-   }
-   else
-   {
-      std::cout << "full waveform\n";
-      m_obj = Manager::createObject(
-                   ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
-                   m_user_limits,m_pulseManager,
-                   m_ui->m_sbNoiseLevel->value(), m_type);
-   }
+   std::cout << "full waveform\n";
+   m_obj = Manager::createObject(
+                ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
+                m_user_limits,m_pulseManager,
+                m_ui->m_sbNoiseLevel->value(), m_type);
+
    m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]-m_user_limits[3])/voxelLength));
    std::string labelStr("Object Status: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data");
    m_ui->m_lbObjectType->setText(labelStr.c_str());

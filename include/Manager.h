@@ -37,18 +37,6 @@ public:
             int i_type
             );
     //-------------------------------------------------------------------------
-    /// @brief create object from the discrete LiDAR data
-    /// @param[in] i_x the number of voxels in the x-axis
-    /// @param[in] user_limits the limits that define the area of interest
-    /// [maxNorthY, minNorthY, maxEastX, maxEastX, maxHeightZ, minHeightZ]
-    /// @param[in] i_discreteData it holds all the info about the las file
-    //-------------------------------------------------------------------------
-    static Object *createObject(
-            unsigned int i_x,
-            const std::vector<double> user_limits,
-            DiscreteData *i_discreteData,
-            int i_type);
-    //-------------------------------------------------------------------------
     /// @brief method that returns a polygonised object
     /// @param[in] i_obj object to be polygonisedmilmil
     /// @param[in] i_x the number of cubes on the x axis
