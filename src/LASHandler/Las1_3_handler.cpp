@@ -17,10 +17,7 @@ Las1_3_handler::Las1_3_handler(
 }
 
 //-----------------------------------------------------------------------------
-void Las1_3_handler::readFileAndGetPulseManager(
-        PulseManager **i_pulseManager,
-        DiscreteData **i_discreteData
-        )
+PulseManager *Las1_3_handler::readFileAndGetPulseManager()
 {
    lasfile.open(m_filename.c_str(),std::ios::binary);
    if(!lasfile.is_open())
@@ -33,15 +30,9 @@ void Las1_3_handler::readFileAndGetPulseManager(
 
    //method that reads point data records
    //---------------------------------------------------------------
-   *i_pulseManager =
+   PulseManager *i_pulseManager =
            new (std::nothrow) PulseManager(public_header,wv_info);
-   if(*i_pulseManager==0)
-   {
-       std::cerr << "Error: Memory could not be allocated\n";
-       exit(EXIT_FAILURE);
-   }
-   *i_discreteData = new(std::nothrow)DiscreteData(public_header.number_of_point_records);
-   if(*i_discreteData==0)
+   if(i_pulseManager==0)
    {
        std::cerr << "Error: Memory could not be allocated\n";
        exit(EXIT_FAILURE);
@@ -52,22 +43,26 @@ void Las1_3_handler::readFileAndGetPulseManager(
 
    unsigned int count=0;
    unsigned int countDiscrete = 0;
+   // temporarly saving discrete values that are associated with a
+   // waveform but the 1st return haven't been saved yet
+   std::vector<gmtl::Vec3f> discretePoints;
+   // the corresponding intensities of the discrete points
+   std::vector<unsigned short> discreteIntensities;
+   // the corresponding wave offsets of the dicrete points
+   std::vector<int> discreteWaveOffsets;
+
    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
    {
       lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+      int wave_offset = public_header.start_of_wf_data_Packet_record +
+              point_info.byte_offset_to_wf_packet_data;
 
       if((int)point_info.classification!=7)
       {
          if( point_info.wave_packet_descriptor_index!=0 &&
                  (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
            {
-             (*i_discreteData)->addPoint(point_info.itensity,
-                                         gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
-                                                   point_info.Y*public_header.y_scale_factor,
-                                                   point_info.Z*public_header.z_scale_factor));
               count++;
-              int wave_offset = public_header.start_of_wf_data_Packet_record +
-                      point_info.byte_offset_to_wf_packet_data;
               char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
               if(wave_data==0)
               {
@@ -78,19 +73,27 @@ void Las1_3_handler::readFileAndGetPulseManager(
               int tmp = lasfile.tellg();
               lasfile.seekg(wave_offset);
               lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-              (*i_pulseManager)->addPoint(point_info,wave_data);
+              i_pulseManager->addPoint(point_info,wave_data,wave_offset);
               lasfile.seekg(tmp);
               delete []wave_data;
         }
-        else
+        else if (point_info.wave_packet_descriptor_index!=0)
         {
-            (*i_discreteData)->addPoint(point_info.itensity,
-                                        gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
-                                                  point_info.Y*public_header.y_scale_factor,
-                                                  point_info.Z*public_header.z_scale_factor));
-            countDiscrete++;
+             // temporarly save point
+             discretePoints.push_back(
+                         gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                     point_info.Y*public_header.y_scale_factor,
+                                     point_info.Z*public_header.z_scale_factor));
+             discreteIntensities.push_back(point_info.itensity);
+             discreteWaveOffsets.push_back(wave_offset);
+
+             countDiscrete++;
             // no waveform associated with the data
         }
+         else
+         {
+            i_pulseManager->addUnAssociatedDiscretePoint(point_info);
+         }
       }
       else
       {
@@ -106,9 +109,19 @@ void Las1_3_handler::readFileAndGetPulseManager(
        std::cout << count << " waveforms found\n";
        std::cout << count+countDiscrete << " discrete points found\n";
    }
-   //---------------------------------------------------------------
+   //--------------------------------------------------------------------------
 
+   i_pulseManager->sortDiscretePoints(
+               discretePoints,discreteIntensities,discreteWaveOffsets);
+
+   discreteIntensities.clear();
+   discretePoints.clear();
+   discreteWaveOffsets.clear();
+   std::cout << "There are " << i_pulseManager->getNumOfAloneDiscretePoints()
+             << " Discrete Without Waveforms\n";
+   std::cout << "----------------------------------------------------------\n";
    lasfile.close();
+   return i_pulseManager;
 }
 
 //-----------------------------------------------------------------------------

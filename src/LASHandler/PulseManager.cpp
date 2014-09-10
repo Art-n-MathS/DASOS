@@ -12,9 +12,6 @@ PulseManager::PulseManager(
    memcpy((void*) &m_public_header,(void*)&i_publicHeader,sizeof(m_public_header));
    memcpy((void*) &m_wfInfo,(void *) &i_wv_info, sizeof(m_wfInfo));
 
-   // set the kernel for smoothing the wave while detecting the key points
-   float kernel[] = {1,2,3,2,1};
-   Pulse::s_kernel.assign (kernel,kernel+5);   // assigning from array.
 }
 
 //-----------------------------------------------------------------------------
@@ -33,23 +30,24 @@ PulseManager::PulseManager(
     }
 }
 
+
 //-----------------------------------------------------------------------------
-Object *PulseManager::fillObject(
-        Object *obj,
-        const std::vector<double> &user_limits
-        ) const
-{
-   obj->setNoiseLevel(m_noiseLevel);
-   for(unsigned int i=0; i< m_pulses.size(); ++i)
+void PulseManager::fillObject(
+   Object *obj,
+   const std::vector<double> &user_limits
+   ) const
    {
-      if(m_pulses[i]->isInsideLimits(user_limits))
+      obj->setNoiseLevel(m_noiseLevel);
+      for(unsigned int i=0; i< m_pulses.size(); ++i)
       {
-         m_pulses[i]->addIntensitiesToObject(obj);
+         if(m_pulses[i]->isInsideLimits(user_limits))
+         {
+            m_pulses[i]->addIntensitiesToObject(obj);
+         }
       }
-   }
    obj->normalise();
-   return obj;
 }
+
 
 //-----------------------------------------------------------------------------
 void PulseManager::setNoiseLevel(double i_noiseLevel)
@@ -60,17 +58,18 @@ void PulseManager::setNoiseLevel(double i_noiseLevel)
 //-----------------------------------------------------------------------------
 void PulseManager::addPoint(
         const Types::Data_Point_Record_Format_4 &i_point,
-        const char *wave_data
+        const char *wave_data,
+        int wave_offset
         )
 {
    float originZ = i_point.Z*m_public_header.z_scale_factor +
            (float)i_point.Z_t*i_point.return_point_wf_location;
    if(originZ < 110.f)
    {
-      Pulse *pulse = new Pulse(m_public_header,m_wfInfo,i_point,wave_data);
+      Pulse *pulse = new Pulse(m_public_header,m_wfInfo,i_point,wave_data,wave_offset);
       m_pulses.push_back(pulse);
-      gmtl::Vec3f &origin = m_pulses[m_pulses.size()-1]->getOrigin();
-      gmtl::Vec3f &offset = m_pulses[m_pulses.size()-1]->getOffset();
+      const gmtl::Vec3f &origin = m_pulses[m_pulses.size()-1]->getOrigin();
+      const gmtl::Vec3f &offset = m_pulses[m_pulses.size()-1]->getOffset();
       gmtl::Vec3f endPoint(offset);
       endPoint*=(m_wfInfo.number_of_samples);
       endPoint+=origin;
@@ -80,19 +79,67 @@ void PulseManager::addPoint(
       m_public_header.max_y = std::max((double)endPoint[1],m_public_header.max_y);
       m_public_header.max_z = std::max((double)origin[2],m_public_header.max_z);
       m_public_header.max_z = std::max((double)endPoint[2],m_public_header.max_z);
+      std::pair<int,unsigned int> pair(wave_offset,m_pulses.size()-1);
+      myMap.insert(pair);
+   }
+}
+
+
+//-----------------------------------------------------------------------------
+void PulseManager::addPoint(
+        const Types::Data_Point_Record_Format_4 &i_point,
+        int wave_offset
+        )
+{
+   std::unordered_map<int,unsigned int>::const_iterator got = myMap.find(wave_offset);
+   if(got == myMap.end())
+   {
+       noAssDis ++;
+       m_discretePoints.push_back(
+                   gmtl::Vec3f(i_point.X*m_public_header.x_scale_factor,
+                               i_point.Y*m_public_header.y_scale_factor,
+                               i_point.Z*m_public_header.z_scale_factor));
+       m_discreteIntensities.push_back(i_point.itensity);
+       m_discreteWaveOffsets.push_back(wave_offset);
+   }
+   else
+   {
+      m_pulses[got->second]->addDiscretePoint(m_public_header,i_point);
+      assDis++;
    }
 }
 
 //-----------------------------------------------------------------------------
-void PulseManager::setKernel(const std::vector<double> &i_kernel)
+void PulseManager::sortDiscretePoints(
+        const std::vector<gmtl::Vec3f> &m_discretePoints,
+        const std::vector<unsigned short> &m_discreteIntensities,
+        const std::vector<int> &m_discreteWaveOffsets
+        )
 {
-   Pulse::s_kernel.resize(i_kernel.size());
-   for(unsigned int i=0; i<Pulse::s_kernel.size(); ++i)
+   for(unsigned int i=0; i<m_discreteIntensities.size(); ++i)
    {
-      Pulse::s_kernel[i] = i_kernel[i];
+      std::unordered_map<int,unsigned int>::const_iterator got =
+              myMap.find(m_discreteWaveOffsets[i]);
+      if(got == myMap.end())
+      {
+      }
+      else
+      {
+         m_pulses[got->second]->addDiscretePoint(m_discretePoints[i],m_discreteIntensities[i]);
+      }
    }
 }
-
+//-----------------------------------------------------------------------------
+void PulseManager::addUnAssociatedDiscretePoint(
+        const Types::Data_Point_Record_Format_4 &i_point_info
+        )
+{
+    m_discretePoints.push_back(
+                gmtl::Vec3f(i_point_info.X*m_public_header.x_scale_factor,
+                            i_point_info.Y*m_public_header.y_scale_factor,
+                            i_point_info.Z*m_public_header.z_scale_factor));
+    m_discreteIntensities.push_back(i_point_info.itensity);
+}
 
 //-----------------------------------------------------------------------------
 void PulseManager::sortPulseWithRespectToY()

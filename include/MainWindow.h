@@ -17,7 +17,6 @@
 #include "GLData.h"
 #include "Object.h"
 #include "PulseManager.h"
-#include "DiscreteData.h"
 
 namespace Ui {
     class MainWindow;
@@ -134,10 +133,6 @@ private:
     //-------------------------------------------------------------------------
     PulseManager *m_pulseManager;
     //-------------------------------------------------------------------------
-    /// @brief all the discrete data
-    //-------------------------------------------------------------------------
-    DiscreteData *m_discreteData;
-    //-------------------------------------------------------------------------
     /// @brief those limits define the area that the user would like to process
     /// @note before you use them you should always update them by calling the
     /// updateLimits() function.
@@ -159,7 +154,7 @@ private:
     /// @brief what time of data will be used
     /// 0/false for fullwaveform data and 1/true for discrete data
     //-------------------------------------------------------------------------
-    bool m_type;
+    int m_type;
 
 
 };

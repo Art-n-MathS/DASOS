@@ -1,0 +1,40 @@
+Start creating Object
+user limits = 104986 102576 437870 437290
+full waveform
+Legth of Voxels = 1.24993
+Object constructor : no of voxels = 464 1929 354
+Max Limits 437870 104987 360.364
+Min Limits 437290 102576 -82.112
+Start filling object - full waveform
+
+---------------------------------------
+Object created!
+calling Marching Cubes with Integral Volume
+Num of Cubes: 464 1929 354
+Normals calculated
+Polygonisation took 176.25 SECONDS!!!
+Object has been polygonised!
+No of Vertices: 4377630
+File saved
+Start creating Object
+user limits = 104986 102576 437870 437290
+discrete
+Legth of Voxels = 1.24993
+Object constructor : no of voxels = 464 1929 354
+Max Limits 437870 104987 360.364
+Min Limits 437290 102576 -82.112
+Start filling object - discrete
+DiscreteDAta: fillObject
+
+---------------------------------------
+
+---------------------------------------
+Object created!
+calling Marching Cubes with Integral Volume
+Num of Cubes: 464 1929 354
+Normals calculated
+Polygonisation took 117.95 SECONDS!!!
+Object has been polygonised!
+No of Vertices: 3165235
+File saved
+

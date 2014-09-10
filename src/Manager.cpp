@@ -14,13 +14,14 @@ Object *Manager::createObject(
         unsigned int i_x,
         const std::vector<double> user_limits,
         PulseManager *i_pulseManager,
-        double noiseLevel
+        double noiseLevel,
+        int /*i_type*/
         )
 {
    Object *obj = new Object(i_x,user_limits);
    std::cout << "Start filling object - full waveform\n";
    i_pulseManager->setNoiseLevel(noiseLevel);
-   obj = i_pulseManager->fillObject(obj,user_limits);
+   i_pulseManager->fillObject(obj,user_limits);
    obj->insertIntoIntegralVolume();
 
    return obj;
@@ -30,13 +31,14 @@ Object *Manager::createObject(
 Object *Manager::createObject(
         unsigned int i_x,
         const std::vector <double> user_limits,
-        DiscreteData *i_discreteData
+        DiscreteData *i_discreteData,
+        int /*i_type*/
         )
 {
    Object *obj = new Object(i_x,user_limits);
    std::cout << "Start filling object - discrete\n";
    obj->setNoiseLevel(0.0f);
-   obj = i_discreteData->fillObject(obj,user_limits);
+   i_discreteData->fillObject(obj,user_limits);
    obj->insertIntoIntegralVolume();
    return obj;
 }

@@ -10,8 +10,10 @@ Pulse::Pulse(
         const Types::Public_Header_Block &i_publicHeader,
         const Types::WF_packet_Descriptor &i_wv_info,
         const Types::Data_Point_Record_Format_4 &i_point_info,
-        const char *wave_data
-        ):m_returns(0)
+        const char *wave_data,
+        int wave_offset
+        ):m_returns(0),
+          m_waveOffset(wave_offset)
 {
    // sampling frequency in nanoseconds
 
@@ -62,7 +64,11 @@ Pulse::Pulse(
        exit(EXIT_FAILURE);
    }
    memcpy(m_returns,wave_data,m_noOfSamples);
-
+   m_discretePoints.push_back(
+               gmtl::Vec3f(i_point_info.X*i_publicHeader.x_scale_factor,
+                           i_point_info.Y*i_publicHeader.y_scale_factor,
+                           i_point_info.Z*i_publicHeader.z_scale_factor));
+   m_discreteIntensities.push_back(i_point_info.itensity);
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +90,9 @@ Pulse::Pulse(
     m_returnPointLocation(i_pulse.m_returnPointLocation),
     m_pointInWaveform(i_pulse.m_pointInWaveform),
     m_offset(i_pulse.m_offset),
-    m_origin(i_pulse.m_origin)
+    m_origin(i_pulse.m_origin),
+    m_discretePoints(i_pulse.m_discretePoints),
+    m_waveOffset(i_pulse.m_waveOffset)
 {
    m_returns = new (std::nothrow) char[m_noOfSamples];
    if(m_returns==0)
@@ -93,6 +101,7 @@ Pulse::Pulse(
       exit(EXIT_FAILURE);
    }
    memcpy(m_returns,i_pulse.m_returns,m_noOfSamples);
+
 }
 
 
@@ -129,6 +138,28 @@ void Pulse::print()const
 }
 
 //-----------------------------------------------------------------------------
+void Pulse::addDiscretePoint(
+        const Types::Public_Header_Block &i_publicHeader,
+        const Types::Data_Point_Record_Format_4 &i_point_info
+        )
+{
+   m_discretePoints.push_back(
+               gmtl::Vec3f(i_point_info.X*i_publicHeader.x_scale_factor,
+                           i_point_info.Y*i_publicHeader.y_scale_factor,
+                           i_point_info.Z*i_publicHeader.z_scale_factor));
+   m_discreteIntensities.push_back(i_point_info.itensity);
+}
+
+//-----------------------------------------------------------------------------
+void Pulse::addDiscretePoint(gmtl::Vec3f i_point, unsigned short i_intensity)
+{
+   m_discretePoints.push_back(i_point);
+   m_discreteIntensities.push_back(i_intensity);
+}
+
+
+
+//-----------------------------------------------------------------------------
 bool Pulse::isInsideLimits(const std::vector<double> &i_user_limits)const
 {
    return m_point[1]<i_user_limits[0] && m_point[1]>i_user_limits[1] &&
@@ -144,7 +175,7 @@ void Pulse::addIntensitiesToObject(
    for(unsigned int i=0; i< m_noOfSamples; ++i)
    {
      obj->addItensity(tempPosition,m_returns[i]);
-     tempPosition+=m_offset;
+     tempPosition-=m_offset;
    }
 }
 

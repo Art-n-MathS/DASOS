@@ -55,7 +55,7 @@ void GLWindow::initializeGL()
     glewInit(); // need a local glew init as well as lib one for windows
   #endif
 
-  glClearColor(0.4f, 0.4f, 0.4f, 1.4f);			   // Grey Background
+  glClearColor(1.0f, 1.0f, 1.0f, 1.0f);			   // Grey Background
   // enable depth testing for drawing
   glEnable(GL_DEPTH_TEST);
   ngl::ShaderLib *shader=ngl::ShaderLib::instance();

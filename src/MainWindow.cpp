@@ -16,10 +16,9 @@ MainWindow::MainWindow(QWidget *parent) :
     m_ui(new Ui::MainWindow),
     m_gl(0),
     m_pulseManager(0),
-    m_discreteData(0),
     m_obj(0),
     m_glData(0),
-    m_type(false)
+    m_type(0)
 {
    m_ui->setupUi(this);
    m_gl=new  GLWindow(this);
@@ -47,9 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
    maps << "Non-Empty Voxels" << "Density" << "Thickness"  << "Hyperspectral" << "Hyperspectral Mean";
    m_ui->m_cbMaps->insertItems(0,maps);
    QStringList types;
-   types << "Full-wavefrom" << "Discrete";
+   types << "Full-wavefrom" << "All Discrete" << "Discrete & Waveforms" << "Discrete";
    m_ui->m_cbDataType->insertItems(0,types);
-
    m_ui->m_pbLoadIGM->hide();
    m_user_limits.resize(6);
    loadLASfile();
@@ -156,7 +154,7 @@ void MainWindow::createHist()
 void MainWindow::loadLASfile()
 {
 //    QString file("/local/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009806.LAS");
-//    QString file("/local/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
+//    QString file("/local1/data/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
     QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                 "",tr("Files (*.*)"));
    if(!file.isEmpty())
@@ -169,13 +167,8 @@ void MainWindow::loadLASfile()
          delete m_pulseManager;
          m_pulseManager=0;
       }
-      if(m_discreteData!=0)
-      {
-         delete m_discreteData;
-         m_discreteData=0;
-      }
       // load LAS file into the pulse manager
-      lala.readFileAndGetPulseManager(&m_pulseManager, &m_discreteData);
+      m_pulseManager = lala.readFileAndGetPulseManager();
       t2 = clock();
       float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
       std::cout << "Reading LAS1_3 file took " << diff << " SECONDS!!!\n";
@@ -259,9 +252,9 @@ void MainWindow::createObject()
    if(m_type)
    {
       std::cout << "discrete\n";
-      m_obj = Manager::createObject(
-                   ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
-                   m_user_limits,m_discreteData);
+//      m_obj = Manager::createObject(
+//                   ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
+//                   m_user_limits,m_discreteData);
    }
    else
    {
@@ -269,7 +262,7 @@ void MainWindow::createObject()
       m_obj = Manager::createObject(
                    ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
                    m_user_limits,m_pulseManager,
-                   m_ui->m_sbNoiseLevel->value());
+                   m_ui->m_sbNoiseLevel->value(), m_type);
    }
    m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]-m_user_limits[3])/voxelLength));
    std::string labelStr("Object Status: Object created from " + m_ui->m_cbDataType->currentText().toStdString() + " data");

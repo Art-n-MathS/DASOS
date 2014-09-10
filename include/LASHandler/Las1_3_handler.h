@@ -7,7 +7,6 @@
 
 #include "Types.h"
 #include "PulseManager.h"
-#include "DiscreteData.h"
 
 class Las1_3_handler
 {
@@ -23,10 +22,7 @@ public:
    /// NOTE: i_pulseManager is dynamic allocated, so by calling this function,
    /// you are responsible for releasing memory afterwards.
    //-------------------------------------------------------------------------
-   void readFileAndGetPulseManager(
-           PulseManager **i_pulseManager,
-           DiscreteData **i_discreteData
-           );
+   PulseManager * readFileAndGetPulseManager();
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------

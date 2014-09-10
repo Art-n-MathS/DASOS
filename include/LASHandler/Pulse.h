@@ -13,12 +13,11 @@ public:
    //--------------------------------------------------------------------------
    /// @brief default constructor
    //--------------------------------------------------------------------------
-   Pulse(
-       const Types::Public_Header_Block &i_publicHeader,
+   Pulse(const Types::Public_Header_Block &i_publicHeader,
        const Types::WF_packet_Descriptor &i_wv_info,
        const Types::Data_Point_Record_Format_4 &i_point_info,
-       const char *wave_data
-           );
+       const char *wave_data,
+       int wave_offset);
    //--------------------------------------------------------------------------
    /// @brief copy constructor
    //--------------------------------------------------------------------------
@@ -29,7 +28,21 @@ public:
    /// @returns boolean whether the pulse is insise the given limits or not
    //--------------------------------------------------------------------------
    bool isInsideLimits(const std::vector<double> &i_user_limits)const;
-
+   //--------------------------------------------------------------------------
+   /// @brief method that adds a discrete point
+   //--------------------------------------------------------------------------
+   void addDiscretePoint(
+           const Types::Public_Header_Block &i_publicHeader,
+           const Types::Data_Point_Record_Format_4 &i_point_info
+           );
+   //--------------------------------------------------------------------------
+   /// @brief method that adds a discrete point
+   /// @param[in] i_point the position of the point
+   /// @param[in] i_intensity the intensity of the point
+   //--------------------------------------------------------------------------
+   void addDiscretePoint(gmtl::Vec3f i_point,
+           unsigned short i_intensity
+           );
    //--------------------------------------------------------------------------
    /// @brief method that prints all the attributes associated with this pulse
    //--------------------------------------------------------------------------
@@ -37,11 +50,16 @@ public:
    //--------------------------------------------------------------------------
    /// @brief method that returns the origin of the point
    //--------------------------------------------------------------------------
-   gmtl::Vec3f &getOrigin(){return m_origin;}
+   const gmtl::Vec3f &getOrigin(){return m_origin;}
    //--------------------------------------------------------------------------
    /// @brief method that returns the offset of the point
    //--------------------------------------------------------------------------
-   gmtl::Vec3f &getOffset(){return m_offset;}
+   const gmtl::Vec3f &getOffset(){return m_offset;}
+   //--------------------------------------------------------------------------
+   /// @brief method that returns the wave offset of the waveform packet
+   /// used to identify waveforms and match 2nd,3rd and 4rd returns of the beam
+   //--------------------------------------------------------------------------
+   int getWaveOffset(){return m_waveOffset;}
    //--------------------------------------------------------------------------
    /// @brief method that add the intensities return to a given object
    /// @param[in] i_obj the input obj of time LASVoxels
@@ -54,8 +72,6 @@ public:
    /// @note normalised factor does not have to be included
    //-------------------------------------------------------------------------
    static std::vector<float> s_kernel;
-
-
    //--------------------------------------------------------------------------
    /// @brief default destructor
    //--------------------------------------------------------------------------
@@ -65,10 +81,6 @@ public:
 
 private:
 
-   //--------------------------------------------------------------------------
-   /// @brief method that detects the peak points
-   //--------------------------------------------------------------------------
-   void detectPeaks();
    //--------------------------------------------------------------------------
    /// @brief
    //--------------------------------------------------------------------------
@@ -123,13 +135,20 @@ private:
    /// @brief meters per nanosecond
    //-------------------------------------------------------------------------
    static constexpr float c_light_speed = 0.299792458;
-
-
-
    //-------------------------------------------------------------------------
-   /// @brief all the peak points of the pulse
+   /// @brief all the discrete points of the pulse
    //-------------------------------------------------------------------------
-//   std::vector<Peak *> m_peakPoints;
+   std::vector<gmtl::Vec3f> m_discretePoints;
+   //-------------------------------------------------------------------------
+   /// @brief the corresponding intensities of the discrete points
+   //-------------------------------------------------------------------------
+   std::vector<int> m_discreteIntensities;
+   //-------------------------------------------------------------------------
+   /// @brief waveform packet offset in the binary file
+   /// used to identify discrete points associated with the same waveform
+   //-------------------------------------------------------------------------
+   int m_waveOffset;
+
 
 };
 

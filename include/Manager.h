@@ -33,7 +33,8 @@ public:
             unsigned int i_x,
             const std::vector<double> user_limits,
             PulseManager *i_pulseManager,
-            double noiseLevel
+            double noiseLevel,
+            int i_type
             );
     //-------------------------------------------------------------------------
     /// @brief create object from the discrete LiDAR data
@@ -45,8 +46,8 @@ public:
     static Object *createObject(
             unsigned int i_x,
             const std::vector<double> user_limits,
-            DiscreteData *i_discreteData
-            );
+            DiscreteData *i_discreteData,
+            int i_type);
     //-------------------------------------------------------------------------
     /// @brief method that returns a polygonised object
     /// @param[in] i_obj object to be polygonisedmilmil

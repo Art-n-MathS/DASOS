@@ -1,13 +1,8 @@
 #include <QApplication>
 #include "MainWindow.h"
+#include <iostream>
+#include <memory>
 
-typedef struct
-{
-   unsigned short int mins[3];
-   unsigned short int lens[3];
-   unsigned short int divisibles;
-   unsigned short int nextSide;
-}Cube;
 
 int main(int argc, char **argv)
 {
@@ -18,9 +13,18 @@ int main(int argc, char **argv)
   QGLFormat::setDefaultFormat(glFormat);
   MainWindow w;
   w.show();
+
+//  std::shared_ptr<int []> p1(new int[5]);
+//  std::shared_ptr<int []> p2(new int[5]);
+//  int n = 10;
+//  std::unique_ptr<int []> uptr(new int[n]);
+//  uptr[9] = 100; // Set last elem to 100
+
+
   std::cout << "   ***   EXIT   ***\n";
   return a.exec();
 }
+
 
 //#pragma warning disable 4512, 4180
 // #include <QApplication>
@@ -111,7 +115,7 @@ int main(int argc, char **argv)
 //             bands[0] = 140;
 //             bands[1] = 78;
 //             bands[2] = 30;
-//             voxelLength = 1.2;
+//             voxelLength = 6.2;
 //             objVsHyperTextureFileNames = "hello";
 //             polygonise = true;
 //          }
@@ -157,16 +161,16 @@ int main(int argc, char **argv)
 //                    m_user_limits,m_discreteData);
 //   }
 
-////   tMapInfo = new MapsManager::mapInfo;
-////   tMapInfo->name = "ThicknessOr.png";
-////   tMapInfo->type = "Thickness";
-////   tMapInfo->obj = m_obj;
-////   tMapInfo->band = 0;
-////   tMapInfo->bilFileName = "";
-////   tMapInfo->IGMfileName = "";
-////   tMapInfo->thres = 0;
-////   tMapInfo->samp = 0;
-////   mapsStack.push(tMapInfo);
+//   tMapInfo = new MapsManager::mapInfo;
+//   tMapInfo->name = "ThicknessOr.png";
+//   tMapInfo->type = "Thickness";
+//   tMapInfo->obj = m_obj;
+//   tMapInfo->band = 0;
+//   tMapInfo->bilFileName = "";
+//   tMapInfo->IGMfileName = "";
+//   tMapInfo->thres = 0;
+//   tMapInfo->samp = 0;
+//   mapsStack.push(tMapInfo);
 
 ////   tMapInfo = new MapsManager::mapInfo;
 ////   tMapInfo->name = "HyperMean.png";
