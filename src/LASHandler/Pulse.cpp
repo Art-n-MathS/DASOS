@@ -172,10 +172,19 @@ void Pulse::addIntensitiesToObject(
         )
 {
    gmtl::Vec3f tempPosition = m_origin;
-   for(unsigned int i=0; i< m_noOfSamples; ++i)
+   int i=0;
+//   if(m_discreteIntensities.size()>0)
+//   {
+//      while((m_discretePoints[0][2]-0.001)<tempPosition[2])
+//      {
+//         i++;
+//         tempPosition+=m_offset;
+//      }
+//   }
+   for(; i< m_noOfSamples; ++i)
    {
      obj->addItensity(tempPosition,m_returns[i]);
-     tempPosition-=m_offset;
+     tempPosition+=m_offset;
    }
 }
 

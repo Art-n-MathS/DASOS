@@ -117,8 +117,9 @@ public:
    //-------------------------------------------------------------------------
    void fillObject(
            Object *obj,
-           const std::vector<double> &user_limits
-           )const;
+           const std::vector<double> &user_limits,
+           int i_type
+           );
    //-------------------------------------------------------------------------
    /// @brief method that insert the discrete values into the 3D density
    /// volume
@@ -150,7 +151,44 @@ private:
    /// their origins
    //-------------------------------------------------------------------------
    void sortPulseWithRespectToY();
-
+   //-------------------------------------------------------------------------
+   /// @brief method that fills the object with fw samples
+   /// @param[in/out] i_obj: object to be filled
+   /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
+   //-------------------------------------------------------------------------
+   void fillWithFWSamples(
+           Object *i_obj,
+           const std::vector<double> &user_limits
+           );
+   //-------------------------------------------------------------------------
+   /// @brief method that fills the object with all the discrete returns
+   /// @param[in/out] i_obj: object to be filled
+   /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
+   //-------------------------------------------------------------------------
+   void fillWithAllDiscreteReturns(
+           Object *i_obj,
+           const std::vector<double> &user_limits
+           );
+   //-------------------------------------------------------------------------
+   /// @brief method that fills the object with a combination of fw waves and
+   /// the discrete returns that have not waveform associated with it
+   /// @param[in/out] i_obj: object to be filled
+   /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
+   //-------------------------------------------------------------------------
+   void fillWithFWnDiscrete(
+           Object *i_obj,
+           const std::vector<double> &user_limits
+           );
+   //-------------------------------------------------------------------------
+   /// @brief method that fills the object with only the discrete returns that
+   /// have a waveform associated with them
+   /// @param[in/out] i_obj: object to be filled
+   /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
+   //-------------------------------------------------------------------------
+   void fillWithDiscreteAssociatedWithFWonly(
+           Object *i_obj,
+           const std::vector<double> &user_limits
+           );
    //-------------------------------------------------------------------------
    /// @brief public header block
    //-------------------------------------------------------------------------

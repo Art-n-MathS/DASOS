@@ -17,6 +17,13 @@ Object::Object(unsigned int i_x, const std::vector<double> &i_userLimits):
 {
     m_noOfVoxelsX = i_x;
     m_dis[0]= (m_higherLimits[0] - m_lowerLimits[0]);
+    float voxelLength = m_dis[0]/i_x;
+    for(unsigned int i=0; i<3;++i)
+    {
+       m_higherLimits[i]+=(voxelLength+0.001);
+       m_lowerLimits[i]-=(voxelLength+0.001);
+    }
+    m_dis[0]= (m_higherLimits[0] - m_lowerLimits[0]);
     m_dis[1] = (m_higherLimits[1] - m_lowerLimits[1]);
     m_dis[2] = (m_higherLimits[2] - m_lowerLimits[2]);
     m_noOfVoxelsY = ceil(((double)i_x)*m_dis[1]/m_dis[0]);
@@ -188,6 +195,24 @@ void Object::addItensity(const gmtl::Vec3f &point, float i_intensity)
          m_noOfReturnsPerVoxel[index]++;
       }
    }
+}
+
+////-----------------------------------------------------------------------------
+void Object::compare(Object *i_obj)
+{
+   unsigned int diff = 0;
+   if(i_obj->m_intensities.size() != m_intensities.size())
+   {
+      return;
+   }
+   for(unsigned int i=0; i<m_intensities.size(); ++i)
+   {
+      if(i_obj->m_intensities[i]<m_intensities[i]-0.001f || i_obj->m_intensities[i]>m_intensities[i]+0.001f)
+      {
+         diff++;
+      }
+   }
+   std::cout << "Difference = " << diff << " / " << m_intensities.size() << "\n";
 }
 
 //-----------------------------------------------------------------------------

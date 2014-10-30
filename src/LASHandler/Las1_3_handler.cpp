@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <gmtl/gmtl.h>
+
 
 //-----------------------------------------------------------------------------
 Las1_3_handler::Las1_3_handler(
@@ -17,7 +19,165 @@ Las1_3_handler::Las1_3_handler(
 }
 
 //-----------------------------------------------------------------------------
-PulseManager *Las1_3_handler::readFileAndGetPulseManager()
+Object *Las1_3_handler::readFileAndGetObject(
+        float i_voxelLength,
+        const std::vector<double> &user_limits,
+        double noiseLevel,
+        int i_type
+        )
+{
+   lasfile.open(m_filename.c_str(),std::ios::binary);
+   if(!lasfile.is_open())
+   {
+      std::cerr << "File not found \n";
+   }
+   read_public_header();
+   read_variable_length_records();
+
+   Object *obj=new Object(ceil((user_limits[2]-user_limits[3])/i_voxelLength),
+                                 user_limits);
+   if(obj==0)
+   {
+      std::cerr << "Error: Memory could not be allocated\n";
+      exit(EXIT_FAILURE);
+   }
+   Types::Data_Point_Record_Format_4 point_info;
+   lasfile.seekg((int) public_header.offset_to_point);
+
+   unsigned int count=0;
+   unsigned int countDiscrete = 0;
+   // temporarly saving discrete values that are associated with a
+   // waveform but the 1st return haven't been saved yet
+   std::vector<gmtl::Vec3f> discretePoints;
+   // the corresponding intensities of the discrete points
+   std::vector<unsigned short> discreteIntensities;
+   // the corresponding wave offsets of the dicrete points
+   std::vector<int> discreteWaveOffsets;
+
+   std::cout << "start looping through point packet records " << i_type << " " << public_header.number_of_point_records<< " \n";
+   for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+   {
+      lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+      int wave_offset = public_header.start_of_wf_data_Packet_record +
+               point_info.byte_offset_to_wf_packet_data;
+
+      if((int)point_info.classification!=7)
+      {
+         // TYPES:
+         // 0. Full-waveform
+         // 1. All Discrete
+         // 2. Discrete and Waveforms
+         // 3. Discrete (associated with waveform only
+         obj->setNoiseLevel(noiseLevel);
+         switch(i_type)
+         {
+         // Waveform samples only
+         case 0:
+         {
+            count++;
+            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+            if(wave_data==0)
+            {
+                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                          << "Program will terminate\n";
+                exit(EXIT_FAILURE);
+            }
+            int tmp = lasfile.tellg();
+            lasfile.seekg(wave_offset);
+            lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+
+            gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
+                                point_info.Y*public_header.y_scale_factor+public_header.y_offset,
+                                point_info.Z*public_header.z_scale_factor+public_header.z_offset);
+
+            float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
+            gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
+            offset *= (1000.0f * temporalSampleSpacing);
+
+            origin[0] = origin[0] + (double )point_info.X_t*
+                    (double )point_info.return_point_wf_location;
+            origin[1] = origin[1] + (double )point_info.Y_t*
+                    (double )point_info.return_point_wf_location;
+            origin[2] = origin[2] + (double )point_info.Z_t*
+                    (double )point_info.return_point_wf_location;
+
+            int noOfSamples = point_info.wf_packet_size_in_bytes;
+
+            char *waveSamplesIntensities = new (std::nothrow) char[noOfSamples];
+            if(waveSamplesIntensities==0)
+            {
+                std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                exit(EXIT_FAILURE);
+            }
+            memcpy(waveSamplesIntensities,wave_data,noOfSamples);
+
+            gmtl::Vec3f tempPosition = origin;
+            for(i=0; i< noOfSamples; ++i)
+            {
+              obj->addItensity(tempPosition,waveSamplesIntensities[i]);
+              tempPosition+=offset;
+            }
+
+            lasfile.seekg(tmp);
+            delete []wave_data;
+            break;
+         }
+         // All Discrete Points
+         case 1:
+            obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                         point_info.Y*public_header.y_scale_factor,
+                                         point_info.Z*public_header.z_scale_factor),
+                             point_info.itensity);
+            break;
+         case 2:
+
+            break;
+         // Only Discrete Returns that have a waveform associated with the
+         case 3:
+            if (point_info.wave_packet_descriptor_index!=0)
+            {
+               obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                            point_info.Y*public_header.y_scale_factor,
+                                            point_info.Z*public_header.z_scale_factor),
+                                point_info.itensity);
+            }
+            break;
+         default:
+             //there are no more types of objects, returns an empty volume
+             break;
+         }
+      }
+      else
+      {
+          // only noise has been recorded
+      }
+
+   }
+
+   if(count==0)
+   {
+       std::cout << "no waveforms associated with that area\n";
+   }
+   else
+   {
+       std::cout << count << " waveforms found\n";
+       std::cout << count+countDiscrete << " discrete points found\n";
+   }
+
+   discreteIntensities.clear();
+   discretePoints.clear();
+   discreteWaveOffsets.clear();
+//   std::cout << "There are " << i_pulseManager->getNumOfAloneDiscretePoints()
+//             << " Discrete Without Waveforms\n";
+   std::cout << "----------------------------------------------------------\n";
+   lasfile.close();
+   obj->normalise();
+   obj->insertIntoIntegralVolume();
+   return obj;
+}
+
+//-----------------------------------------------------------------------------
+PulseManager *Las1_3_handler::readFileAndGetObject()
 {
    lasfile.open(m_filename.c_str(),std::ios::binary);
    if(!lasfile.is_open())
@@ -51,6 +211,7 @@ PulseManager *Las1_3_handler::readFileAndGetPulseManager()
    // the corresponding wave offsets of the dicrete points
    std::vector<int> discreteWaveOffsets;
 
+   std::cout << "public_header.number_of_point_records = " << public_header.number_of_point_records << "\n";
    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
    {
       lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);

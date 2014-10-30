@@ -78,6 +78,15 @@ public:
     //-------------------------------------------------------------------------
     void insertIntoIntegralVolume();
     //-------------------------------------------------------------------------
+    /// @brief all the data inserted into an integral volume
+    //--------------------------------------------------------------------------------------------------------------------temporarly public
+    IntegralVolumes *m_integralVolume;
+    //-------------------------------------------------------------------------
+    /// @brief the length of voxel (voxels are cubes)
+    //-------------------------------------------------------------------------
+    float m_lengthOfVoxel;
+
+    //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------
     ~Object();
@@ -86,14 +95,9 @@ public:
     unsigned int getNoVoxelsY()const{return m_noOfVoxelsY;}
     unsigned int getNoVoxelsZ()const{return m_noOfVoxelsZ;}
 
-    //-------------------------------------------------------------------------
-    /// @brief all the data inserted into an integral volume
-    //--------------------------------------------------------------------------------------------------------------------temporarly public
-    IntegralVolumes *m_integralVolume;
-    //-------------------------------------------------------------------------
-    /// @brief the length of voxel (voxels are cubes)
-    //-------------------------------------------------------------------------
-    float m_lengthOfVoxel;
+
+    void compare(Object *i_obj);
+
 
 protected:
     //-------------------------------------------------------------------------

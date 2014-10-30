@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     m_gl(0),
     m_pulseManager(0),
     m_obj(0),
+    m_obj2(0),
     m_glData(0),
     m_type(0)
 {
@@ -171,7 +172,7 @@ void MainWindow::loadLASfile()
          m_pulseManager=0;
       }
       // load LAS file into the pulse manager
-      m_pulseManager = lala.readFileAndGetPulseManager();
+      m_pulseManager = lala.readFileAndGetObject();
       t2 = clock();
       float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
       std::cout << "Reading LAS1_3 file took " << diff << " SECONDS!!!\n";
@@ -234,6 +235,19 @@ void MainWindow::close()
 //-----------------------------------------------------------------------------
 void MainWindow::createObject()
 {
+
+   if(m_obj2!=0)
+   {
+      delete m_obj2;
+   }
+
+   Las1_3_handler lala("/local1/data/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
+   updateLimits();
+
+   m_obj2 = lala.readFileAndGetObject(m_ui->m_dsVoxelLength->value(),m_user_limits,m_ui->m_sbNoiseLevel->value(),0);
+
+   std::cout << "Object 2 Generated!\n";
+
    if(m_pulseManager==0)
    {
       std::cout << "Please load a LAS1.3 file first\n";
@@ -245,7 +259,6 @@ void MainWindow::createObject()
 
    double voxelLength = m_ui->m_dsVoxelLength->value();
 
-   updateLimits();
    std::cout << "user limits = " << m_user_limits[0] << " " << m_user_limits[1]
              << " " << m_user_limits[2] << " " << m_user_limits[3] << "\n";
    if(m_obj!=0)
@@ -259,7 +272,7 @@ void MainWindow::createObject()
                 m_ui->m_sbNoiseLevel->value(), m_type);
    m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]
                                           -m_user_limits[3])/voxelLength));
-   std::string labelStr("Object Status: Object created from " +
+   std::string labelStr("Object Status: Object created from " + 
                 m_ui->m_cbDataType->currentText().toStdString() + " data");
    m_ui->m_lbObjectType->setText(labelStr.c_str());
    std::cout << "Object created!\n";
@@ -304,7 +317,10 @@ void MainWindow::polygonise()
       return;
    }
 
-   if(m_obj!=0)
+   std::cout << "-----------------------------++++-\n";
+   m_obj->compare(m_obj2);
+
+   if(m_obj2!=0)
    {
    // if an object already exists then it should be deleted before another one
    // is created
@@ -313,7 +329,7 @@ void MainWindow::polygonise()
           delete m_glData;
       }
       m_glData = Manager::getPolygonisedObject(
-                  m_obj,m_ui->m_sbNoOfVoxelsInX->value(),
+                  m_obj2,m_ui->m_sbNoOfVoxelsInX->value(),
                   m_ui->m_cbIntegralVolume->isChecked());
       if(m_bilFilename!="" && m_IGMFilename=="")
       {

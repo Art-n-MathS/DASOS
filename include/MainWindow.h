@@ -144,6 +144,8 @@ private:
     /// @brief an implicit object, created from the las data
     //-------------------------------------------------------------------------
     Object *m_obj;
+    Object *m_obj2;
+
     //-------------------------------------------------------------------------
     /// @brief the vertices, normals and indices that specify an object
     /// the object generated from the voxelise() function

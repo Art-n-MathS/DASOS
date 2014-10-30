@@ -34,18 +34,98 @@ PulseManager::PulseManager(
 //-----------------------------------------------------------------------------
 void PulseManager::fillObject(
    Object *obj,
-   const std::vector<double> &user_limits
-   ) const
+   const std::vector<double> &user_limits,
+   int i_type
+   )
+{
+   // TYPES:
+   // 0. Full-waveform
+   // 1. All Discrete
+   // 2. Discrete and Waveforms
+   // 3. Discrete
+   obj->setNoiseLevel(m_noiseLevel);
+   switch(i_type)
    {
-      obj->setNoiseLevel(m_noiseLevel);
-      for(unsigned int i=0; i< m_pulses.size(); ++i)
-      {
-         if(m_pulses[i]->isInsideLimits(user_limits))
-         {
-            m_pulses[i]->addIntensitiesToObject(obj);
-         }
-      }
+   case 0:
+       fillWithFWSamples(obj,user_limits);
+       break;
+   case 1:
+       fillWithAllDiscreteReturns(obj,user_limits);
+       break;
+   case 2:
+       fillWithFWnDiscrete(obj,user_limits);
+       break;
+   case 3:
+       fillWithDiscreteAssociatedWithFWonly(obj,user_limits);
+       break;
+   default:
+       //there are no more types of objects, returns an empty volume
+       break;
+   }
+
+
    obj->normalise();
+}
+
+//-----------------------------------------------------------------------------
+void PulseManager::fillWithFWSamples(
+        Object *i_obj,
+        const std::vector<double> &i_user_limits
+        )
+{
+   for(unsigned int i=0; i< m_pulses.size(); ++i)
+   {
+//      if(m_pulses[i]->isInsideLimits(i_user_limits))
+      {
+         m_pulses[i]->addIntensitiesToObject(i_obj);
+      }
+   }
+}
+
+//-----------------------------------------------------------------------------
+void PulseManager::fillWithAllDiscreteReturns(
+        Object *i_obj,
+        const std::vector<double> &user_limits
+        )
+{
+   fillWithDiscreteAssociatedWithFWonly(i_obj,user_limits);
+   std::cout << "The rest of the Discrete\n";
+   for(unsigned int i=0; i<m_discreteIntensities.size();++i)
+   {
+      i_obj->addItensity(m_discretePoints[i],m_discreteIntensities[i]);
+   }
+}
+
+//-----------------------------------------------------------------------------
+void PulseManager::fillWithFWnDiscrete(
+        Object *i_obj,
+        const std::vector<double> &user_limits
+        )
+{
+    fillWithFWSamples(i_obj,user_limits);
+    for(unsigned int i=0; i<m_discreteIntensities.size();++i)
+    {
+       i_obj->addItensity(m_discretePoints[i],m_discreteIntensities[i]);
+    }
+}
+
+//-----------------------------------------------------------------------------
+void PulseManager::fillWithDiscreteAssociatedWithFWonly(
+        Object *i_obj,
+        const std::vector<double> &user_limits
+        )
+{
+   std::cout << "Associated Discrete only\n";
+   for(unsigned int i=0; i<m_pulses.size(); i++)
+   {
+      for(unsigned int j=0; j< m_pulses[i]->m_discretePoints.size();++j)
+      {
+         i_obj->addItensity(
+                     m_pulses[i]->m_discretePoints[j],
+                     m_pulses[i]->m_discreteIntensities[j]
+                     );
+      }
+   }
 }
 
 
@@ -73,12 +153,20 @@ void PulseManager::addPoint(
       gmtl::Vec3f endPoint(offset);
       endPoint*=(m_wfInfo.number_of_samples);
       endPoint+=origin;
-      m_public_header.max_x = std::max((double)origin[0],m_public_header.max_x);
-      m_public_header.max_x = std::max((double)endPoint[0],m_public_header.max_x);
-      m_public_header.max_y = std::max((double)origin[1],m_public_header.max_y);
-      m_public_header.max_y = std::max((double)endPoint[1],m_public_header.max_y);
-      m_public_header.max_z = std::max((double)origin[2],m_public_header.max_z);
-      m_public_header.max_z = std::max((double)endPoint[2],m_public_header.max_z);
+      m_public_header.max_x = std::max((double)origin[0]-1.0,m_public_header.max_x);
+      m_public_header.max_x = std::max((double)endPoint[0]+1.0,m_public_header.max_x);
+      m_public_header.max_y = std::max((double)origin[1]-1.0,m_public_header.max_y);
+      m_public_header.max_y = std::max((double)endPoint[1]+1.0,m_public_header.max_y);
+      m_public_header.max_z = std::max((double)origin[2]-1.0,m_public_header.max_z);
+      m_public_header.max_z = std::max((double)endPoint[2]+1.0,m_public_header.max_z);
+
+      m_public_header.min_x = std::min((double)origin[0]+1.0,m_public_header.min_x);
+      m_public_header.min_x = std::min((double)endPoint[0]-1.0,m_public_header.min_x);
+      m_public_header.min_y = std::min((double)origin[1]+1.0,m_public_header.min_y);
+      m_public_header.min_y = std::min((double)endPoint[1]-1.0,m_public_header.min_y);
+      m_public_header.min_z = std::min((double)origin[2]+1.0,m_public_header.min_z);
+      m_public_header.min_z = std::min((double)endPoint[2]-1.0,m_public_header.min_z);
+
       std::pair<int,unsigned int> pair(wave_offset,m_pulses.size()-1);
       myMap.insert(pair);
    }

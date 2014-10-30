@@ -15,15 +15,13 @@ Object *Manager::createObject(
         const std::vector<double> user_limits,
         PulseManager *i_pulseManager,
         double noiseLevel,
-        int /*i_type*/
+        int i_type
         )
 {
    Object *obj = new Object(i_x,user_limits);
-   std::cout << "Start filling object - full waveform\n";
    i_pulseManager->setNoiseLevel(noiseLevel);
-   i_pulseManager->fillObject(obj,user_limits);
+   i_pulseManager->fillObject(obj,user_limits,i_type);
    obj->insertIntoIntegralVolume();
-
    return obj;
 }
 

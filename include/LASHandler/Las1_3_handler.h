@@ -7,6 +7,7 @@
 
 #include "Types.h"
 #include "PulseManager.h"
+#include "Object.h"
 
 class Las1_3_handler
 {
@@ -22,7 +23,20 @@ public:
    /// NOTE: i_pulseManager is dynamic allocated, so by calling this function,
    /// you are responsible for releasing memory afterwards.
    //-------------------------------------------------------------------------
-   PulseManager * readFileAndGetPulseManager();
+   PulseManager * readFileAndGetObject();
+
+
+   /// @param[in] i_x the number of voxels in the x dimension - the rest are
+   /// calculated depending on the higher and lower x y z of the points
+   /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
+   /// @return the implicit object which is a made by voxels
+   //-------------------------------------------------------------------------
+   Object *readFileAndGetObject(
+           float i_voxelLength,
+           const std::vector<double> &user_limits,
+           double noiseLevel,
+           int i_type
+           );
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------
@@ -31,6 +45,8 @@ public:
    /// @brief default destructor
    //-------------------------------------------------------------------------
    ~Las1_3_handler();
+
+
 
 
 protected:
