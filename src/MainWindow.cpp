@@ -11,13 +11,13 @@
 //-----------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    m_bilFilename(""),
+    m_lasFileName(""),
+    m_bilFileName(""),
     m_IGMFilename("/local/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.ReprojectedOSNG/e098061b_osgn.igm"),
     m_ui(new Ui::MainWindow),
     m_gl(0),
     m_pulseManager(0),
     m_obj(0),
-    m_obj2(0),
     m_glData(0),
     m_type(0)
 {
@@ -65,10 +65,10 @@ void MainWindow::loadHyperspectraldata()
                                                     "",tr("Files (*.*)"));
    if(!file.isEmpty())
    {
-      m_bilFilename = file.toStdString();
+      m_bilFileName = file.toStdString();
       if(m_glData!=0 && !m_ui->m_cbUseLevel1Data->isChecked())
       {
-         m_glData->createUVsBIL(m_bilFilename);
+         m_glData->createUVsBIL(m_bilFileName);
       }
       else if(m_glData!=0 && m_ui->m_cbUseLevel1Data->isChecked())
       {
@@ -112,7 +112,7 @@ void MainWindow::updateHyperspectral()
     bands[0] = m_ui->m_sbBand1->value();
     bands[1] = m_ui->m_sbBand2->value();
     bands[2] = m_ui->m_sbBand3->value();
-    m_gl->loadHyperspectral(m_bilFilename,bands);
+    m_gl->loadHyperspectral(m_bilFileName,bands);
     if(m_glData!=NULL)
     {
         m_gl->buildVAO(m_glData);
@@ -161,48 +161,29 @@ void MainWindow::loadLASfile()
 //    QString file("/local1/data/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
     QString file = QFileDialog::getOpenFileName(this, tr("Open File"),
                                                 "",tr("Files (*.*)"));
+
    if(!file.isEmpty())
    {
-      clock_t t1,t2;
-      t1 =clock();
+      m_lasFileName = file.toStdString();
       Las1_3_handler lala(file.toStdString());
-      if (m_pulseManager!=0)
-      {
-         delete m_pulseManager;
-         m_pulseManager=0;
-      }
-      // load LAS file into the pulse manager
-      m_pulseManager = lala.readFileAndGetObject();
-      t2 = clock();
-      float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
-      std::cout << "Reading LAS1_3 file took " << diff << " SECONDS!!!\n";
-      t1 =clock();
-      t2 =clock();
-      diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
-//      std::cout << "Creating Quadtree took " << diff << " SECONDS. \n";
-
+      std::vector<float> temp(lala.getBoundaries());
+      m_user_limits[4] = temp[4];
+      m_user_limits[5] = temp[5];
       // update the limits North and East on GUI
-      m_ui->m_maxNorthY->setMaximum(m_pulseManager->getMaxY());
-      m_ui->m_maxNorthY->setMinimum(m_pulseManager->getMinY());
-      m_ui->m_maxNorthY->setValue(m_pulseManager->getMaxY());
+      m_ui->m_maxNorthY->setMaximum(temp[0]);
+      m_ui->m_maxNorthY->setMinimum(temp[1]);
+      m_ui->m_maxNorthY->setValue(temp[0]);
 
-      m_ui->m_minNorthY->setMinimum(m_pulseManager->getMinY());
-      m_ui->m_minNorthY->setMaximum(m_pulseManager->getMaxY());
+      m_ui->m_minNorthY->setMinimum(temp[0]);
+      m_ui->m_minNorthY->setMaximum(temp[1]);
 
-      m_ui->m_maxEastX->setMaximum(m_pulseManager->getMaxX());
-      m_ui->m_maxEastX->setMinimum(m_pulseManager->getMinX());
-      m_ui->m_maxEastX->setValue(m_pulseManager->getMaxX());
+      m_ui->m_maxEastX->setMaximum(temp[2]);
+      m_ui->m_maxEastX->setMinimum(temp[3]);
+      m_ui->m_maxEastX->setValue(temp[2]);
 
-      m_ui->m_minEastX->setMinimum(m_pulseManager->getMinX());
-      m_ui->m_minEastX->setMaximum(m_pulseManager->getMaxX());
-
-      m_user_limits[4] = m_pulseManager->getMaxZ();
-      m_user_limits[5] = m_pulseManager->getMinZ();
+      m_ui->m_minEastX->setMinimum(temp[2]);
+      m_ui->m_minEastX->setMaximum(temp[3]);
       updateLimits();
-   }
-//   else
-   {
-      // no file has been loaded
    }
 }
 
@@ -236,46 +217,32 @@ void MainWindow::close()
 void MainWindow::createObject()
 {
 
-   if(m_obj2!=0)
+   if(m_obj!=0)
    {
-      delete m_obj2;
+      delete m_obj;
    }
 
-   Las1_3_handler lala("/local1/data/scratch/mmi/2010_098_FW/classified_manually/LDR-FW10_01-201009822.LAS");
+   if(m_lasFileName=="")
+   {
+       std::cout << "Please Load a LAS file first!\n";
+       return;
+   }
+
+   Las1_3_handler lala(m_lasFileName);
    updateLimits();
-
-   m_obj2 = lala.readFileAndGetObject(m_ui->m_dsVoxelLength->value(),m_user_limits,m_ui->m_sbNoiseLevel->value(),0);
-
-   std::cout << "Object 2 Generated!\n";
-
-   if(m_pulseManager==0)
-   {
-      std::cout << "Please load a LAS1.3 file first\n";
-      return;
-   }
-   m_pulseManager->setNoiseLevel(m_ui->m_sbNoiseLevel->value());
-   std::cout << "Start creating Object\n";
-
-
    double voxelLength = m_ui->m_dsVoxelLength->value();
 
    std::cout << "user limits = " << m_user_limits[0] << " " << m_user_limits[1]
              << " " << m_user_limits[2] << " " << m_user_limits[3] << "\n";
-   if(m_obj!=0)
-   {
-       delete m_obj;
-   }
-   std::cout << "full waveform\n";
-   m_obj = Manager::createObject(
-                ceil((m_user_limits[2]-m_user_limits[3])/voxelLength),
-                m_user_limits,m_pulseManager,
-                m_ui->m_sbNoiseLevel->value(), m_type);
+   m_obj = lala.readFileAndGetObject(m_ui->m_dsVoxelLength->value(),m_user_limits,m_ui->m_sbNoiseLevel->value(),0);
+
    m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]
                                           -m_user_limits[3])/voxelLength));
-   std::string labelStr("Object Status: Object created from " + 
-                m_ui->m_cbDataType->currentText().toStdString() + " data");
-   m_ui->m_lbObjectType->setText(labelStr.c_str());
-   std::cout << "Object created!\n";
+   std::string labelStr("Object Status: Object created from " +
+                  m_ui->m_cbDataType->currentText().toStdString() + " data");
+     m_ui->m_lbObjectType->setText(labelStr.c_str());
+
+   std::cout << "Object 2 Generated!\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -299,7 +266,7 @@ void MainWindow::createMap()
       infoOfMap->name = file.toStdString();
       infoOfMap->obj = m_obj;
       infoOfMap->band = m_ui->m_sbBand->value();
-      infoOfMap->bilFileName = m_bilFilename;
+      infoOfMap->bilFileName = m_bilFileName;
       infoOfMap->IGMfileName = m_IGMFilename;
       infoOfMap->thres = m_ui->m_sbThreshold->value();
       infoOfMap->samp = m_ui->m_sbSampling->value();
@@ -311,16 +278,7 @@ void MainWindow::createMap()
 //-----------------------------------------------------------------------------
 void MainWindow::polygonise()
 {
-   if(m_pulseManager==0)
-   {
-      std::cout << "File have not been loaded yet\n";
-      return;
-   }
-
-   std::cout << "-----------------------------++++-\n";
-   m_obj->compare(m_obj2);
-
-   if(m_obj2!=0)
+   if(m_obj!=0)
    {
    // if an object already exists then it should be deleted before another one
    // is created
@@ -329,13 +287,13 @@ void MainWindow::polygonise()
           delete m_glData;
       }
       m_glData = Manager::getPolygonisedObject(
-                  m_obj2,m_ui->m_sbNoOfVoxelsInX->value(),
+                  m_obj,m_ui->m_sbNoOfVoxelsInX->value(),
                   m_ui->m_cbIntegralVolume->isChecked());
-      if(m_bilFilename!="" && m_IGMFilename=="")
+      if(m_bilFileName!="" && m_IGMFilename=="")
       {
-         m_glData->createUVsBIL(m_bilFilename);
+         m_glData->createUVsBIL(m_bilFileName);
       }
-      else if (m_bilFilename!="" && m_IGMFilename!="")
+      else if (m_bilFileName!="" && m_IGMFilename!="")
       {
          m_glData->createUVsIGM(m_IGMFilename);
       }
@@ -361,14 +319,14 @@ void MainWindow::exportOBJ()
       QString file = QFileDialog::getSaveFileName(this, tr("Save File"),
                                                        "",tr("Files (*.*)"));
       m_glData->exportToObj(file.toStdString());
-      if(m_bilFilename!="")
+      if(m_bilFileName!="")
       {
           std::vector<short unsigned int > bands(3);
           bands[0] = m_ui->m_sbBand1->value();
           bands[1] = m_ui->m_sbBand2->value();
           bands[2] = m_ui->m_sbBand3->value();
          //save texture as well
-         m_glData->exportHyperToImage(m_bilFilename,file.toStdString(),bands);
+         m_glData->exportHyperToImage(m_bilFileName,file.toStdString(),bands);
          std::cout << "Texture saved as well\n";
       }
    }

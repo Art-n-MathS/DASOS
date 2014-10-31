@@ -19,6 +19,27 @@ Las1_3_handler::Las1_3_handler(
 }
 
 //-----------------------------------------------------------------------------
+std::vector<float> Las1_3_handler::getBoundaries()
+{
+   lasfile.open(m_filename.c_str(),std::ios::binary);
+   if(!lasfile.is_open())
+   {
+      std::cerr << "File not found \n";
+   }
+   read_public_header();
+   std::vector<float> boundaries(6);
+   // [MaxNorthY, MinNorthY, MaxEastX, MinEastX, MaxHeightZ, MinHeightZ]
+   boundaries[0] = public_header.max_y;
+   boundaries[1] = public_header.min_y;
+   boundaries[2] = public_header.max_x;
+   boundaries[3] = public_header.min_x;
+   boundaries[4] = public_header.max_z;
+   boundaries[5] = public_header.min_z;
+   lasfile.close();
+   return boundaries;
+}
+
+//-----------------------------------------------------------------------------
 Object *Las1_3_handler::readFileAndGetObject(
         float i_voxelLength,
         const std::vector<double> &user_limits,

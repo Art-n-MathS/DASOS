@@ -113,9 +113,13 @@ private:
     void updateLimits();
 
     //-------------------------------------------------------------------------
+    /// @brief the name/location of the LAS file
+    //-------------------------------------------------------------------------
+    std::string m_lasFileName;
+    //-------------------------------------------------------------------------
     /// @brief the name/location of the hyperspectraldata
     //-------------------------------------------------------------------------
-    std::string m_bilFilename;
+    std::string m_bilFileName;
     //-------------------------------------------------------------------------
     /// @brief the name/location of the IGM file
     //-------------------------------------------------------------------------
@@ -137,15 +141,13 @@ private:
     /// @note before you use them you should always update them by calling the
     /// updateLimits() function.
     /// the limits are ordered as follow:
-    /// [MaxNorthY, MinNorthY, MaxEastX, MinEastX, MaxHeightZ, MaxHeightZ]
+    /// [MaxNorthY, MinNorthY, MaxEastX, MinEastX, MaxHeightZ, MinHeightZ]
     //-------------------------------------------------------------------------
     std::vector<double> m_user_limits;
     //-------------------------------------------------------------------------
     /// @brief an implicit object, created from the las data
     //-------------------------------------------------------------------------
     Object *m_obj;
-    Object *m_obj2;
-
     //-------------------------------------------------------------------------
     /// @brief the vertices, normals and indices that specify an object
     /// the object generated from the voxelise() function
