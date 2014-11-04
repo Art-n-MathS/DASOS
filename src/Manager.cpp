@@ -2,29 +2,13 @@
 #include "MarchingCubes.h"
 #include "MCwithIntegralImages.h"
 #include "Histogram.h"
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 Manager::Manager()
 {
 
 }
-
-//-----------------------------------------------------------------------------
-Object *Manager::createObject(
-        unsigned int i_x,
-        const std::vector<double> user_limits,
-        PulseManager *i_pulseManager,
-        double noiseLevel,
-        int i_type
-        )
-{
-   Object *obj = new Object(i_x,user_limits);
-   i_pulseManager->setNoiseLevel(noiseLevel);
-   i_pulseManager->fillObject(obj,user_limits,i_type);
-   obj->insertIntoIntegralVolume();
-   return obj;
-}
-
 
 //-----------------------------------------------------------------------------
 GLData *Manager::getPolygonisedObject(

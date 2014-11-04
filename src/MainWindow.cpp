@@ -16,7 +16,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_IGMFilename("/local/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.ReprojectedOSNG/e098061b_osgn.igm"),
     m_ui(new Ui::MainWindow),
     m_gl(0),
-    m_pulseManager(0),
     m_obj(0),
     m_glData(0),
     m_type(0)
@@ -166,7 +165,7 @@ void MainWindow::loadLASfile()
    {
       m_lasFileName = file.toStdString();
       Las1_3_handler lala(file.toStdString());
-      std::vector<float> temp(lala.getBoundaries());
+      std::vector<double> temp(lala.getBoundaries());
       m_user_limits[4] = temp[4];
       m_user_limits[5] = temp[5];
       // update the limits North and East on GUI
@@ -260,8 +259,9 @@ void MainWindow::createMap()
       m_obj->setIsolevel(m_ui->m_limit->value());
       MapsManager m;
       QString mapType = m_ui->m_cbMaps->currentText();
-      std::cout << "++++: " << mapType.toStdString() << "\n";
+
       MapsManager::mapInfo *infoOfMap = new MapsManager::mapInfo;
+
       infoOfMap->type = mapType.toStdString();
       infoOfMap->name = file.toStdString();
       infoOfMap->obj = m_obj;
@@ -289,6 +289,7 @@ void MainWindow::polygonise()
       m_glData = Manager::getPolygonisedObject(
                   m_obj,m_ui->m_sbNoOfVoxelsInX->value(),
                   m_ui->m_cbIntegralVolume->isChecked());
+
       if(m_bilFileName!="" && m_IGMFilename=="")
       {
          m_glData->createUVsBIL(m_bilFileName);
@@ -358,10 +359,6 @@ void MainWindow::updateLimits()
 MainWindow::~MainWindow()
 {
    delete m_ui;
-   if (m_pulseManager!=0)
-   {
-      delete m_pulseManager;
-   }
    if(m_glData!=0)
    {
       delete m_glData;

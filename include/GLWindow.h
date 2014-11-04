@@ -14,7 +14,6 @@
 #include "GLData.h"
 #include "Object.h"
 #include "Camera.h"
-#include "PulseManager.h"
 #include "Texture.h"
 
 /// @file GLWindow.h

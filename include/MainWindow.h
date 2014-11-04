@@ -16,7 +16,6 @@
 #include "GLWindow.h"
 #include "GLData.h"
 #include "Object.h"
-#include "PulseManager.h"
 
 namespace Ui {
     class MainWindow;
@@ -132,10 +131,6 @@ private:
     /// @brief the openGL widget
     //-------------------------------------------------------------------------
     GLWindow *m_gl;
-    //-------------------------------------------------------------------------
-    /// @brief the pulse manager where all the info of the LAS file are saved
-    //-------------------------------------------------------------------------
-    PulseManager *m_pulseManager;
     //-------------------------------------------------------------------------
     /// @brief those limits define the area that the user would like to process
     /// @note before you use them you should always update them by calling the

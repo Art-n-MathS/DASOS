@@ -6,7 +6,6 @@
 #include <string>
 
 #include "Types.h"
-#include "PulseManager.h"
 #include "Object.h"
 
 class Las1_3_handler
@@ -18,17 +17,10 @@ public:
    //-------------------------------------------------------------------------
    Las1_3_handler(const std::string i_filename);
    //-------------------------------------------------------------------------
-   /// @brief method that reads the data and returns a pulse manager with all
-   /// the waveform information of the pulses
-   /// NOTE: i_pulseManager is dynamic allocated, so by calling this function,
-   /// you are responsible for releasing memory afterwards.
-   //-------------------------------------------------------------------------
-   PulseManager * readFileAndGetObject();
-   //-------------------------------------------------------------------------
    /// @brief method that returns the min and max values that define the
    /// boundary of the scanned area
    //-------------------------------------------------------------------------
-   std::vector<float> getBoundaries();
+   std::vector<double> getBoundaries();
    //-------------------------------------------------------------------------
    /// @param[in] i_x the number of voxels in the x dimension - the rest are
    /// calculated depending on the higher and lower x y z of the points

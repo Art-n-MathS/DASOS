@@ -44,7 +44,6 @@ void HyperMean::createMap()
        // to memory
        for(unsigned int b=1; b<nbands; ++b)
        {
-          std::cout << m_IGMfileName << "\n"<< b << " " << nbands << "\n";
           file.Readband((char *)m_hyperData,b);
           for(unsigned int x=0; x<noX; ++x)
           {

@@ -45,16 +45,13 @@ SOURCES += \
     src/Maps/HyperMean.cpp \
     src/Maps/HyperStandardDeviation.cpp
 
-SOURCES += src/LASHandler/PulseManager.cpp \
-    src/LASHandler/Pulse.cpp \
+SOURCES += \
     src/LASHandler/Las1_3_handler.cpp
 
 HEADERS += \
     include/MainWindow.h \
     include/GLWindow.h \
     include/LASHandler/Types.h \
-    include/LASHandler/PulseManager.h \
-    include/LASHandler/Pulse.h \
     include/LASHandler/Las1_3_handler.h \
     include/Manager.h \
     include/MarchingCubes/GLData.h \
