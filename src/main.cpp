@@ -46,8 +46,8 @@ int main(int argc, char **argv)
   GLData *glData = mc.createPolygonisedObject();
   glData->createUVsIGM(igmFileName);
 
-//  glData->exportToObj(objFileName);
-//  glData->exportHyperToImage(bilFileName,objFileName,bands);
+  glData->exportToObj(objFileName);
+  glData->exportHyperToImage(bilFileName,objFileName,bands);
 
   // ["NON-EMPTY VOXELS"] = 1;
   // ["DENSITY"]   = 2;
