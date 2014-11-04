@@ -55,28 +55,37 @@ int main(int argc, char **argv)
   // ["HYPERSPECTRAL"] = 4;
   // ["HYPERSPECTRAL MEAN"] = 5;
   MapsManager m;
-  MapsManager::mapInfo *mInfo= new MapsManager::mapInfo;
-  mInfo->type = "THICKNESS";
-  mInfo->name = "map.png";
-  mInfo->obj = obj;
-  mInfo->band = 140;
-  mInfo->bilFileName = bilFileName;
-  mInfo->IGMfileName = igmFileName;
-  mInfo->thres = 0;
-  mInfo->samp = 0;
-  m.createMap(mInfo);
+  unsigned int mapsIndex=0;
+  std::vector<MapsManager::mapInfo *> mInfo;
+  mInfo.push_back(new MapsManager::mapInfo);
+  mInfo[mapsIndex]->type = "THICKNESS";
+  mInfo[mapsIndex]->name = "map.png";
+  mInfo[mapsIndex]->obj = obj;
+  mInfo[mapsIndex]->band = 140;
+  mInfo[mapsIndex]->bilFileName = bilFileName;
+  mInfo[mapsIndex]->IGMfileName = igmFileName;
+  mInfo[mapsIndex]->thres = 0;
+  mInfo[mapsIndex]->samp = 0;
+  mapsIndex++;
 
-  mInfo->type = "HYPERSPECTRAL MEAN";
-  mInfo->name = "maphyper.png";
-  mInfo->obj = obj;
-  mInfo->band = 140;
-  mInfo->bilFileName = bilFileName;
-  mInfo->IGMfileName = igmFileName;
-  mInfo->thres = 0;
-  mInfo->samp = 0;
-  m.createMap(mInfo);
+  mInfo.push_back(new MapsManager::mapInfo);
+  mInfo[mapsIndex]->type = "HYPERSPECTRAL MEAN";
+  mInfo[mapsIndex]->name = "maphyper.png";
+  mInfo[mapsIndex]->obj = obj;
+  mInfo[mapsIndex]->band = 140;
+  mInfo[mapsIndex]->bilFileName = bilFileName;
+  mInfo[mapsIndex]->IGMfileName = igmFileName;
+  mInfo[mapsIndex]->thres = 0;
+  mInfo[mapsIndex]->samp = 0;
+  mapsIndex++;
 
-  delete mInfo;
+  for(unsigned int i=0; i<mapsIndex; ++i)
+  {
+     m.createMap(mInfo[i]);
+     delete mInfo[i];
+  }
+
+
   delete obj;
   delete glData;
   std::cout << "   ***   EXIT   ***\n";
