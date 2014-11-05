@@ -374,8 +374,8 @@ void GLData::exportToObj(std::string i_name)const
        }
        for(int i=0; i<nsize; i+=3)
        {
-         myfile <<"vn "<< -m_normals[i]<<" "<< -m_normals[i+1]
-                << " "<< -m_normals[i+2] << "\n";
+         myfile <<"vn "<< m_normals[i]<<" "<< m_normals[i+1]
+                << " "<< m_normals[i+2] << "\n";
        }
        myfile <<"\n\n";
        for(int i=0; i<isize; i+=3)
@@ -388,22 +388,22 @@ void GLData::exportToObj(std::string i_name)const
            x++;y++;z++;
            if(m_UVs.size()==0)
            {
-              myfile << "f "<< x <<
+              myfile << "f "<< y <<
+                        "//" << y <<
+                        " "<< x <<
                    "//" << x <<
-                   " " << y <<
-                   "//" << y <<
-                   " " << z <<
+                   " "  << z <<
                    "//" << z <<
                    "\n";
            }
            else
            {
-              myfile << "f "<< x <<
+              myfile << "f "<< y <<
+                        "/"<< y <<"/" << y <<
+                        " " << x <<
                    "/"<< x <<"/" << x <<
-                   " " << y <<
-                   "/"<< y <<"/" << y <<
                    " " << z <<
-                   "/"<< y <<"/" << z <<
+                   "/"<< z <<"/" << z <<
                    "\n";
            }
          }

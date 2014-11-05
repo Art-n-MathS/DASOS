@@ -43,13 +43,13 @@ MainWindow::MainWindow(QWidget *parent) :
 //		connect(m_ui->m_objectSelection,SIGNAL(currentIndexChanged(int)),m_gl,SLOT(setObjectMode(int)));
 
    QStringList maps;
-   maps << "Non-Empty Voxels" << "Density" << "Thickness"  << "Hyperspectral" << "Hyperspectral Mean";
+   maps << "Non-Empty_Voxels" << "Density" << "Thickness"  << "Hyperspectral" << "Hyperspectral_Mean";
    m_ui->m_cbMaps->insertItems(0,maps);
    QStringList types;
-   types << /*0*/ "Full-wavefrom"
-         << /*1*/ "All Discrete"
-         << /*2*/ "Discrete & Waveforms"
-         << /*3*/ "Discrete";
+   types << /*1*/ "Full-waveform"
+         << /*2*/ "All_Discrete"
+         << /*3*/ "Discrete_n_Waveforms"
+         << /*4*/ "Discrete";
    m_ui->m_cbDataType->insertItems(0,types);
    m_ui->m_pbLoadIGM->hide();
    m_user_limits.resize(6);
@@ -233,7 +233,7 @@ void MainWindow::createObject()
 
    std::cout << "user limits = " << m_user_limits[0] << " " << m_user_limits[1]
              << " " << m_user_limits[2] << " " << m_user_limits[3] << "\n";
-   m_obj = lala.readFileAndGetObject(m_ui->m_dsVoxelLength->value(),m_user_limits,m_ui->m_sbNoiseLevel->value(),0);
+   m_obj = lala.readFileAndGetObject(m_ui->m_dsVoxelLength->value(),m_user_limits,m_ui->m_sbNoiseLevel->value(),m_ui->m_cbDataType->currentText().toStdString());
 
    m_ui->m_sbNoOfVoxelsInX->setValue(ceil((m_user_limits[2]
                                           -m_user_limits[3])/voxelLength));

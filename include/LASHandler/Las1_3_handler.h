@@ -27,11 +27,10 @@ public:
    /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
    /// @return the implicit object which is a made by voxels
    //-------------------------------------------------------------------------
-   Object *readFileAndGetObject(
-           float i_voxelLength,
+   Object *readFileAndGetObject(float i_voxelLength,
            const std::vector<double> &user_limits,
            double noiseLevel,
-           int i_type
+           const std::string i_type
            );
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata

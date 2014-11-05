@@ -22,6 +22,11 @@ void HyperMean::createMap()
 {
     try
     {
+       if(m_bilFileName=="" || m_IGMfileName=="")
+       {
+          std::cout<<"WARNING: hyperspectral files have not been loaded\n";
+          return;
+       }
        std::cout << "m_bilFileName = " << m_bilFileName << "\n";
        bilLib::BinFile file(m_bilFileName);
        unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));

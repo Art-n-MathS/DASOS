@@ -10,11 +10,11 @@
 //-----------------------------------------------------------------------------
 MapsManager::MapsManager():m_map(0)
 {
-    m_types["NON-EMPTY VOXELS"] = 1;
+    m_types["NON-EMPTY_VOXELS"] = 1;
     m_types["DENSITY"]   = 2;
     m_types["THICKNESS"]    = 3;
     m_types["HYPERSPECTRAL"] = 4;
-    m_types["HYPERSPECTRAL MEAN"] = 5;
+    m_types["HYPERSPECTRAL_MEAN"] = 5;
 }
 
 
