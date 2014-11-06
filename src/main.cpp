@@ -249,7 +249,6 @@ int main(int argc, char **argv)
            mInfo[mapsIndex]->thres = 0;
            mInfo[mapsIndex]->samp = 0;
            mapsIndex++;
-
            mInfo.push_back(new MapsManager::mapInfo);
            mInfo[mapsIndex]->type = "HYPERSPECTRAL MEAN";
            mInfo[mapsIndex]->name = "maphyper.png";
