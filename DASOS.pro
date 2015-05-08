@@ -1,6 +1,6 @@
 
 OBJECTS_DIR=obj/
-TARGET=QtNGL
+TARGET=DASOS
 
 CONFIG += console
 
