@@ -1,6 +1,6 @@
 #include "HyperMap.h"
 #include "Grid.h"
-#include <bilLib/binfile.h>
+#include "binfile.h"
 
 //-----------------------------------------------------------------------------
 HyperMap::HyperMap(

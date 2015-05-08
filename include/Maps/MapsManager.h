@@ -2,6 +2,7 @@
 #define MAPSMANAGER_H
 
 #include "Map.h"
+#include <map>
 
 class MapsManager
 {
@@ -16,6 +17,9 @@ public:
        std::string IGMfileName;
        unsigned int thres;
        unsigned int samp;
+       std::string fodisFileName;
+       std::string spectralSignature;
+       std::string spectralSignatureType;
     };
 
     //-------------------------------------------------------------------------

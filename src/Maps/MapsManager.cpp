@@ -4,8 +4,14 @@
 #include "ThicknessMap.h"
 #include "HyperMap.h"
 #include "HyperMean.h"
+#include "FirstPatch.h"
+#include "LastPatch.h"
+#include "HyperStandardDeviation.h"
+#include "NDVI.h"
+#include "SignatureDifferneceMap.h"
+#include "TerrainModel.h"
 #include <map>
-
+#include <algorithm>
 
 //-----------------------------------------------------------------------------
 MapsManager::MapsManager():m_map(0)
@@ -15,6 +21,13 @@ MapsManager::MapsManager():m_map(0)
     m_types["THICKNESS"]    = 3;
     m_types["HYPERSPECTRAL"] = 4;
     m_types["HYPERSPECTRAL_MEAN"] = 5;
+    m_types["LOWEST_RETURN"] = 6;
+    m_types["SPECTRAL_SIGNATURE"] = 7;
+//    m_types["HYPERSPECTRAL_STD"] = 8;
+    m_types["FIRST_PATCH"] = 9;
+    m_types["NDVI"] = 10;
+    m_types["LAST_PATCH"] = 11;
+
 }
 
 
@@ -57,6 +70,39 @@ void MapsManager::createMap(
       m_map = new HyperMean(m_infoOfMap->name,m_infoOfMap->obj,
                             m_infoOfMap->bilFileName,m_infoOfMap->IGMfileName);
       break;
+   case 6:
+      std::cout << "Terrain Model\n";
+      m_map = new TerrainModel(m_infoOfMap->name,m_infoOfMap->obj);
+      break;
+   case 7:
+       std::cout << "Spectral Signature\n";
+       m_map = new SignatureDifferneceMap(m_infoOfMap->name,m_infoOfMap->obj,
+                            m_infoOfMap->bilFileName,m_infoOfMap->IGMfileName,
+                            m_infoOfMap->fodisFileName,
+                            m_infoOfMap->spectralSignature,
+                            m_infoOfMap->spectralSignatureType);
+       break;
+   case 8:
+//       std::cout << "Hyperspectral Standard Deviations\n";
+//       m_map = new HyperStandardDeviation
+//               (m_infoOfMap->name,m_infoOfMap->obj,
+//                m_infoOfMap->bilFileName,m_infoOfMap->IGMfileName,
+//                m_infoOfMap->fodisFileName);
+       break;
+   case 9:
+       std::cout << "Length of first continues patch of non empty voxels\n";
+       m_map = new FirstPatch(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
+   case 10:
+      std::cout << "NDVI\n";
+      m_map = new NDVI(m_infoOfMap->name,m_infoOfMap->obj,
+                       m_infoOfMap->bilFileName,m_infoOfMap->IGMfileName,
+                       m_infoOfMap->fodisFileName);
+      break;
+   case 11:
+       std::cout << "Length of last continues patch of non empty voxels\n";
+       m_map = new LastPatch(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
    default:
       std::cout << m_infoOfMap->type << " is not a valid type of map";
       break;

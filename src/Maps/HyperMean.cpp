@@ -1,6 +1,6 @@
 #include "HyperMean.h"
 #include "Grid.h"
-#include <bilLib/binfile.h>
+#include "binfile.h"
 
 //--------------------------------------------------------------------------
 HyperMean::HyperMean(

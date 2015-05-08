@@ -10,7 +10,8 @@ MCwithIntegralImages::MCwithIntegralImages(
         ):
     MarchingCubes(i_obj,i_x)
 {
-    std::cout << "Polygonisation using integral Images\n";
+    std::cout << "Polygonisation\n";
+    i_obj->insertIntoIntegralVolume();
 }
 
 //-----------------------------------------------------------------------------

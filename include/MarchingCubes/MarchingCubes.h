@@ -83,6 +83,11 @@ protected:
    /// @brief
    //--------------------------------------------------------------------------
    void computeNormals(GLData *i_glData);
+   //---------------------------------------------------------------------------
+   /// @brief method that generates the m_classUVs, which are used to project
+   /// classification results and paint validation data
+   //--------------------------------------------------------------------------
+   void generateClassUVs(GLData *i_glData);
    //--------------------------------------------------------------------------
    /// @brief method that returns the index of a given vertex. If the index
    /// does not exist in glData then it is first added and then the index is

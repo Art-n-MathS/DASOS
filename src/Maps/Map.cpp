@@ -9,9 +9,9 @@ Map::Map(
         ):
     m_name(i_name),
     m_object(i_obj),
-    m_noOfPixelsX(i_obj->m_noOfVoxelsX),
-    m_noOfPixelsY(i_obj->m_noOfVoxelsY),
-    m_noOfPixelsZ(i_obj->m_noOfVoxelsZ)
+    m_noOfPixelsX(i_obj->getNoVoxelsX()),
+    m_noOfPixelsY(i_obj->getNoVoxelsY()),
+    m_noOfPixelsZ(i_obj->getNoVoxelsZ())
 {
    m_mapValues.resize(m_noOfPixelsX*m_noOfPixelsY);
 }
@@ -99,15 +99,13 @@ const Map Map::operator +(const Map &i_map)const
 //-----------------------------------------------------------------------------
 bool Map::isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z)
 {
-    return (m_object->m_intensities[i_x+i_y*m_noOfPixelsX+i_z*
-            m_noOfPixelsX*m_noOfPixelsY]>=m_object->m_isolevel);
+    return m_object->isInside(i_x, i_y, i_z);
 }
 
 //-----------------------------------------------------------------------------
 float Map::getIntensity(unsigned int i_x, unsigned int i_y, unsigned int i_z)
 {
-   return m_object->m_intensities[i_x+i_y*m_noOfPixelsX+
-                                  i_z*m_noOfPixelsX*m_noOfPixelsY];
+   return m_object->getIntensity(i_x,i_y,i_z);
 }
 
 //-----------------------------------------------------------------------------

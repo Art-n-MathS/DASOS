@@ -261,8 +261,8 @@ void MarchingCubes::computeNormals(GLData *i_glData
   // each vertex should have each own normal.
   i_glData->m_normals.resize(i_glData->m_vertices.size());
 
-  const std::vector<GLfloat>& vertices = i_glData->m_vertices;
-  const std::vector<GLuint>& indices = i_glData->m_indices;
+  const std::vector<float>& vertices = i_glData->m_vertices;
+  const std::vector<int>& indices = i_glData->m_indices;
   unsigned int numOfIndices = i_glData->m_indices.size();
 
   // calculate normals
@@ -301,6 +301,19 @@ void MarchingCubes::computeNormals(GLData *i_glData
 }
 
 //-----------------------------------------------------------------------------
+void MarchingCubes::generateClassUVs(GLData *i_glData)
+{
+   i_glData->m_classUVs.resize(i_glData->m_vertices.size()/3*2+1);
+   for(unsigned int i=0; i<i_glData->m_vertices.size()/3; ++i)
+   {
+      i_glData->m_classUVs[i*2  ]=(i_glData->m_vertices[i*3   ]-m_minLimits[0])/
+                                  (m_maxLimits[0]-m_minLimits[0]);
+      i_glData->m_classUVs[i*2+1]=-(i_glData->m_vertices[i*3+1]-m_minLimits[1])/
+                                  (m_maxLimits[1]-m_minLimits[1]);
+   }
+}
+
+//-----------------------------------------------------------------------------
 GLData *MarchingCubes::createPolygonisedObject()
 {
    clock_t t1,t2;
@@ -312,6 +325,7 @@ GLData *MarchingCubes::createPolygonisedObject()
    m_hashTable.setGLData(glData);
    computeVertices(glData);
    computeNormals(glData);
+   generateClassUVs(glData);
 
    t2 = clock();
    float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;

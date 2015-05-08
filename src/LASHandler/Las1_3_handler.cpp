@@ -9,6 +9,7 @@
 #include <iostream>
 #include <fstream>
 #include <gmtl/gmtl.h>
+#include <map>
 
 
 //-----------------------------------------------------------------------------
@@ -16,6 +17,7 @@ Las1_3_handler::Las1_3_handler(
         const std::string i_filename
         ): m_filename(i_filename),i_hist(0)
 {
+   std::cout << "\n" << i_filename << "\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -67,7 +69,6 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
    lasfile.seekg((int) public_header.offset_to_point);
 
    unsigned int count=0;
-   unsigned int countDiscrete = 0;
    // temporarly saving discrete values that are associated with a
    // waveform but the 1st return haven't been saved yet
    std::vector<gmtl::Vec3f> discretePoints;
@@ -86,7 +87,6 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
    std::string s(i_type);
    std::transform(s.begin(), s.end(), s.begin(), toupper);
 
-   std::cout << "start looping through point packet records " << i_type << " " << types[s]<< " " << public_header.number_of_point_records<< " \n";
    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
    {
       lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
@@ -96,10 +96,10 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
       if((int)point_info.classification!=7)
       {
          // TYPES:
-         // 0. Full-waveform
-         // 1. All_Discrete
-         // 2. Discrete_n_Waveforms
-         // 3. Discrete (associated with waveform only
+         // 1. Full-waveform
+         // 2. All_Discrete
+         // 3. Discrete_n_Waveforms
+         // 4. Discrete (associated with waveform only
          switch(types[s])
          {
          // Waveform samples only
@@ -153,6 +153,7 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
                }
 
                lasfile.seekg(tmp);
+               delete []waveSamplesIntensities;
                delete []wave_data;
             }
             break;
@@ -213,7 +214,6 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
    std::cout << "----------------------------------------------------------\n";
    lasfile.close();
    obj->normalise();
-   obj->insertIntoIntegralVolume();
    return obj;
 }
 
