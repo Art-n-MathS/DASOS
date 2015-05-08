@@ -56,15 +56,7 @@ void NDVI::createMap()
               for(unsigned int y=0; y<noY; ++y)
               {
                  const gmtl::Vec2f point(mins[0]+vl/2+ vl*x,mins[1]+vl/2+vl*y) ;
-                 const unsigned int noOfPix =
-                 grid->pixIndicesOfSquare(point,&pixPos);
-                 tempValue = 0;
-                 for(unsigned int i=0; i<noOfPix; ++i)
-                 {
-                    tempValue += m_hyperData[pixPos[i]];
-                 }
-                 tempValue/=noOfPix;
-                 VIS[x+y*m_noOfPixelsX]+=tempValue;
+                 VIS[x+y*m_noOfPixelsX]+=m_hyperData[grid->getClosestPixelPosition(point[0],point[1])];
                  delete []pixPos;
               }
            }
@@ -85,15 +77,7 @@ void NDVI::createMap()
               for(unsigned int y=0; y<noY; ++y)
               {
                  const gmtl::Vec2f point(mins[0]+vl/2+ vl*x,mins[1]+vl/2+vl*y) ;
-                 const unsigned int noOfPix =
-                 grid->pixIndicesOfSquare(point,&pixPos);
-                 tempValue = 0;
-                 for(unsigned int i=0; i<noOfPix; ++i)
-                 {
-                    tempValue += m_hyperData[pixPos[i]];
-                 }
-                 tempValue/=noOfPix;
-                 NIR[x+y*m_noOfPixelsX]+=tempValue;
+                 NIR[x+y*m_noOfPixelsX]+=m_hyperData[grid->getClosestPixelPosition(point[0],point[1])];
                  delete []pixPos;
               }
            }

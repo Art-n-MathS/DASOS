@@ -57,17 +57,17 @@ int main (int argc, char const* argv[])
    std::map<std::string, int> tags;
 
    // igm file name of hyperspectral imagery - string
-   tags["-igm"] = 1;
+   tags["-igm"] = 1; /// -igm <filename>
    // bil file name of hyperspectral imagery - string
-   tags["-bil"] = 2;
+   tags["-bil"] = 2; // <filename>
    // export polygon mesh to an obj file - string
-   tags["-obj"] = 3;
+   tags["-obj"] = 3; /// -obj <filename>
    // the bands of the hyperspectral imagery that will be used as RGB values - int int int
-   tags["-rgb"] = 4;
+   tags["-rgb"] = 4; /// -rgb <band1> <band2> <band3>
    // the voxel length - double
-   tags["-vl" ] = 5;
+   tags["-vl" ] = 5; /// -vl <voxel length>
    // the noise level - double
-   tags["-nl" ] = 6;
+   tags["-nl" ] = 6; /// -nl <noise level>
    // isolevel
    tags ["-iso"] = 7;
    // type of the object, what to import in the polygon mesh
@@ -86,17 +86,17 @@ int main (int argc, char const* argv[])
    // ["LOWEST_RETURN"] = 6;
    // 2. more parameters
    // -thres <integer from [1-255] to threshold the map
-   tags ["-map"] = 9;
+   tags ["-map"] = 9; /// -map  <type>  ?<band> ?{ -thres <threshold> }  <output_name>  ?{ -signature <type> <signature_directory> }
    // optimisation algorithm - on/off
-   tags ["-opt"] = 10;
-   // load default setting for testing
-   tags ["-defaulth"] = 11;
+   tags ["-opt"] = 10; /// -opt <on/off>;
+   // load default setting for testing with hyperspectral
+   tags ["-default"] = 11;
    // print instructions on how to use the software
    tags ["--help"] = 12;
    // LAS file name - string
-   tags["-las"] = 13;
-   // load default setting for testing
-   tags ["-default"] = 14;
+   tags["-las"] = 13; /// -las <lasFileName>
+   // load fodis file
+   tags ["-fodis"] = 14;
 
 
 
@@ -205,8 +205,10 @@ int main (int argc, char const* argv[])
               {
                   std::cout << "WARNING: Band haven't been defined. Set to 140 as default";
                   mInfo[mapsIndex]->band = 140;
+                  break;
               }
            }
+
            mInfo[mapsIndex]->thres = 0;
            if(argvIndex+2<argc && std::string(argv[argvIndex])=="-thres")
            {
@@ -215,17 +217,22 @@ int main (int argc, char const* argv[])
            }
 
            mInfo[mapsIndex]->name = argv[argvIndex];
-
-           if(argvIndex+3<argc && std::string(argv[argvIndex])=="-signature")
+           if(s=="SPECTRAL_SIGNATURE")
            {
-              argvIndex+=3;
-              mInfo[mapsIndex]->spectralSignatureType = argv[argvIndex-2]; // "ASTER" or "notASTER"
-              mInfo[mapsIndex]->spectralSignature = argv[argvIndex-1];
+               if(argvIndex+3<argc && std::string(argv[argvIndex+1])=="-signature")
+               {
+                  argvIndex+=3;
+                  mInfo[mapsIndex]->spectralSignatureType = argv[argvIndex-2]; // "ASTER" or "notASTER"
+                  mInfo[mapsIndex]->spectralSignature = argv[argvIndex-1];
+                  break;
+               }
            }
+
 
            // mInfo[mapsIndex]->obj , defined later
            mInfo[mapsIndex]->bilFileName = bilFileName;
            mInfo[mapsIndex]->IGMfileName = igmFileName;
+           mInfo[mapsIndex]->fodisFileName =fodisFileName;
 
            mInfo[mapsIndex]->samp = 0;
            mapsIndex++;
@@ -240,43 +247,42 @@ int main (int argc, char const* argv[])
            }
            break;
         }
-        case 11: // -defaulth
+        case 11: // -default
         {
-            lasFileName = "/local1/data/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009822.LAS";
-            voxelLength = 1.5f;
+            lasFileName = "data/LDR-FW-FW10_01-201009821.LAS";
+            voxelLength = 2.8f;
             noiseLevel = 25.0f;
             isolevel = -99.9f;
 
-            igmFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.ReprojectedOSNG/e098221b_osgn.igm";
-            bilFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/01.masked_data/e098221b_masked.bil";
-            fodisFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/Fodis/e098221b_FODIS.bil";
+            igmFileName = "data/e098211b_osgn.igm";
+            bilFileName = "data/e098211b_masked.bil";
+            fodisFileName = "data/e098211b_FODIS.bil";
             bands[0] = 140;
             bands[1] = 78;
             bands[2] = 23;
 
-            objFileName = "object";
-
+            objFileName = "object1";
 
             mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[0]->type = "HYPERSPECTRAL";
-            mInfo[0]->name = "HYPERSPECTRAL.png";
-            mInfo[0]->band = 140;
-            mInfo[0]->bilFileName = bilFileName;
-            mInfo[0]->IGMfileName = igmFileName;
-            mInfo[0]->fodisFileName =fodisFileName;
-            mInfo[0]->thres = 0;
-            mInfo[0]->samp = 0;
+            mInfo[mapsIndex]->type = "HYPERSPECTRAL_MEAN";
+            mInfo[mapsIndex]->name = "HYPERSPECTRAL_MEAN.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
             mapsIndex++;
 
             mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[0]->type = "HYPERSPECTRAL_MEAN";
-            mInfo[0]->name = "HYPERSPECTRAL_MEAN.png";
-            mInfo[0]->band = 140;
-            mInfo[0]->bilFileName = bilFileName;
-            mInfo[0]->IGMfileName = igmFileName;
-            mInfo[0]->fodisFileName =fodisFileName;
-            mInfo[0]->thres = 0;
-            mInfo[0]->samp = 0;
+            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
+            mInfo[mapsIndex]->name = "HYPERSPECTRAL.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
             mapsIndex++;
 
 
@@ -352,7 +358,7 @@ int main (int argc, char const* argv[])
 
             mInfo.push_back(new MapsManager::mapInfo);
             mInfo[mapsIndex]->type = "SPECTRAL_SIGNATURE";
-            mInfo[mapsIndex]->name = "mapSpectralFodisNoAster.png";
+            mInfo[mapsIndex]->name = "SPECTRAL_SIGNATURE.png";
             mInfo[mapsIndex]->band = 140;
             mInfo[mapsIndex]->bilFileName = bilFileName;
             mInfo[mapsIndex]->IGMfileName = igmFileName;
@@ -377,10 +383,8 @@ int main (int argc, char const* argv[])
         }
         case 12: // "--help"
         {
-           std::cout<< "Las1.3Vis User Quide:\n"
-           << "---------------------\n\n"
-           << "Object related options:\n"
-           << "---------------------\n";
+           std::cout<< "DASOS User Quide:\n"
+           << "---------------------\n\n";
 
            char buff[2000];
            std::sprintf(buff,"%-30s %s", "-las <lasFileName>", "The name/directory of LAS file to be loaded and it's compulsory\n\n");
@@ -409,8 +413,21 @@ int main (int argc, char const* argv[])
            std::cout << buff;
            std::sprintf(buff,"%-30s %s", "-map SPECTRAL_SIGNATURE <outputName> -signature <type> <signature_directory> ", "The spectral signature map gives the square spectral difference between the signature and each pixel. The type is either \"ASTER\" or \"USGS!\".\n\n");
            std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map <type> -thres <threshold> <outputName>", " A threshold is optional and can be added to any type of maps\n\n");
+           std::sprintf(buff,"%-30s %s", "-map <type> -thres <threshold> <outputName>", " A threshold is optional and can be added to any type of maps. Always added before the <outputname>\n\n");
            std::cout << buff;
+           std::sprintf(buff,"%-30s %s", "-default", "It reads one of the sample FW LAS files and produces a 3D polygon representation and all the related maps\n\n");
+           std::cout << buff;
+           std::sprintf(buff,"%-30s %s", "-defaulth", "It reads one of the sample FW LAS files along with the hyperspectral and produces a coloured 3D polygon representation and all the related metrics\n\n\n\n");
+           std::cout << buff;
+
+           std::cout << "This project is funded by the Centre for Digital Entertainment and Plymouth Marine Laboratory.\n"
+                     << "The code is released under the "
+
+                     << "The data were collected by the NERC Airborne Research and Survey\n"
+                     << "Facility (ARSF). Copyright is held by the UK Natural Environment\n"
+                     << "Research Council (NERC). The data are free for non-commercial use,\n"
+                     << "NERC-ARSF must be acknowledged in any publications, software or other\n"
+                     << "media that make use of these data\n";
            break;
         }
         case 13: // -las
@@ -422,89 +439,14 @@ int main (int argc, char const* argv[])
            }
            break;
         }
-        case 14: // -default
+        case 14: // -fodis <filename>
         {
-            lasFileName = "full_waveform_tutorial_data.LAS";
-            voxelLength = 1.5f;
-            noiseLevel = 25.0f;
-            isolevel = -99.9f;
-
-            bands[0] = 140;
-            bands[1] = 78;
-            bands[2] = 23;
-
-            objFileName = "object";
-
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "THICKNESS";
-            mInfo[mapsIndex]->name = "THICKNESS.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
-
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "NON-EMPTY_VOXELS";
-            mInfo[mapsIndex]->name = "NON-EMPTY_VOXELS.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
-
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "DENSITY";
-            mInfo[mapsIndex]->name = "DENSITY.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
-
-
-
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "FIRST_PATCH";
-            mInfo[mapsIndex]->name = "FIRST_PATCH.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
-
-
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "LOWEST_RETURN";
-            mInfo[mapsIndex]->name = "LOWEST_RETURN.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
-
-
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "LAST_PATCH";
-            mInfo[mapsIndex]->name = "LAST_PATCH.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
-            break;
+           argvIndex ++;
+           if (argvIndex<argc)
+           {
+              fodisFileName = argv[argvIndex];
+           }
+           break;
         }
         default:
         {

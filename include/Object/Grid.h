@@ -45,12 +45,23 @@ public:
            );
    //--------------------------------------------------------------------------
    /// @brief method that takes as input a point and returns the position of
-   /// its closest pixel
+   /// its closest pixel scaled to be between 0 and 1
    /// @param[in] i_x the x position of the vertex of our interest
    /// @param[in] i_y the y position of the vertex of our interest
    /// @returns the position of its closest pixel on the image
    //--------------------------------------------------------------------------
    gmtl::Vec2f getPixelPositionScaled0_1(
+           const float i_x,
+           const float i_y
+           ) const;
+   //--------------------------------------------------------------------------
+   /// @brief method that takes as input a point and returns the position of
+   /// its closest pixel
+   /// @param[in] i_x the x position of the vertex of our interest
+   /// @param[in] i_y the y position of the vertex of our interest
+   /// @returns the position of its closest pixel on the image
+   //--------------------------------------------------------------------------
+   unsigned int getClosestPixelPosition(
            const float i_x,
            const float i_y
            ) const;

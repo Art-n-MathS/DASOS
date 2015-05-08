@@ -11,8 +11,6 @@ SpectralSignature::SpectralSignature(
         const std::string i_type
         )
 {
-   std::cout << " ---------------------------------------------\n" << i_file << "\n\n\n\n";
-
    std::ifstream bvhStream(i_file.c_str());
    if (!bvhStream)
    {

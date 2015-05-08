@@ -206,12 +206,28 @@ gmtl::Vec2f Grid::getPixelPositionScaled0_1(
         const float i_y
         )const
 {
+   unsigned int currentPixelKey = getClosestPixelPosition(i_x,i_y);
+   gmtl::Vec2f pixelPos(0,0);
+   pixelPos = getPixelPosFromKey(currentPixelKey);
+   pixelPos[1] = -pixelPos[1];
+   pixelPos[0]/=m_nsamps;
+   pixelPos[1]/=m_nlines;
+   return gmtl::Vec2f(pixelPos[0],pixelPos[1]);
+}
+
+
+
+//-----------------------------------------------------------------------------
+unsigned int Grid::getClosestPixelPosition(
+        const float i_x,
+        const float i_y
+        )const
+{
    const unsigned int x = float((i_x-m_min[0])/
                                 (m_max[0]-m_min[0])*(float)m_nX);
    const unsigned int y = float((i_y-m_min[1])/
                                 (m_max[1]-m_min[1])*(float)m_nY);
    const gmtl::Vec2f point(i_x,i_y);
-   gmtl::Vec2f pixelPos(0,0);
    unsigned int currentPixelKey = 0;
    float minDis = sqrt(pow(m_Xs[0]-point[0],2.0)+pow(m_Ys[0]-point[1],2.0));
    auto itsElements = m_map.equal_range(getKeyOfSquare(x,y));
@@ -225,15 +241,9 @@ gmtl::Vec2f Grid::getPixelPositionScaled0_1(
          minDis = distance;
       }
    }
-   pixelPos = getPixelPosFromKey(currentPixelKey);
-   pixelPos[0]/=m_nsamps;
-   pixelPos[1]/=m_nlines;
-   pixelPos[1] = -pixelPos[1];
-   return gmtl::Vec2f(pixelPos[0],pixelPos[1]);
 
+   return currentPixelKey;
 }
-
-
 
 //-----------------------------------------------------------------------------
 Grid::~Grid()

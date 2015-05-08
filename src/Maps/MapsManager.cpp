@@ -36,7 +36,6 @@ void MapsManager::createMap(
         mapInfo *m_infoOfMap
         )
 {
-   std::cout << m_infoOfMap->name << " " << m_infoOfMap->type << " " << m_infoOfMap->thres << "\n";
    if (m_map!=0)
    {
       delete m_map;
@@ -76,11 +75,14 @@ void MapsManager::createMap(
       break;
    case 7:
        std::cout << "Spectral Signature\n";
-       m_map = new SignatureDifferneceMap(m_infoOfMap->name,m_infoOfMap->obj,
-                            m_infoOfMap->bilFileName,m_infoOfMap->IGMfileName,
-                            m_infoOfMap->fodisFileName,
-                            m_infoOfMap->spectralSignature,
-                            m_infoOfMap->spectralSignatureType);
+       m_map = new SignatureDifferneceMap(
+                   m_infoOfMap->name,
+                   m_infoOfMap->obj,
+                   m_infoOfMap->bilFileName,
+                   m_infoOfMap->IGMfileName,
+                   m_infoOfMap->fodisFileName,
+                   m_infoOfMap->spectralSignature,
+                   m_infoOfMap->spectralSignatureType);
        break;
    case 8:
 //       std::cout << "Hyperspectral Standard Deviations\n";
@@ -104,7 +106,7 @@ void MapsManager::createMap(
        m_map = new LastPatch(m_infoOfMap->name,m_infoOfMap->obj);
        break;
    default:
-      std::cout << m_infoOfMap->type << " is not a valid type of map";
+      std::cout << std::string (s) << " is not a valid type of map";
       break;
    }
    // create and save the map

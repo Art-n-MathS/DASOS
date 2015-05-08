@@ -69,27 +69,19 @@ HyperMap::HyperMap(
 //-----------------------------------------------------------------------------
 void HyperMap::createMap()
 {
-   Grid *grid = new Grid(m_IGMfileName,m_object->m_lengthOfVoxel,
-                         m_object->getMinLimits());
+   Grid *grid = new Grid(m_IGMfileName,30);
    const gmtl::Vec3f &mins = m_object->getMinLimits();
    const float vl(m_object->m_lengthOfVoxel);
 
    const unsigned int noX = m_object->getNoVoxelsX();
    const unsigned int noY = m_object->getNoVoxelsY();
-   unsigned int *pixPos = NULL;
    for(unsigned int x=0; x<noX; ++x)
    {
       for(unsigned int y=0; y<noY; ++y)
       {
          const gmtl::Vec2f point(mins[0]+vl/2+ vl*x,mins[1]+vl/2+vl*y) ;
-         const unsigned int noOfPix = grid->pixIndicesOfSquare(point,&pixPos);
-
-         for(unsigned int i=0; i<noOfPix; ++i)
-         {
-            m_mapValues[x+y*m_noOfPixelsX] += m_hyperData[pixPos[i]];
-         }
-         m_mapValues[x+y*m_noOfPixelsX]/=noOfPix;
-         delete []pixPos;
+         m_mapValues[x+y*m_noOfPixelsX]=
+                 m_hyperData[grid->getClosestPixelPosition(point[0],point[1])];
       }
    }
    delete grid;

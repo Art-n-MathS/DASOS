@@ -17,6 +17,7 @@ SignatureDifferneceMap::SignatureDifferneceMap(const std::string &i_name,
     m_fodisFileName(i_fodisFileName),
     m_spectralSingature(i_signatureFileName,I_signatureType)
 {
+    std::cout << i_signatureFileName << "\n";
 }
 
 
@@ -37,14 +38,10 @@ void SignatureDifferneceMap::createMap()
        unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
 
 
-       std::cout << "Billl = " << nsamps << " " << nlines << " " << nbands << "\n";
-
        bilLib::BinFile fileFodis(m_fodisFileName);
        unsigned int nsampsF=bilLib::StringToUINT(fileFodis.FromHeader("samples"));
        unsigned int nlinesF=bilLib::StringToUINT(fileFodis.FromHeader("lines"));
        unsigned int nbandsF=bilLib::StringToUINT(fileFodis.FromHeader("bands"));
-
-       std::cout << "Fodis = " << nsampsF << " " << nlinesF << " " << nbandsF << "\n";
 
        Grid *grid = new Grid(m_IGMfileName,m_object->m_lengthOfVoxel*1.8,
                              m_object->getMinLimits());

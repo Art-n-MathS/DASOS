@@ -335,11 +335,12 @@ void GLData::exportToObj(
    {
       createUVsIGM(i_igmFileName);
    }
+   std::string mtlName("");
    if(i_bilFileName!="")
    {
       exportHyperToImage(i_bilFileName,i_name,i_bands);
       std::ofstream mtlFile;
-      std::string mtlName=i_name+".mtl";
+      mtlName=i_name+".mtl";
       mtlFile.open(mtlName.c_str());
       mtlFile << "newmtl material0\nKa 1.000000 1.000000 1.000000\n"
               << "Kd 1.000000 1.000000 1.000000\nKs 0.000000 0.000000 0.000000"
@@ -381,7 +382,10 @@ void GLData::exportToObj(
        int vsize = m_vertices.size();
        int nsize = m_normals.size();
        int isize = m_indices.size();
-       myfile << "mtllib " << i_name <<  ".mtl\n\n";
+       if(mtlName!="")
+       {
+          myfile << "mtllib " << mtlName <<"\n\n";
+       }
        for(int i=0; i<vsize; i+=3)
        {
          myfile << "v "<< m_vertices[i  ] - offset[0]
