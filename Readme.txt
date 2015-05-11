@@ -6,7 +6,7 @@ Facility (ARSF). Copyright is held by the UK Natural Environment
 Research Council (NERC). The data are free for non-commercial use,
 NERC-ARSF must be acknowledged in any publications, software or other
 media that make use of these data.
-Available at:https: //rsg.pml.ac.uk/shared_files/arsf/DASOS/
+Available at: https://rsg.pml.ac.uk/shared_files/arsf/DASOS/
 
 Dependancies:
  qmake-qt4
