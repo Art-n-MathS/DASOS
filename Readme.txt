@@ -1,5 +1,8 @@
 This project is funded by the Centre for Digital Entertainement and Plymouth Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC LICENSE, Version 3. For any publications or public use please reference the related paper "ALIGNMENT OF HYPERSPECTRAL IMAGERY AND FULL-WAVEFORM LIDAR DATA FOR VISUALISATION AND CLASSIFICATION PURPOSES", which was presented at the 36th International Symposium of Remote Sensing of the Enviroment 2015. 
 
+For any publications and research please reference the following paper:
+Miltiadou M., Warren M. A., Grant M., Brown M., 2015, Alignment of Hyperspectral Imagery and full-waveform LiDAR data for visualisation and classification purposes, 36th International Symposium of Remote Sensing of the enviroment
+
 For testing the system, please download and copy the sample data inside the 'data' folder.
 These data were collected by the NERC Airborne Research and Survey
 Facility (ARSF). Copyright is held by the UK Natural Environment
