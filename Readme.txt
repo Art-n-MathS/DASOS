@@ -2,6 +2,7 @@ This project is funded by the Centre for Digital Entertainement and Plymouth Mar
 
 For any publications and research please reference the following paper:
 Miltiadou M., Warren M. A., Grant M., Brown M., 2015, Alignment of Hyperspectral Imagery and full-waveform LiDAR data for visualisation and classification purposes, 36th International Symposium of Remote Sensing of the enviroment
+Available at: http://meetingorganizer.copernicus.org/ISRSE36/ISRSE36-158-2.pdf
 
 For testing the system, please download and copy the sample data inside the 'data' folder.
 These data were collected by the NERC Airborne Research and Survey
