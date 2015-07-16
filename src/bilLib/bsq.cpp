@@ -41,7 +41,7 @@ BSQReader::BSQReader(std::string fname)
       //An error occured, store a general error message into the brinfo stream
       if(retval!=1)
       {
-         brinfo<<"An error has occurred whilst reading from the hdr file."<<std::endl;      
+         brinfo<<"An error has occurred whilst reading from the hdr file."<<std::endl;
          throw BRexception(brinfo.str()); //Throw an exception
       }
       std::map<std::string,std::string>::iterator it; //use an iterator to access the Header map
@@ -108,57 +108,51 @@ BSQReader::~BSQReader()
 }
 
 //Read 1 line for all bands [equivalent number of bytes from current position]
-void BSQReader::Readline(char* const /*chdata*/)
+void BSQReader::Readline(char* const chdata)
 {
    throw BRexception("This method is deprecated and should not be used (It doesn't even exist - maybe it should).");
 }
 
 //Read numlines lines of data from startline
 //Data is stored in chdata as band0line0;band0line1;band0linex;band1line0;band1line1;...;bandx;linex
-void BSQReader::Readlines(char* const chdata, unsigned int startline, unsigned int numlines) 
+void BSQReader::Readlines(char* const chdata, unsigned int startline, unsigned int numlines)
 {
    //check error bit is not set
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Read band line has failed...stream not good.") 
-      brinfo<<"Read band line has failed...stream not good."<<std::endl;   
+      DEBUGPRINT("Read band line has failed...stream not good.")
+      brinfo<<"Read band line has failed...stream not good."<<std::endl;
       throw BRexception(brinfo.str());
    }
-   
+
    //DEBUG statement
    DEBUGPRINT("Reading Lines from BSQ...from "<<startline<<" reading "<<numlines<<" lines.");
    //number of bytes that should be read from the file
    uint64_t nbytestoread=(this->numsamples * this->datasize * this->numbands) * numlines;
-   uint64_t bytesperline=(this->numsamples * this->datasize); 
+   uint64_t bytesperline=(this->numsamples * this->datasize);
    //position at which to start reading from
    //unsigned long int pos=bytesperline * startline;
    //Move the file pointer to this position
    //this->filein.seekg(pos,std::ios::beg);
 
-   if(this->CheckCapacity(nbytestoread))
+   //Cannot do the check on capacity (using the binary reader function) for this function as
+   //it is not reading a continuous block of data
+   for(unsigned int band=0;band<numbands;band++)
    {
-      for(unsigned int band=0;band<numbands;band++)
+      for(unsigned int line=startline;line<startline+numlines;line++)
       {
-         for(unsigned int line=startline;line<startline+numlines;line++)
-         {
-            Readbandline(&chdata[bytesperline*(line-startline)+band*numlines*bytesperline], band, line);
-         }
+         Readbandline(&chdata[bytesperline*(line-startline)+band*numlines*bytesperline], band, line);
       }
-   }
-   else
-   {
-      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read"<<std::endl;
-      throw BRexception(brinfo.str());
    }
 }
 
 //Read the specified number of bytes from current position
-void BSQReader::Readbytes(char* const chdata, uint64_t nbytes) 
+void BSQReader::Readbytes(char* const chdata, uint64_t nbytes)
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Read bytes has failed...stream not good.") 
-      brinfo<<"Read bytes has failed...stream not good."<<std::endl;   
+      DEBUGPRINT("Read bytes has failed...stream not good.")
+      brinfo<<"Read bytes has failed...stream not good."<<std::endl;
       throw BRexception(brinfo.str());
    }
 
@@ -171,18 +165,18 @@ void BSQReader::Readbytes(char* const chdata, uint64_t nbytes)
    }
    else
    {
-      brinfo<<"Attempted to read "<<nbytes<<" but file reports there are less bytes remaining to be read"<<std::endl;   
+      brinfo<<"Attempted to read "<<nbytes<<" but file reports there are less bytes remaining to be read"<<std::endl;
       throw BRexception(brinfo.str());
    }
 }
 
 //Reads the specified band
-int BSQReader::Readband(char* const chdata, unsigned int /*band*/)
+int BSQReader::Readband(char* const chdata, unsigned int band)
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Read band line has failed...stream not good.") 
-      brinfo<<"Read band line has failed...stream not good."<<std::endl;   
+      DEBUGPRINT("Read band line has failed...stream not good.")
+      brinfo<<"Read band line has failed...stream not good."<<std::endl;
       throw BRexception(brinfo.str());
    }
 
@@ -205,12 +199,12 @@ int BSQReader::Readband(char* const chdata, unsigned int /*band*/)
 }
 
 //reads the given line for the given band
-int BSQReader::Readbandline(char* const chdata, unsigned int band, unsigned int line) 
+int BSQReader::Readbandline(char* const chdata, unsigned int band, unsigned int line)
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Read band line has failed...stream not good.") 
-      brinfo<<"Read band line has failed...stream not good."<<std::endl;   
+      DEBUGPRINT("Read band line has failed...stream not good.")
+      brinfo<<"Read band line has failed...stream not good."<<std::endl;
       throw BRexception(brinfo.str());
    }
 
@@ -228,7 +222,7 @@ int BSQReader::Readbandline(char* const chdata, unsigned int band, unsigned int 
       fread(chdata,sizeof(char),nbytestoread,filein);
    else
    {
-      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read"<<std::endl;   
+      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read"<<std::endl;
       throw BRexception(brinfo.str());
    }
    return 1;
@@ -239,10 +233,10 @@ double BSQReader::ReadCell(const unsigned int band,const unsigned int line, cons
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("ReadCell has failed...stream not good.") 
-      brinfo<<"ReadCell has failed...stream not good."<<std::endl;   
+      DEBUGPRINT("ReadCell has failed...stream not good.")
+      brinfo<<"ReadCell has failed...stream not good."<<std::endl;
       throw BRexception(brinfo.str());
-   }   
+   }
    //Get the number of bytes to skip to get to point to read
    uint64_t nbytestoskip=((this->numsamples * this->numrows)*band + (this->numsamples * line) + col) * this->datasize;
    //Create a char array of the size of one cell
@@ -255,7 +249,7 @@ double BSQReader::ReadCell(const unsigned int band,const unsigned int line, cons
    //Need to dereference this, convert to double and return
    double val=DerefToDouble(cbuffer);
    delete[] cbuffer;
-   return val;  
+   return val;
 }
 
 void BSQReader::ReadlineToDoubles(double* const ddata,unsigned int line)
@@ -266,24 +260,24 @@ void BSQReader::ReadlineToDoubles(double* const ddata,unsigned int line)
    for(unsigned int sample=0;sample<this->numsamples*this->numbands;sample++)
    {
       //The following switch statement allows the data in chtmp to be derefenced
-      //to many types, allowing different data formats in the BSQ to be used 
+      //to many types, allowing different data formats in the BSQ to be used
       switch(this->datatype)
       {
       case 1: //8-bit
          {
-            char* cderef=(char*)(chtmp);      
+            char* cderef=(char*)(chtmp);
             ddata[sample]=static_cast<double>(cderef[sample]);
-            break;   
+            break;
          }
       case 2: //16 bit signed short int
          {
-            short int* sideref=(short int*)(chtmp);      
+            short int* sideref=(short int*)(chtmp);
             ddata[sample]=static_cast<double>(sideref[sample]);
             break;
          }
       case 3: //32 bit signed short int
          {
-            int* ideref=(int*)(chtmp);      
+            int* ideref=(int*)(chtmp);
             ddata[sample]=static_cast<double>(ideref[sample]);
             break;
          }
@@ -315,8 +309,83 @@ void BSQReader::ReadlineToDoubles(double* const ddata,unsigned int line)
          throw "Unrecognised data type for BSQ file. Currently supports 8-bit, signed and unsigned 16-bit and 32-bit integer, 32-bit and 64-bit float";
          break;
       }
-   }   
+   }
    delete[] chtmp;
+}
+
+//-------------------------------------------------------------------------
+// Functon to read a rectangle from a BSQ (DEM) file
+// - This is just a direct copy of the BILReader function since number
+// of bands has to be 1 for the DEM file. Done this way to allow future
+// update to multiple band files if ever required
+//-------------------------------------------------------------------------
+int BSQReader::ReadRect(char* const chdata,const int minrow, const int maxrow,const int mincol,const int maxcol)
+{
+   if(numbands!=1)
+      throw "ReadRect should currently only be used for files with 1 band.";
+
+   //Check input parameters and throw exception if they are not in correct order
+   if ((maxrow < minrow) || (maxcol < mincol))
+      throw "Order of elements in BSQReader.ReadRect should be llx,lly urx,ury. Min row/col is greater than max row/col.";
+
+   //Get the extent of the area in rows/cols
+   unsigned int numlines=(unsigned int)(maxrow-minrow+1);
+   unsigned int numsamps=(unsigned int)(maxcol-mincol+1);
+
+   //Convert these to byte positions within the BSQ file and the
+   //number of bytes for each line to read. Then use bil->Readbytes
+   //methodology.
+   uint64_t numofbytesperline=numsamps*this->GetDataSize();
+   DEBUGPRINT("Will read "<<numsamps<<" samples of data with size "<<this->GetDataSize()<<" bytes from "<<numlines<<" lines.")
+
+   //Loop through each of the lines reading in the required part, storing in chdata
+   for(unsigned int l=0;l<numlines;l++)
+   {
+      //For each line to read from - read in some data
+      ReadPartOfLine(&chdata[l*numofbytesperline],l+(unsigned int)minrow,(unsigned int)mincol,numsamps);
+   }
+   return 0;
+
+}
+
+//-------------------------------------------------------------------------
+// Function to read in part of a line from a BSQ (DEM) file
+//-------------------------------------------------------------------------
+void BSQReader::ReadPartOfLine(char* const chdata,const unsigned int lineno,const unsigned int sampleno,const unsigned int nsamps)
+{
+   if(this->IsGood() == false)
+   {
+      DEBUGPRINT("ReadPartOfLine has failed...stream not good.")
+      this->brinfo<<"ReadPartOfLine has failed...stream not good."<<std::endl;
+      throw BRexception(brinfo.str());
+   }
+
+   //DEBUG statement
+   DEBUGPRINT("Reading Part Of Line from BinaryFile..."<<nsamps<<" samples starting at sample "<<sampleno<<" of line "<<lineno);
+
+   //number of bytes that should be read from the file
+   uint64_t nbytestoread=(nsamps * this->GetDataSize() );
+
+   //position to move file get pointer to
+   uint64_t pos=0;
+
+   //Check that there are nbytestoread left in the file, if not then throw exception
+   if(this->CheckCapacity(nbytestoread))
+   {
+      //Store the previous position
+      this->prevpointerloc=FileTell(filein);
+      //Skip pointer to new location
+      pos=lineno*this->numsamples*this->GetDataSize() + sampleno*this->GetDataSize();
+      //this->filein.seekg(pos,std::ios::beg);
+      FileSeek(filein,pos,SEEK_SET);
+      //Read in the length of data
+      fread(chdata,sizeof(char),nbytestoread,filein);
+   }
+   else
+   {
+      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read"<<std::endl;
+      throw BRexception(brinfo.str());
+   }
 }
 
 }

@@ -152,6 +152,7 @@ void GLData::exportHyperToImage(
 
       unsigned int gLsamples = nsamps+((4-(nsamps%4))%4);
 
+      std::cout << "bil file lines samples " << nlines << " " << nsamps << "\n";
 
       if (dataType == 4)// 32-bit floating point
       {
@@ -331,6 +332,7 @@ void GLData::exportToObj(
         const std::string i_bilFileName,
         const std::vector<unsigned short int> i_bands)
 {
+   std::cout << "Bil File: " << i_bilFileName << "\n";
    if(i_igmFileName!="")
    {
       createUVsIGM(i_igmFileName);
@@ -394,23 +396,25 @@ void GLData::exportToObj(
        }
        myfile <<"\n\n";
 
-//       // m_classUVs are UVs used for validation datasets
-//       if(m_vertices.size()/3*2+1 == m_classUVs.size())
-//       {
-//          // UVs has been calculated and better be saved into the file
-//          for(unsigned int i=0; i<m_classUVs.size()-1; i+=2)
-//          {
-//             myfile << "vt " << m_classUVs[i] << " " << m_classUVs[i+1] << "\n";
-//          }
-//       }
-       if(m_vertices.size()/3*2+1 == m_UVs.size())
+       // m_classUVs are UVs used for validation datasets
+       if(m_vertices.size()/3*2+1 == m_classUVs.size())
        {
-         // UVs has been calculated and better be saved into the file
-          for(unsigned int i=0; i<m_UVs.size()-1; i+=2)
+          // UVs has been calculated and better be saved into the file
+          for(unsigned int i=0; i<m_classUVs.size()-1; i+=2)
           {
-             myfile << "vt " << m_UVs[i] << " " << m_UVs[i+1] << "\n";
+             myfile << "vt " << m_classUVs[i] << " " << m_classUVs[i+1] << "\n";
           }
        }
+
+//       // uvs used for texturing
+//       if(m_vertices.size()/3*2+1 == m_UVs.size())
+//       {
+//         // UVs has been calculated and better be saved into the file
+//          for(unsigned int i=0; i<m_UVs.size()-1; i+=2)
+//          {
+//             myfile << "vt " << m_UVs[i] << " " << m_UVs[i+1] << "\n";
+//          }
+//       }
        for(int i=0; i<nsize; i+=3)
        {
          myfile <<"vn "<< m_normals[i]<<" "<< m_normals[i+1]

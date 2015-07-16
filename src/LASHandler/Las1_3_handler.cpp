@@ -56,8 +56,7 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
    read_public_header();
    read_variable_length_records();
 
-   Object *obj=new Object(ceil((user_limits[2]-user_limits[3])/i_voxelLength),
-                                 user_limits);
+   Object *obj=new Object(i_voxelLength,user_limits);
    obj->setNoiseLevel(noiseLevel);
 
    if(obj==0)
@@ -151,7 +150,6 @@ Object *Las1_3_handler::readFileAndGetObject(float i_voxelLength,
                  obj->addItensity(tempPosition,waveSamplesIntensities[j]);
                  tempPosition+=offset;
                }
-
                lasfile.seekg(tmp);
                delete []waveSamplesIntensities;
                delete []wave_data;

@@ -13,16 +13,21 @@ namespace bilLib
 
 BinaryReader::BinaryReader() //constructor
 {
+   //Assign error string and set items to NULL that are undefined
+   //may need to do a more full setting of items to 0 here.
+   missingheaderitemerror="Trying to read a key from hdr which does not exist: ";
+   this->filein=NULL;
+
 }
 
 BinaryReader::BinaryReader(std::string fname)//constructor with filename - only to return the filetype (BIL or BSQ)
 {
+   //Assign error string
+   missingheaderitemerror="Trying to read a key from hdr which does not exist: ";
    //Asssign filename
    this->filename=fname;
    //Want to open bsq file, read in hdr file, and assign all the class variables
    this->filein = fopen(this->filename.c_str(),"rb");
-
-
    if(!this->IsOpen())
    {
       //File has failed to open
@@ -37,7 +42,7 @@ BinaryReader::BinaryReader(std::string fname)//constructor with filename - only 
       //An error occured, store a general error message into the brinfo stream
       if(retval!=1)
       {
-         brinfo<<"An error has occurred whilst trying to read from the hdr file for data file: "<<this->filename<<std::endl;      
+         brinfo<<"An error has occurred whilst trying to read from the hdr file for data file: "<<this->filename<<std::endl;
          throw BRexception(brinfo.str()); //Throw an exception
       }
       std::map<std::string,std::string>::iterator it; //use an iterator to access the Header map
@@ -100,7 +105,7 @@ int BinaryReader::ReadHeader()
 {
    //DEBUG statement
    DEBUGPRINT("Reading BIL Header file...");
-   //Open the header file 
+   //Open the header file
    //It is expected to be the same as filename(-'raw' + 'hdr')
    //std::string hdrfile=this->filename;
    //hdrfile.replace(this->filename.length() - 3, 3, "hdr");
@@ -112,13 +117,13 @@ int BinaryReader::ReadHeader()
    //Loop through the types of header file name to try and open until one works
    for(short int type=0;type<maxtypes;type++)
    {
-      hdrfile=GetHeaderFileName(type);
-      hdrin.open(hdrfile.c_str());
+      this->hdrfilename=GetHeaderFileName(type);
+      hdrin.open(this->hdrfilename.c_str());
       if(!hdrin.is_open())
       {
          failcount++;
          //An error has occured
-         //brinfo<<"An error has occurred opening the hdr file: "<<hdrfile<<std::endl;
+         //brinfo<<"An error has occurred opening the hdr file: "<<this->hdrfilename<<std::endl;
          continue;
          //return -1;
       }
@@ -142,7 +147,7 @@ int BinaryReader::ReadHeader()
       bool multilineval=false; // bool to test if values are over multiple file lines
       while(!hdrin.eof())
       {
-         //get a line from the hdr file 
+         //get a line from the hdr file
          std::getline(hdrin,strbuffer);
          //std::cout<<strbuffer<<std::endl;
          //search for an equals
@@ -151,7 +156,7 @@ int BinaryReader::ReadHeader()
             //An = has been found in this string
             if(strbuffer.find('{') != std::string::npos)
             {
-               //A { has been found. This could mean that the value is on more than one line 
+               //A { has been found. This could mean that the value is on more than one line
                strkey=strbuffer.substr(0,strbuffer.find('=')); //can set key
                strval.assign(strbuffer.substr(strbuffer.find('=')+1)); //this is part of value
                //trim whitespace
@@ -165,7 +170,7 @@ int BinaryReader::ReadHeader()
                   strkey.clear();
                   strval.clear();
                   continue;
-                  
+
                }
                else
                   multilineval=true;// value is spread over multiple lines of header file
@@ -184,7 +189,7 @@ int BinaryReader::ReadHeader()
                strval.clear();//empty the string
                continue;
             }
-         }         
+         }
          else if(strbuffer.find('}') != std::string::npos)
          {
             //there is a }. This could mean that the end of a value has been reached
@@ -194,10 +199,10 @@ int BinaryReader::ReadHeader()
             {
                //At the end - get everything upto there as values - comma separates values
                strbuffer=ReplaceAllWith(&strbuffer,',',';');
-               strval=strval+";"+strbuffer; // add the string to the value string using ; as delimiter 
+               strval=strval+";"+strbuffer; // add the string to the value string using ; as delimiter
                this->Header[ToLowerCase(strkey)]=strval; //add to the header map
                multilineval=false; //reset the bool
-               strval.clear();     
+               strval.clear();
             }
             else
             {
@@ -210,12 +215,12 @@ int BinaryReader::ReadHeader()
          {
             strbuffer=TrimWhitespace(strbuffer);
             //No = in this string
-            if(multilineval==false)//For the moment will just pass this as the key AND value into the map            
-            {   
+            if(multilineval==false)//For the moment will just pass this as the key AND value into the map
+            {
                this->Header[strbuffer]=strbuffer;
             }
             else if(!strbuffer.empty())
-            {   
+            {
                // 14/02/2011 TrimPunctuation and then remove commas and replace with ';' - this could be dangerous
                strbuffer=TrimPunctuation(strbuffer);
                strbuffer=ReplaceAllWith(&strbuffer,',',';');
@@ -240,7 +245,7 @@ void BinaryReader::DatasizeFromDatatype()
    {
       case 1:
          //8 bit
-         this->datasize=1; 
+         this->datasize=1;
          break;
       case 2:
          //16 bit signed int
@@ -291,7 +296,7 @@ void BinaryReader::DatasizeFromDatatype()
 
 
 // Function now converts the passed key to lower case to search the header
-std::string BinaryReader::FromHeader(std::string key,int itemnum)
+std::string BinaryReader::FromHeader(std::string key,int itemnum,std::string THROW)
 {
    //DEBUG statement
    DEBUGPRINT("Retrieving item "<<itemnum<<" from value relating to key "<<key);
@@ -302,7 +307,13 @@ std::string BinaryReader::FromHeader(std::string key,int itemnum)
    //Find the value from the map
    it=this->Header.find(ToLowerCase(key));
    if(it==this->Header.end()) //if the key doesnt exist return an empty string
+   {
+      if(THROW.compare("true")==0)
+      {
+         throw missingheaderitemerror+key;
+      }
       return "";
+   }
    else //else continue and get the related value to the key
       str=it->second;
 
@@ -315,21 +326,21 @@ std::string BinaryReader::FromHeader(std::string key,int itemnum)
    else
    {
       if(str.find(';')!=std::string::npos)
-      {         
+      {
          //This occurs when multiple objects where on the multiple lines
          //eg {;1
          //    ;56
          //    ;76}
-         //Not an empty string - search for itemnums ; delimiter 
+         //Not an empty string - search for itemnums ; delimiter
          unsigned int pos=0; //set position to start of string
          for(int i=0;i<=itemnum;i++)
          {
             pos=str.find(';',pos+1);
-//            if(pos == std::string::npos)
-//            {
-//               //there are less than itemnum ; in string
-//               return retstr;
-//            }
+            if(pos == std::string::npos)
+            {
+               //there are less than itemnum ; in string
+               return retstr;
+            }
          }
          //found itemnum ;
          int index=str.find(';',pos+1);
@@ -339,10 +350,10 @@ std::string BinaryReader::FromHeader(std::string key,int itemnum)
       }
       else if(str.find(',')!=std::string::npos)
       {
-         //This occurs when multiple objects where on the same line
+         //This occurs when multiple objects were on the same line
          //eg {1, 56, 76} - only returns numbers
-      
-         //Commented out below 2 lines 10/09/2010 and replaced with new fnction to use comma delims and return anything 
+
+         //Commented out below 2 lines 10/09/2010 and replaced with new fnction to use comma delims and return anything
          //str=RemoveAllBut(str,"0123456789.-+ ");
          //return GetItemFromString(str,itemnum);
 
@@ -360,22 +371,22 @@ std::string BinaryReader::FromHeader(std::string key,int itemnum)
 void BinaryReader::CannotFind(std::string key)
 {
    brinfo<<"Cannot find \""<<key<<"\" in header file."<<std::endl;
-   throw BRexception(brinfo.str()); //Throw an exception  
+   throw BRexception(brinfo.str()); //Throw an exception
 
 }
 
 //Function to manually close the file and tidy up anything else
 void BinaryReader::Close()
 {
-   //Close the bil file if open
+   //Close the binary file if open
    if(this->IsOpen())
    {
       //DEBUG statement
-      DEBUGPRINT("Closing BILReader...");
+      DEBUGPRINT("Closing BinaryReader...");
       clearerr(filein);
       if(fclose(filein)==0)
-         filein=NULL; 
-   }   
+         filein=NULL;
+   }
 }
 
 bool BinaryReader::CheckCapacity(uint64_t numbytes)
@@ -399,7 +410,7 @@ void BinaryReader::GotoPreviousPosition()
 }
 
 //-------------------------------------------------------------------------
-// Function to dereference a char* buffer containing a single item read 
+// Function to dereference a char* buffer containing a single item read
 // from the data file, and return as a double
 //-------------------------------------------------------------------------
 double BinaryReader::DerefToDouble(char* cbuffer)
@@ -416,32 +427,34 @@ double BinaryReader::DerefToDouble(char* cbuffer)
    //Check buffer is not null
    if(cbuffer==NULL)
    {
-      throw "Attempt to convert NULL to double in DerefToDouble().";      
+      throw "Attempt to convert NULL to double in DerefToDouble().";
    }
 
+   //The following switch statement allows the data in chtmp to be derefenced
+   //to many types, allowing different data formats in the BIL to be used
    switch(this->GetDataType())
    {
    case 1: //8-bit
-      cp=(char*)(cbuffer);      
-      return (double)(*cp);
+      cp=(char*)(cbuffer);
+      return static_cast<double>(*cp);
    case 2: //16 bit signed int
-      sip=(short int*)(cbuffer);      
-      return (double)(*sip);
+      sip=reinterpret_cast<short int*>(cbuffer);
+      return static_cast<double>(*sip);
    case 3:
-      ip=(int*)(cbuffer);
-      return (double)(*ip);
+      ip=reinterpret_cast<int*>(cbuffer);
+      return static_cast<double>(*ip);
    case 4: //float
-      fp=(float*)(cbuffer);
-      return (double)(*fp);
+      fp=reinterpret_cast<float*>(cbuffer);
+      return static_cast<double>(*fp);
    case 5: //double
-      dp=(double*)(cbuffer);
+      dp=reinterpret_cast<double*>(cbuffer);
       return (*dp);
    case 12: //16 bit unsigned short int
-      usip=(unsigned short int*)(cbuffer);
-      return (double)(*usip);
+      usip=reinterpret_cast<unsigned short int*>(cbuffer);
+      return static_cast<double>(*usip);
    case 13: //32 bit unsigned int
-      uip=(unsigned int*)(cbuffer);
-      return (double)(*uip);
+      uip=reinterpret_cast<unsigned int*>(cbuffer);
+      return static_cast<double>(*uip);
    default:
       throw "Unrecognised data type. Currently supports 8-bit, both signed and unsigned 16 & 32-bit integer, and 32 & 64-bit float";
       break;
@@ -458,21 +471,24 @@ std::string BinaryReader::HeaderDump(bool ret)
    std::map<std::string,std::string>::iterator it;
 
    for(it=Header.begin();it!=Header.end();it++)
+   {
+      if(((*it).first=="")&&((*it).second==""))
+         continue;//ignore empty items
       dump+=((*it).first)+" = "+((*it).second)+"\n";
-
+   }
    if(ret==true)
       return dump;
    else
       std::cout<<dump<<std::endl;
-   
+
    return "";
 }
 
 //-------------------------------------------------------------------------
 // Function to tidy up strings when added to the header file
-// - makes {, -> { and ,} -> } 
+// - makes {, -> { and ,} -> }
 //-------------------------------------------------------------------------
-std::string BinaryReader::TidyForHeader(std::string totidy)
+std::string BinaryReader::TidyForHeader(std::string totidy,bool wrapinbraces)
 {
    std::string ret=totidy;
    //replace any ; with , unless string starts with ; - may be a comment
@@ -480,8 +496,15 @@ std::string BinaryReader::TidyForHeader(std::string totidy)
       ret=ReplaceAllWith(&ret,";",",\n");
    ret=ReplaceAllWith(&ret,"{,","{");
    ret=ReplaceAllWith(&ret,"{\n,","{\n");
-   ret=ReplaceAllWith(&ret,",}","}");  
-   ret=ReplaceAllWith(&ret,",\n}","\n}"); 
+   ret=ReplaceAllWith(&ret,",}","}");
+   ret=ReplaceAllWith(&ret,",\n}","\n}");
+   if(wrapinbraces)
+   {
+      if(ret.find("{")!=0)
+         ret.insert(0,"{");
+      if(ret.rfind("}")!=ret.length()-1)
+         ret.push_back('}');
+   }
    return ret;
 }
 

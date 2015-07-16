@@ -7,32 +7,32 @@
 #include <iterator>
 
 //-----------------------------------------------------------------------------
-Object::Object(unsigned int i_x, const std::vector<double> &i_userLimits):
+Object::Object(float i_voxelLength, const std::vector<double> &i_userLimits):
     m_integralVolume(0),
     m_lowerLimits(gmtl::Vec3f(i_userLimits[3],i_userLimits[1],i_userLimits[5])),
     m_higherLimits(gmtl::Vec3f(i_userLimits[2]+0.0001,
                              i_userLimits[0]+0.0001,
                              i_userLimits[4]+0.0001)),
     m_isolevel(-99.9999999),
-    m_noiseLevel(0.0)
+    m_noiseLevel(0.0),
+    m_lengthOfVoxel(i_voxelLength)
 {
-    m_noOfVoxelsX = i_x;
+    m_noOfVoxelsX = ceil((i_userLimits[2]-i_userLimits[3])/i_voxelLength);
     m_dis[0]= (m_higherLimits[0] - m_lowerLimits[0]);
-    float voxelLength = m_dis[0]/i_x;
     for(unsigned int i=0; i<3;++i)
     {
-       m_higherLimits[i]+=(voxelLength+0.001);
-       m_lowerLimits[i]-=(voxelLength+0.001);
+       m_higherLimits[i]+=(i_voxelLength+0.001);
+       m_lowerLimits[i]-=(i_voxelLength+0.001);
     }
     m_dis[0]= (m_higherLimits[0] - m_lowerLimits[0]);
     m_dis[1] = (m_higherLimits[1] - m_lowerLimits[1]);
     m_dis[2] = (m_higherLimits[2] - m_lowerLimits[2]);
-    m_noOfVoxelsY = ceil(((double)i_x)*m_dis[1]/m_dis[0]);
-    m_noOfVoxelsZ = ceil(((double)i_x)*m_dis[2]/m_dis[0]);
+    m_noOfVoxelsY = ceil(((double)m_noOfVoxelsX)*m_dis[1]/m_dis[0]);
+    m_noOfVoxelsZ = ceil(((double)m_noOfVoxelsX)*m_dis[2]/m_dis[0]);
     m_intensities.resize(m_noOfVoxelsX*m_noOfVoxelsY*m_noOfVoxelsZ);
     m_noOfReturnsPerVoxel.resize(m_intensities.size());
     std::fill(m_noOfReturnsPerVoxel.begin(),m_noOfReturnsPerVoxel.end(),0);
-    m_lengthOfVoxel = m_dis[0]/m_noOfVoxelsX;
+
 
     m_higherLimits[1] = m_lowerLimits[1] + m_noOfVoxelsY * m_lengthOfVoxel;
     m_higherLimits[2] = m_lowerLimits[2] + m_noOfVoxelsZ * m_lengthOfVoxel;
@@ -150,6 +150,7 @@ void Object::exportToFile(std::string i_filename)
     // NoOfVoxels x y z
     // Distance dx dy dz
     // NoiseLevel l
+    // VoxelLength vl
     // NumberOfIntensities Num
     // - All the intensities
     std::ofstream myfile;
@@ -163,6 +164,7 @@ void Object::exportToFile(std::string i_filename)
            << m_noOfVoxelsZ << "\n";
     myfile << "Distance " << m_dis[0] << " " << m_dis[1] << " " << m_dis[2] << "\n";
     myfile << "NoiseLevel " << m_noiseLevel << "\n";
+    myfile << "VoxelLength " << m_lengthOfVoxel << "\n";
     myfile << "NumberOfIntensities " << m_intensities.size() << "\n";
 
     std::cout << "nl _ iL " << m_noiseLevel << " : " << m_isolevel << "\n";
@@ -191,14 +193,14 @@ Object::Object(const std::string &i_filename)
 
    std::vector<std::string> words(it,sentinel);
 
-   if(words.size()<22)
+   if(words.size()<24)
    {
       std::cerr << "ERROR: File \"" << i_filename
                 << "\" is not written in the correct format.\n";
       return;
    }
-   std::cout << words[21] << "\n";
-   if(words.size()!=(unsigned int)(22+atoi(words[21].c_str())))
+   std::cout << words[23] << "\n";
+   if(words.size()!=(unsigned int)(24+atoi(words[23].c_str())))
    {
        std::cerr << "ERROR: File \"" << i_filename
                  << "\" is not written in the correct format.\n";
@@ -227,13 +229,15 @@ Object::Object(const std::string &i_filename)
    m_dis[1] = atof(words[16].c_str());
    m_dis[2] = atof(words[17].c_str());
    m_noiseLevel = atof(words[19].c_str());
-   unsigned int inum = (unsigned int) atoi(words[21].c_str());
+   m_lengthOfVoxel = atof(words[21].c_str());
+   std::cout << m_lengthOfVoxel << "\n";
+   unsigned int inum = (unsigned int) atoi(words[23].c_str());
    m_intensities.resize(inum);
    for(unsigned int i = 0; i < inum; ++i)
    {
-      m_intensities[i] = atof(words[22+i].c_str());
+      m_intensities[i] = atof(words[24+i].c_str());
    }
-   m_lengthOfVoxel = m_dis[0]/m_noOfVoxelsX;
+//   m_lengthOfVoxel = m_dis[0]/m_noOfVoxelsX;
 
 }
 
@@ -272,6 +276,7 @@ void Object::normalise()
    }
    float max = m_intensities[0];
    float min = m_intensities[0];
+   std::cout << "max = " << max << " " << min << "\n";
    for(unsigned int i=1;i<m_intensities.size(); ++i)
    {
       if (max<m_intensities[i])
@@ -335,10 +340,6 @@ unsigned int Object::getIndex(
 const gmtl::Vec3f Object::getMaxLimits()const
 {
     return m_higherLimits;
-    gmtl::Vec3f p2((double)m_noOfVoxelsX-1,
-                 (double)m_noOfVoxelsY-1,
-                 (double)m_noOfVoxelsZ-1);
-    return p2;
 }
 
 //-----------------------------------------------------------------------------

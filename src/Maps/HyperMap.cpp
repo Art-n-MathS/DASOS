@@ -73,6 +73,8 @@ void HyperMap::createMap()
    const gmtl::Vec3f &mins = m_object->getMinLimits();
    const float vl(m_object->m_lengthOfVoxel);
 
+   std::cout << vl << "\n -----------------------------------\n";
+
    const unsigned int noX = m_object->getNoVoxelsX();
    const unsigned int noY = m_object->getNoVoxelsY();
    for(unsigned int x=0; x<noX; ++x)

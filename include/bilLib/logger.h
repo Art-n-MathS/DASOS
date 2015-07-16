@@ -47,7 +47,7 @@ public:
    {
    public:
       LogException();
-      LogException(std::string str):info(str){}; 
+      LogException(std::string str):info(str){};
       std::string info; //contains optional information about exception
       const char* what() const throw()
       {

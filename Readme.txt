@@ -30,6 +30,8 @@ DASOS User Quide:
 
 -bil <bilFileName>             The name/directory of the bil file that contains the hyperspectral cube.
 
+-fodis <fodisFileName>         The name/directory of the fodis files required for the NDVI map
+
 -obj <objFileName>             The name of the .obj file where the polygon representation of the LiDAR file will be exported to. It's optional and when not defined the data are not polygonised. Further it exports a texture when the hyperspectral data are also defined
 
 -rgb <band1> <band2> <band3>   Defines the 3 bands of the hyperpectral images that will be used for texturing the polygon mesh. If not defined the default values 140, 78 and 23 are used.
@@ -42,7 +44,7 @@ DASOS User Quide:
 
 -opt <on/off>                  Enables/Disables the optimisation that uses Integral Images to discard empty chunks of voxels during polygonisation. By default the optimisation is enabled.
 
--map <type> <outputName>       The available types are: "NON-EMPTY_VOXELS", "DENSITY", "THICKNESS", "FIRST_PATCH", "LAST_PATCH", "HYPERSPECTRAL_MEAN", "NDVI", "LOWEST_RETURN" 
+-map <type> <outputName>       The available types are: "NON-EMPTY_VOXELS", "DENSITY", "THICKNESS", "FIRST_PATCH", "LAST_PATCH", "HYPERSPECTRAL_MEAN", "NDVI", "LOWEST_RETURN", "AVERAGE_HEIGHT_DIFFERENCE", "HEIGHT"
 
 -map HYPERSPECTRAL <band> <outputName> The hyperspectral map needs an extra parameter defining which band will be outputed
 

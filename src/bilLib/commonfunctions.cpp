@@ -11,8 +11,7 @@
 
 namespace bilLib
 {
-
-//String function to strip leading and trailing whitespace 
+//String function to strip leading and trailing whitespace
 std::string TrimWhitespace(std::string str)
 {
    //This will trim both leading and trailing whitespace characters
@@ -78,11 +77,9 @@ std::string TrimLeadingChars(std::string str,const char* chars)
    return str;
 }
 
-
 //This function will remove all occurrences of chars in str
-std::string RemoveAllBut(std::string str,const char* chars)
+std::string RemoveAllBut(std::string str,std::string char_string)
 {
-   std::string char_string(chars);
    size_t index=str.find_first_not_of(char_string); //find first non-chars char
    while(index!=std::string::npos)
    {
@@ -121,7 +118,7 @@ std::string GetItemFromString(std::string str,const unsigned int itemnum)
          index=str.find(' ',pos); //find first space char
          pos=index+1;
          i++;
-      }   
+      }
       if(index!=std::string::npos)
       {
          endindex=str.find(' ',pos);
@@ -132,7 +129,7 @@ std::string GetItemFromString(std::string str,const unsigned int itemnum)
       }
       else
          return "";
-   } 
+   }
    return "";
 }
 
@@ -152,7 +149,7 @@ std::string GetItemFromString(std::string str,const unsigned int itemnum,const c
          index=str.find(delim,pos); //find first delim char
          pos=index+1;
          i++;
-      }   
+      }
       if(index!=std::string::npos)
       {
          endindex=str.find(delim,pos);
@@ -163,7 +160,7 @@ std::string GetItemFromString(std::string str,const unsigned int itemnum,const c
       }
       else
          return "";
-   } 
+   }
    return "";
 }
 
@@ -172,7 +169,7 @@ std::string GetItemFromString(std::string str,const unsigned int itemnum,const c
 //if NEGATIVE is TRUE (default) then it will allow negative numbers
 std::string CheckNumbersOnly(std::string str,bool NEGATIVE)
 {
-   std::string integers("0123456789"); //create a string containing integers   
+   std::string integers("0123456789"); //create a string containing integers
    size_t index=str.find_first_not_of(integers);//find first non-occurance
    std::string exception_string="Test failed - not an integer number: "+str;
    if(index == std::string::npos)
@@ -180,7 +177,7 @@ std::string CheckNumbersOnly(std::string str,bool NEGATIVE)
       //Only integers
       return str;
    }
-   else if((index == 0) && (str[0]=='-') && (NEGATIVE==true)) 
+   else if((index == 0) && (str[0]=='-') && (NEGATIVE==true))
    {
       //Minus sign at start - test from reverse end
       index=str.find_last_not_of(integers);
@@ -199,7 +196,7 @@ std::string CheckNumbersOnly(std::string str,bool NEGATIVE)
       //Non integers found therefore unsafe to convert
       throw exception_string;
    }
-   
+
 }
 
 //Function to convert a string to unsigned int
@@ -220,7 +217,7 @@ unsigned int StringToUINT(std::string str)
       //Non integers found therefore unsafe to convert
       retval=0; //will have to return 0 as no other suitable value can be returned
    }
-   return retval;    
+   return retval;
 }
 
 
@@ -249,7 +246,7 @@ int StringToINT(std::string str)
       //Non integers found therefore unsafe to convert
       retval=0; //will have to return 0 as no other suitable value can be returned
    }
-   return retval;    
+   return retval;
 }
 
 // function to count the number of occurences of c in str
@@ -285,7 +282,7 @@ std::string ReplaceAllWith(const std::string* strtosearch, const std::string rep
       {
          if(newstr.substr(c_count,replace.length()).compare(replace)==0)
          {
-            newstr.replace(c_count,replace.length(),sub);         
+            newstr.replace(c_count,replace.length(),sub);
             c_count+=sub.length(); //add on length of inserted string
          }
          else
@@ -329,7 +326,7 @@ double ConvertTime(std::string timestr)
    double secofday=0;
    try
    {
-      std::string hours=timestr.substr(0,timestr.find_first_of(' '));      
+      std::string hours=timestr.substr(0,timestr.find_first_of(' '));
       std::string minutes=timestr.substr(timestr.find_first_of(' ')+1,(timestr.find_last_of(' ')-timestr.find_first_of(' ')-1));
       std::string seconds=timestr.substr(timestr.find_last_of(' ')+1);
 
@@ -350,10 +347,10 @@ double ConvertTime(std::string timestr)
 // Convert a date and time into GPS seconds of week
 // date format "dd-mm-yyyy" time format "hh mm ss.ssss"
 //-------------------------------------------------------------------------
-double GetSecOfWeek(std::string datestr,std::string timestr)
+double GetSecOfWeek(std::string datestr,std::string timestr,std::string dateformat)
 {
    //First get the day of the week
-   int dayofweek=GetDayOfWeek(datestr);
+   int dayofweek=GetDayOfWeek(datestr,dateformat);
    //std::cout<<"Day of week: "<<datestr<<" "<<dayofweek<<std::endl;
 
    if((dayofweek<0)||(dayofweek>6))
@@ -362,7 +359,7 @@ double GetSecOfWeek(std::string datestr,std::string timestr)
    //Now get the seconds of day
    double secofday=ConvertTime(timestr);
    //std::cout<<"Sec of Day: "<<timestr<<" "<<secofday<<std::endl;
-   //Now return the second of week   
+   //Now return the second of week
    return dayofweek*24*3600 + secofday;
 }
 
@@ -370,14 +367,13 @@ double GetSecOfWeek(std::string datestr,std::string timestr)
 // Return a numeric value for day of week (0-sunday, 6-saturday)
 //-------------------------------------------------------------------------
 //Datestr of format "dd-mm-yyyy"
-int GetDayOfWeek(std::string datestr)
+int GetDayOfWeek(std::string datestr,std::string format)
 {
    //Create a time struct
-   #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
    struct tm mytime={0};
 
    //Fill the time struct with the date
-   FillTimeStruct(&mytime,datestr);
+   FillTimeStruct(&mytime,datestr,format);
 
    //Create a time_t object - fills in the week day in the mytime tm struct
    //dont actually bother getting the time_t object, just run mktime
@@ -390,25 +386,72 @@ int GetDayOfWeek(std::string datestr)
 //-------------------------------------------------------------------------
 // Fill in the time struct with the given date string
 //-------------------------------------------------------------------------
-void FillTimeStruct(tm* this_time,std::string datestr)
+void FillTimeStruct(tm* this_time,std::string datestr,std::string format)
 {
-   //Deconstruct the date string
-   std::string daystr=datestr.substr(0,datestr.find_first_of('-'));
-   std::string monthstr=datestr.substr(datestr.find_first_of('-')+1,datestr.find_last_of('-')-datestr.find_first_of('-')-1);
-   std::string yearstr=datestr.substr(datestr.find_last_of('-')+1);   
+   //Use the given format to deconstruct the datestr into year month day components
+   //If no format given then we default to 'dd-mm-yyyy'
+   if(format.compare("")==0)
+   {
+      format="dd-mm-yyyy";
+   }
+
+   int date[3]={0};
+   DesconstructDateString(datestr,format,date);
 
    //Fill in the day/month/year
-   this_time->tm_mday=StringToINT(daystr); //1-31
-   this_time->tm_mon=StringToINT(monthstr)-1; //0-11
-   this_time->tm_year=StringToINT(yearstr)-1900;//years since 1900
+   this_time->tm_mday=date[0];
+   this_time->tm_mon=date[1];
+   this_time->tm_year=date[2];
 }
 
+//-------------------------------------------------------------------------
+// convert datestr into integer components based on format string
+//-------------------------------------------------------------------------
+void DesconstructDateString(std::string datestr,std::string format,int* date)
+{
+   //Convert format string to lower case
+   format=ToLowerCase(format);
+   //Split into substrings based on the d's, m's and y's in format string.
+   std::string daystr=datestr.substr(format.find_first_of('d'),format.find_last_of('d')-format.find_first_of('d')+1);
+   std::string monthstr=datestr.substr(format.find_first_of('m'),format.find_last_of('m')-format.find_first_of('m')+1);
+   std::string yearstr=datestr.substr(format.find_first_of('y'),format.find_last_of('y')-format.find_first_of('y')+1);
 
+   date[0]=StringToINT(daystr);//1-31
+   date[1]=StringToINT(monthstr)-1;//0-11
+   date[2]=StringToINT(yearstr)-1900;//years since 1900
+}
 
-size_t GetNumberOfItemsFromString(std::string str,const char delim)
+//-------------------------------------------------------------------------
+// Function to pad a string with a given char such that padded string has
+// length len. If atend = true then it pads at the end of the string,
+// else at the front
+//-------------------------------------------------------------------------
+std::string pad(std::string str,char p,size_t len,bool atend)
+{
+   //No need to pad if already at required length
+   if(str.length() >= len)
+      return str;
+
+   //Create a string of the pad character with length len
+   std::string toadd(len-str.length(),p);
+   std::string padded="";
+   //Add to the string str at front or back
+   if(atend==true)
+   {
+      padded=str+toadd;
+   }
+   else
+   {
+      padded=toadd+str;
+   }
+
+   return padded;
+}
+
+size_t GetNumberOfItemsFromString(std::string str,std::string delim)
 {
    //Remove everything but the delimiter
-   std::string temp=RemoveAllBut(str,&delim);
+   std::string temp=RemoveAllBut(str,delim);
    //Count the delimiters and add 1 since e.g. "a" has no spaces in,"a b" has 1 space etc
    return temp.length()+1;
 }
@@ -445,7 +488,7 @@ std::string CreatePath(std::string p)
    std::string path;
    //Replace all ; with spaces
    path=ReplaceAllWith(&p,';',' ');
-   return path;   
+   return path;
 }
 
 //std::string GetWritableFilePath(std::string p)
@@ -453,7 +496,7 @@ std::string CreatePath(std::string p)
 //   std::string path;
 //   //Replace all ; with spaces
 //   path=ReplaceAllWith(&p,';',' ');
-//   //Now check if this is a viable path   
+//   //Now check if this is a viable path
 //   if(IsFileWritable(path))
 //   {
 //      //File path exists and can be written to
@@ -500,7 +543,7 @@ bool DoesPathExist(std::string filename)
 //}
 
 //-------------------------------------------------------------------------
-// Function to convert string to double safely 
+// Function to convert string to double safely
 // If except is false it will not throw exceptions (true by default)
 //-------------------------------------------------------------------------
 double StringToDouble(std::string str,bool except)
@@ -515,7 +558,7 @@ double StringToDouble(std::string str,bool except)
       if(except==true)
          throw "Error in StringToDouble() conversion. Converting: "+str+" and got "+ToString(val);
    }
-   return val;   
+   return val;
 }
 
 //-------------------------------------------------------------------------
@@ -576,7 +619,7 @@ unsigned int PercentProgress(unsigned int line,unsigned int nlines,bool quiet)
    static unsigned int perccount=0;
    //Test for divide by 0 in modulo statement - if <1 then return 0
    if((nlines/10.0) < 1)
-      return 0;      
+      return 0;
 
    if( line % (unsigned int)(nlines/10.0) == (unsigned int)(nlines/10.0) -1 )
    {
@@ -584,12 +627,12 @@ unsigned int PercentProgress(unsigned int line,unsigned int nlines,bool quiet)
       if(quiet == false)
       {
          #ifdef LOGGER_H
-         Logger::Log("Approximate percent complete: "+ToString(perccount)+" at line "+ToString(line));      
+         Logger::Log("Approximate percent complete: "+ToString(perccount)+" at line "+ToString(line));
          #else
-         std::cout<<"Approximate percent complete: "<<perccount<<" at line "<<line<<std::endl;   
+         std::cout<<"Approximate percent complete: "<<perccount<<" at line "<<line<<std::endl;
          #endif
       }
-   
+
       return perccount;
    }
    else
@@ -603,7 +646,7 @@ std::string DirName(std::string filename)
 {
    //Find last of '/' or '\'
    size_t index=filename.find_last_of("\\/");
-   std::string path=""; 
+   std::string path="";
    if(index!=std::string::npos)
       path=filename.substr(0,index);
    else
@@ -612,7 +655,7 @@ std::string DirName(std::string filename)
 }
 
 //-------------------------------------------------------------------------
-// Function to print out the error message for abnormal exit 
+// Function to print out the error message for abnormal exit
 // with an unknown reason - includes __FILE__ and __LINE__ of function call
 //-------------------------------------------------------------------------
 void PrintAbnormalExitMessage(const char* file, int line, std::string& exename, const char* vers, const char* contactdetails,std::string cl,std::exception* exc)
@@ -629,4 +672,29 @@ void PrintAbnormalExitMessage(const char* file, int line, std::string& exename, 
    #endif
 }
 
+
+//-------------------------------------------------------------------------
+// Function to determine limits of an array of data when you want to ignore
+// particular data values. minval and maxval will be updated with the
+// derived min and max values
+//-------------------------------------------------------------------------
+void GetArrayLimits(double* array,unsigned int length, double &minval, double &maxval, double ignorevalue)
+{
+   //Set the min and max values to the highest/lowest possible
+   minval=std::numeric_limits<double>::max();
+   maxval=-std::numeric_limits<double>::max();
+   //Loop through each element and find min/max ignoring data points with ignore value
+   for(unsigned int i=0;i<length;i++)
+   {
+      if(array[i]==ignorevalue)
+         continue;
+      else
+      {
+         if(array[i]>maxval)
+            maxval=array[i];
+         if(array[i]<minval)
+            minval=array[i];
+      }
+   }
+}
 }

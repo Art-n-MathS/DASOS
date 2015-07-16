@@ -10,6 +10,8 @@
 #include "NDVI.h"
 #include "SignatureDifferneceMap.h"
 #include "TerrainModel.h"
+#include "HeightMap.h"
+#include "AverageHeightDifference.h"
 #include <map>
 #include <algorithm>
 
@@ -27,6 +29,8 @@ MapsManager::MapsManager():m_map(0)
     m_types["FIRST_PATCH"] = 9;
     m_types["NDVI"] = 10;
     m_types["LAST_PATCH"] = 11;
+    m_types["HEIGHT"] = 12;
+    m_types["AVERAGE_HEIGHT_DIFFERENCE"] = 13;
 
 }
 
@@ -104,6 +108,14 @@ void MapsManager::createMap(
    case 11:
        std::cout << "Length of last continues patch of non empty voxels\n";
        m_map = new LastPatch(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
+   case 12:
+       std::cout << "Height Map\n";
+       m_map = new HeightMap(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
+   case 13:
+       std::cout << "Average Height Difference Map\n";
+       m_map = new AverageHeightDifference(m_infoOfMap->name,m_infoOfMap->obj);
        break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";

@@ -141,22 +141,33 @@ void Map::sample(unsigned int i_samp)
 //-----------------------------------------------------------------------------
 void Map::normalise()
 {
-   float min = m_mapValues[0];
-   float max = m_mapValues[0];
-   for(unsigned int i=0; i<m_mapValues.size(); ++i)
-   {
-      if(min>m_mapValues[i])
-      {
-         min=m_mapValues[i];
-      }else if (max<m_mapValues[i])
-      {
-         max = m_mapValues[i];
-      }
-   }
+   unsigned int i=-1;
+   float max = 104;
+   float min = 39;
+//   while (m_mapValues[++i]<0.0001);
+//   float min = m_mapValues[i];
+//   float max = m_mapValues[i];
+//   for(++i;i<m_mapValues.size(); ++i)
+//   {
+//      if(min>m_mapValues[i] && m_mapValues[i]>0.0001)
+//      {
+//         min=m_mapValues[i];
+//      }else if (max<m_mapValues[i] && m_mapValues[i]>0.0001)
+//      {
+//         max = m_mapValues[i];
+//      }
+//   }
    std::cout << "max min = " << max << " " << min << "\n";
    for(unsigned int i=0; i<m_mapValues.size(); ++i)
    {
-       m_mapValues[i] =(m_mapValues[i]-min)/(max-min)*255.0f;
+      if(m_mapValues[i]<0.0001)
+      {
+         m_mapValues[i] ==0.0f;
+      }
+      else
+      {
+         m_mapValues[i] =(m_mapValues[i]-min)/(max-min)*255.0f;
+      }
    }
 }
 

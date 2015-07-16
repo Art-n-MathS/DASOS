@@ -36,7 +36,10 @@ SOURCES += \
     src/Maps/NDVI.cpp \
     src/Maps/TerrainModel.cpp \
     src/Maps/SpectralSignature.cpp \
-    src/Maps/SignatureDifferneceMap.cpp
+    src/Maps/SignatureDifferneceMap.cpp \
+    src/Maps/AverageHeightDifference.cpp \
+    src/Maps/HeightMap.cpp \
+    src/bilLib/multifile.cpp
 
 
 INCLUDEPATH+=./include/bilLib \
@@ -91,4 +94,7 @@ HEADERS += \
     include/Maps/NDVI.h \
     include/Maps/TerrainModel.h \
     include/Maps/SpectralSignature.h \
-    include/Maps/SignatureDifferneceMap.h
+    include/Maps/SignatureDifferneceMap.h \
+    include/Maps/AverageHeightDifference.h \
+    include/Maps/HeightMap.h \
+    include/bilLib/multifile.h

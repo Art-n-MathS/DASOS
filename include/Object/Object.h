@@ -21,7 +21,7 @@ public:
     /// @brief default constructor
     //-------------------------------------------------------------------------
     Object(
-            unsigned int i_x,
+            float i_voxelLength,
             const std::vector<double> &i_user_limits
             );
     //-------------------------------------------------------------------------

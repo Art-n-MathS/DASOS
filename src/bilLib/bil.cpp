@@ -44,7 +44,7 @@ BILReader::BILReader(std::string fname)
       //An error occured, store a general error message into the brinfo stream
       if(retval!=1)
       {
-         brinfo<<"An error has occurred whilst reading from the hdr file."<<std::endl;      
+         brinfo<<"An error has occurred whilst reading from the hdr file."<<std::endl;
          throw BRexception(brinfo.str()); //Throw an exception
       }
       std::map<std::string,std::string>::iterator it; //use an iterator to access the Header map
@@ -93,7 +93,7 @@ BILReader::BILReader(std::string fname)
       if(fsize != this->filesize)
       {
          brinfo<<"Filesize from header: "<<fsize<<" does not agree with filesize from disk (for "<<this->filename<<"): "<<this->filesize<<std::endl;
-         throw BRexception(brinfo.str()); //Throw an exception         
+         throw BRexception(brinfo.str()); //Throw an exception
       }
 
       //Test for datatypes 6 or 9 - these are not capable of being read
@@ -116,11 +116,11 @@ void BILReader::Readline(char* const chdata)
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Read line has failed...stream not good.") 
-      brinfo<<"Read line function has failed because 'file stream is not good.'"<<std::endl;  
+      DEBUGPRINT("Read line has failed...stream not good.")
+      brinfo<<"Read line function has failed because 'file stream is not good.'"<<std::endl;
       brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;
       brinfo<<"File in question: "<<this->filename<<std::endl;
-      brinfo<<strerror(errno)<<std::endl;    
+      brinfo<<strerror(errno)<<std::endl;
       throw BRexception(brinfo.str());
    }
 
@@ -147,14 +147,14 @@ void BILReader::Readlines(char* const chdata, unsigned int startline, unsigned i
    //check error bit is not set
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Readlines has failed...stream not good.") 
-      brinfo<<"Readlines function has failed because 'file stream is not good.'"<<std::endl; 
-      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;     
-      brinfo<<"File in question: "<<this->filename<<std::endl;    
+      DEBUGPRINT("Readlines has failed...stream not good.")
+      brinfo<<"Readlines function has failed because 'file stream is not good.'"<<std::endl;
+      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;
+      brinfo<<"File in question: "<<this->filename<<std::endl;
       brinfo<<strerror(errno)<<std::endl;
       throw BRexception(brinfo.str());
    }
-   
+
    //DEBUG statement
    DEBUGPRINT("Reading Lines from BIL...from "<<startline<<" reading "<<numlines<<" lines.");
    DEBUGPRINT("Position in file (before seeking):"<<ftello(filein));
@@ -182,10 +182,10 @@ void BILReader::Readbytes(char* const chdata, unsigned long int nbytes)
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Readbytes has failed...stream not good.") 
-      brinfo<<"Readbytes function has failed because 'file stream is not good.'"<<std::endl; 
-      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;     
-      brinfo<<"File in question: "<<this->filename<<std::endl;    
+      DEBUGPRINT("Readbytes has failed...stream not good.")
+      brinfo<<"Readbytes function has failed because 'file stream is not good.'"<<std::endl;
+      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;
+      brinfo<<"File in question: "<<this->filename<<std::endl;
       brinfo<<strerror(errno)<<std::endl;
       throw BRexception(brinfo.str());
    }
@@ -199,7 +199,7 @@ void BILReader::Readbytes(char* const chdata, unsigned long int nbytes)
    }
    else
    {
-      brinfo<<"Attempted to read "<<nbytes<<" but file reports there are less bytes remaining to be read"<<std::endl;   
+      brinfo<<"Attempted to read "<<nbytes<<" but file reports there are less bytes remaining to be read"<<std::endl;
       throw BRexception(brinfo.str());
    }
 }
@@ -221,11 +221,11 @@ int BILReader::Readbandline(char* const chdata, unsigned int band, unsigned int 
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("Readbandline has failed...stream not good.") 
-      brinfo<<"Readbandline function has failed because 'file stream is not good.'"<<std::endl;   
-      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;   
-      brinfo<<"File in question: "<<this->filename<<std::endl;    
-      brinfo<<strerror(errno)<<std::endl;
+      DEBUGPRINT("Readbandline has failed...stream not good.")
+      brinfo<<"Readbandline function has failed because 'file stream is not good.'"<<std::endl;
+      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;
+      brinfo<<"File in question: "<<this->filename<<std::endl;
+      brinfo<<"Errno says: "<<strerror(errno)<<std::endl;
       throw BRexception(brinfo.str());
    }
 
@@ -237,17 +237,16 @@ int BILReader::Readbandline(char* const chdata, unsigned int band, unsigned int 
    uint64_t pos=(this->numsamples * this->datasize * this->numbands) * line  + (this->numsamples * this->datasize * band);
 
    //Move the file pointer to this position
-   //this->filein.seekg(pos,std::ios::beg);
-   //SeekInFileForWindows(pos);
    FileSeek(filein,pos,SEEK_SET);
 
    if(this->CheckCapacity(nbytestoread))
       fread(chdata,sizeof(char),nbytestoread,filein);
    else
    {
-      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read."<<std::endl;   
+      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read."<<std::endl;
       throw BRexception(brinfo.str());
    }
+
    return 1;
 }
 
@@ -256,18 +255,18 @@ double BILReader::ReadCell(const unsigned int band,const unsigned int line, cons
 {
    if(this->IsGood() == false)
    {
-      DEBUGPRINT("ReadCell has failed...stream not good.") 
-      brinfo<<"ReadCell function has failed because 'file stream is not good.'"<<std::endl;   
-      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;   
-      brinfo<<"File in question: "<<this->filename<<std::endl;    
+      DEBUGPRINT("ReadCell has failed...stream not good.")
+      brinfo<<"ReadCell function has failed because 'file stream is not good.'"<<std::endl;
+      brinfo<<"Further information for debugging: FERROR value: "<<this->Ferror()<<" FEOF: "<<this->Feof()<<std::endl;
+      brinfo<<"File in question: "<<this->filename<<std::endl;
       brinfo<<strerror(errno)<<std::endl;
       throw BRexception(brinfo.str());
-   }   
+   }
 
    if((line>numrows)||(col>numsamples))
    {
-      brinfo<<"ReadCell has failed...row/col out of bounds."<<std::endl;   
-      throw BRexception(brinfo.str());      
+      brinfo<<"ReadCell has failed...row/col out of bounds: row: "<<line<<" col: "<<col<<std::endl;
+      throw BRexception(brinfo.str());
    }
 
    //Get the number of bytes to skip to get to point to read
@@ -275,7 +274,6 @@ double BILReader::ReadCell(const unsigned int band,const unsigned int line, cons
    //Create a char array of the size of one cell
    char* cbuffer=new char[this->datasize];
    //Seek to and read that cell of data
-   //this->filein.seekg(nbytestoskip,std::ios::beg);;
    FileSeek(filein,nbytestoskip,SEEK_SET);
 
    fread(cbuffer,this->datasize,1,filein);
@@ -290,63 +288,87 @@ void BILReader::ReadlineToDoubles(double* const ddata,unsigned int line)
 {
    char* chtmp=new char[this->numsamples*this->numbands* this->datasize];
    Readlines(chtmp,line,1);
-
    for(unsigned int sample=0;sample<this->numsamples*this->numbands;sample++)
    {
-      //The following switch statement allows the data in chtmp to be derefenced
-      //to many types, allowing different data formats in the BIL to be used 
-      switch(this->datatype)
-      {
-      case 1: //8-bit
-         {
-            char* cderef=(char*)(chtmp);      
-            ddata[sample]=static_cast<double>(cderef[sample]);
-            break;   
-         }
-      case 2: //16 bit signed short int
-         {
-            short int* sideref=(short int*)(chtmp);      
-            ddata[sample]=static_cast<double>(sideref[sample]);
-            break;
-         }
-      case 3: //32 bit signed short int
-         {
-            int* ideref=(int*)(chtmp);      
-            ddata[sample]=static_cast<double>(ideref[sample]);
-            break;
-         }
-      case 4: //float
-         {
-            float* fderef=(float*)(chtmp);
-            ddata[sample]=static_cast<double>(fderef[sample]);
-            break;
-         }
-      case 5: //double
-         {
-            double* dderef=(double*)(chtmp);
-            ddata[sample]=static_cast<double>(dderef[sample]);
-            break;
-         }
-      case 12: //16 bit unsigned short int
-         {
-            unsigned short int* usideref=(unsigned short int*)(chtmp);
-            ddata[sample]=static_cast<double>(usideref[sample]);
-            break;
-         }
-      case 13: //32 bit unsigned int
-         {
-            unsigned int* uideref=(unsigned int*)(chtmp);
-            ddata[sample]=static_cast<double>(uideref[sample]);
-            break;
-         }
-      default:
-         throw "Unrecognised data type for BIL file. Currently supports 8-bit, signed and unsigned 16-bit and 32-bit integer, 32-bit and 64-bit float";
-         break;
-      }
-   }   
 
-
+      ddata[sample]=DerefToDouble(&chtmp[sample*datasize]);
+   }
    delete[] chtmp;
+}
+
+//-------------------------------------------------------------------------
+//Read the BIL data that falls within a rectangular area defined by the lower left (ll)
+//and upper right (ur) coordinates (Usually here BIL file is a DEM)
+//-------------------------------------------------------------------------
+int BILReader::ReadRect(char* const chdata,const int minrow, const int maxrow,const int mincol,const int maxcol)
+{
+   if(numbands!=1)
+      throw "ReadRect should currently only be used for files with 1 band.";
+
+   //Check input parameters and throw exception if they are not in correct order
+   if ((maxrow < minrow) || (maxcol < mincol))
+      throw "Order of elements in BILReader.ReadRect should be llx,lly urx,ury. Min row/col is greater than max row/col.";
+
+   //Get the extent of the area in rows/cols
+   unsigned int numlines=(maxrow+1)-minrow;
+   unsigned int numsamps=(maxcol+1)-mincol;
+
+   //Convert these to byte positions within the DEM file and the
+   //number of bytes for each line to read. Then use bil->Readbytes
+   //methodology.
+   unsigned long int numofbytesperline=numsamps*GetDataSize();
+   DEBUGPRINT("Will read "<<numsamps<<" samples of data with size "<<GetDataSize()<<" bytes from "<<numlines<<" lines.")
+
+   //Loop through each of the lines reading in the required part, storing in chdata
+   for(unsigned int l=0;l<numlines;l++)
+   {
+      //For each line to read from - read in some data
+      ReadPartOfLine(&chdata[l*numofbytesperline],l+(unsigned int)minrow,(unsigned int)mincol,numsamps);
+   }
+
+   return 0;
+}
+
+//-------------------------------------------------------------------------
+//Read in a section nsamps long starting from sampleno of a given line from
+//the dem and store in chdata array. chdata should be the size
+//of nsamps * size of data (Usually here BIL file is a DEM)
+//-------------------------------------------------------------------------
+void BILReader::ReadPartOfLine(char* const chdata,const unsigned int lineno,const unsigned int sampleno,const unsigned int nsamps)
+{
+   if(this->IsGood() == false)
+   {
+      DEBUGPRINT("ReadPartOfLine has failed...stream not good.")
+      this->brinfo<<"ReadPartOfLine has failed...stream not good."<<std::endl;
+      throw BRexception(brinfo.str());
+   }
+
+   //DEBUG statement
+   DEBUGPRINT("Reading Part Of Line from BinaryFile..."<<nsamps<<" samples starting at sample "<<sampleno<<" of line "<<lineno);
+
+   //number of bytes that should be read from the file
+   uint64_t nbytestoread=(nsamps * GetDataSize() );
+
+   //position to move file get pointer to
+   uint64_t pos=0;
+
+   //Check that there are nbytestoread left in the file, if not then throw exception
+   if(this->CheckCapacity(nbytestoread))
+   {
+      //Store the previous position
+      this->prevpointerloc=FileTell(filein);
+      //Skip pointer to new location
+      pos=lineno*this->numsamples*GetDataSize() + sampleno*GetDataSize();
+      //this->filein.seekg(pos,std::ios::beg);
+      FileSeek(filein,pos,SEEK_SET);
+      //Read in the length of data
+      fread(chdata,sizeof(char),nbytestoread,filein);
+   }
+   else
+   {
+      brinfo<<"Attempted to read "<<nbytestoread<<" but file reports there are less bytes remaining to be read"<<std::endl;
+      throw BRexception(brinfo.str());
+   }
 }
 
 }

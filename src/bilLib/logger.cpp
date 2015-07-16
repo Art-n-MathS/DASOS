@@ -78,7 +78,7 @@ void Logger::Close()
    {
       logfile.close();
       logfile.clear();
-   } 
+   }
 }
 
 
@@ -113,7 +113,7 @@ void Logger::Verbose(const std::string text)
 {
    if(VERBOSE>0)
    {
-      logtext<<text<<std::endl;  
+      logtext<<text<<std::endl;
       Flush();
    }
 }
@@ -123,7 +123,7 @@ void Logger::Verbose(const char* text)
 {
    if(VERBOSE>0)
    {
-      logtext<<text<<std::endl;  
+      logtext<<text<<std::endl;
       Flush();
    }
 }
@@ -133,7 +133,7 @@ void Logger::Debug(const std::string text)
 {
    if(VERBOSE>=2)
    {
-      logtext<<text<<std::endl;  
+      logtext<<text<<std::endl;
       Flush();
    }
 }
@@ -143,7 +143,7 @@ void Logger::Debug(const char* text)
 {
    if(VERBOSE>=2)
    {
-      logtext<<text<<std::endl;  
+      logtext<<text<<std::endl;
       Flush();
    }
 }
@@ -217,7 +217,7 @@ void Logger::WarnOnce(const char* text)
       logtext<<text<<std::endl;
       logtext<<"---------- ------- ----------"<<std::endl;
       Flush();
-   }  
+   }
 }
 
 //function to output a warning once only, no matter how many times called
@@ -239,7 +239,7 @@ void Logger::WarnOnce(const std::string text)
       logtext<<text<<std::endl;
       logtext<<"---------- ------- ----------"<<std::endl;
       Flush();
-   }  
+   }
 }
 
 
@@ -259,7 +259,7 @@ void Logger::WriteToLogfile()
       std::cout<<e.what()<<std::endl;
       std::cout<<e.info<<std::endl;
    }
-} 
+}
 
  //function to output the string stream object (if tofile true outputs to screen + file else just to screen)
 void Logger::Flush()
