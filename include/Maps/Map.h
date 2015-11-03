@@ -6,6 +6,12 @@
 #include <Object.h>
 #include <iostream>
 
+//--------------------------------------------------------------------------
+/// Special thanks to Dr. Daniel Clewley for helping me to export files into
+/// a .asc format, making the use of DASOS easier
+//--------------------------------------------------------------------------
+
+
 class Map
 {
 public:
@@ -64,7 +70,11 @@ public:
 
 
 private:
-
+   //--------------------------------------------------------------------------
+   /// @brief method that saves the map values before normalisation into
+   /// a text file
+   //--------------------------------------------------------------------------
+   void saveTxt();
    //--------------------------------------------------------------------------
    /// @brief method that normalises the values to be between 0 and 255
    //--------------------------------------------------------------------------
@@ -85,7 +95,7 @@ private:
    /// produces an image. The size of the input array should be equal to
    /// m_noOfVoxelsX*m_noOfVoxelsY
    //--------------------------------------------------------------------------
-   void saveMapToImage()const;
+   virtual void saveMapToImage();
    //--------------------------------------------------------------------------
    /// @brief method that creates a map
    //--------------------------------------------------------------------------
@@ -108,6 +118,10 @@ protected:
    /// @param[in] i_z the z coordinate of the voxel
    //--------------------------------------------------------------------------
    bool isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z);
+   //--------------------------------------------------------------------------
+   /// @brief method that flips the image due to different coordinate systems
+   //--------------------------------------------------------------------------
+   void flip();
 
    //--------------------------------------------------------------------------
    /// @brief method that returns the index of the map

@@ -336,11 +336,11 @@ std::string BinaryReader::FromHeader(std::string key,int itemnum,std::string THR
          for(int i=0;i<=itemnum;i++)
          {
             pos=str.find(';',pos+1);
-            if(pos == std::string::npos)
-            {
-               //there are less than itemnum ; in string
-               return retstr;
-            }
+//            if(pos == std::string::npos)
+//            {
+//               //there are less than itemnum ; in string
+//               return retstr;
+//            }
          }
          //found itemnum ;
          int index=str.find(';',pos+1);

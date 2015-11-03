@@ -12,6 +12,8 @@
 #include "TerrainModel.h"
 #include "HeightMap.h"
 #include "AverageHeightDifference.h"
+#include "IntensityMap.h"
+#include "IntensityMax.h"
 #include <map>
 #include <algorithm>
 
@@ -31,6 +33,11 @@ MapsManager::MapsManager():m_map(0)
     m_types["LAST_PATCH"] = 11;
     m_types["HEIGHT"] = 12;
     m_types["AVERAGE_HEIGHT_DIFFERENCE"] = 13;
+    m_types["TREE_CROWNS"] = 14;
+    m_types["TREE_CROWNS_2TEMPLATES"] = 15;
+    m_types["INTENSITY"] = 16;
+    m_types["INTENSITY_MAX"] = 17;
+    m_types["PLOT_FIELD_PLOT"] = 18;
 
 }
 
@@ -117,6 +124,32 @@ void MapsManager::createMap(
        std::cout << "Average Height Difference Map\n";
        m_map = new AverageHeightDifference(m_infoOfMap->name,m_infoOfMap->obj);
        break;
+//   case 14:
+//       std::cout << "Tree Crowns Detection\n";
+//       m_map = new TreeCrowns(m_infoOfMap->name,
+//                              m_infoOfMap->obj,
+//                              m_infoOfMap->templatesPosFileName);
+//       break;
+//   case 15:
+//       std::cout<<"Tree Crowns Detection with positive & negative templates\n";
+//       m_map = new TreeCrownsWith2Templates(m_infoOfMap->name,
+//                                            m_infoOfMap->obj,
+//                                            m_infoOfMap->templatesPosFileName,
+//                                            m_infoOfMap->templatesNegFileName);
+//       break;
+   case 16:
+       std::cout << "Intensity Average Map\n";
+       m_map = new IntensityMap(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
+   case 17:
+       std::cout << "Intensity Max Map\n";
+       m_map = new IntensityMax(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
+//   case 18:
+//       std::cout << "Plotting Field plot on a Height map\n";
+//       m_map = new FieldPlotOnHeightMap(m_infoOfMap->name,m_infoOfMap->obj,
+//                                        m_infoOfMap->fieldPlot);
+//       break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";
       break;

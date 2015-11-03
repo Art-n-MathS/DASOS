@@ -1,6 +1,8 @@
 #include "Map.h"
 #include <iostream>
+#include <fstream>
 #include <QImage>
+#include <iomanip>
 
 //-----------------------------------------------------------------------------
 Map::Map(
@@ -142,33 +144,69 @@ void Map::sample(unsigned int i_samp)
 void Map::normalise()
 {
    unsigned int i=-1;
-   float max = 104;
-   float min = 39;
-//   while (m_mapValues[++i]<0.0001);
-//   float min = m_mapValues[i];
-//   float max = m_mapValues[i];
-//   for(++i;i<m_mapValues.size(); ++i)
-//   {
-//      if(min>m_mapValues[i] && m_mapValues[i]>0.0001)
-//      {
-//         min=m_mapValues[i];
-//      }else if (max<m_mapValues[i] && m_mapValues[i]>0.0001)
-//      {
-//         max = m_mapValues[i];
-//      }
-//   }
+   while (m_mapValues[++i]<0.0001);
+   float min = m_mapValues[i];
+   float max = m_mapValues[i];
+   for(++i;i<m_mapValues.size(); ++i)
+   {
+      if(min>m_mapValues[i] && m_mapValues[i]>0.0001)
+      {
+         min=m_mapValues[i];
+      }else if (max<m_mapValues[i] && m_mapValues[i]>0.0001)
+      {
+         max = m_mapValues[i];
+      }
+   }
+   if(max-min < 0.0000001)
+   {
+      std::cout << "WARNING: Map cannot be normalised because all values are zero\n";
+      return;
+   }
    std::cout << "max min = " << max << " " << min << "\n";
    for(unsigned int i=0; i<m_mapValues.size(); ++i)
    {
       if(m_mapValues[i]<0.0001)
       {
-         m_mapValues[i] ==0.0f;
+         m_mapValues[i] =0.0f;
       }
       else
       {
          m_mapValues[i] =(m_mapValues[i]-min)/(max-min)*255.0f;
       }
    }
+}
+
+//-----------------------------------------------------------------------------
+void Map::saveTxt()
+{ 
+    std::string TextFileName = m_name + ".asc";
+    std::ofstream myfile;
+    myfile.open (TextFileName.c_str());
+    myfile << "ncols "       << std::setprecision(8) << m_object->getNoVoxelsX()
+           << "\nnrows "     << std::setprecision(8) << m_object->getNoVoxelsY()
+           << "\nxllcorner " << m_object->getMinLimits()[0]
+           << "\nyllcorner " << m_object->getMinLimits()[1]
+           << "\ncellsize "  << m_object->getVoxelLen()
+           << "\nNODATA_value -0\n";
+
+//    myfile << "ncols 184\nnrows 1424\nxllcorner 435299\nyllcorner 100985\ncellsize 3.5\nNODATA_value -0\n";
+
+    for(unsigned y=0; y<m_noOfPixelsY; ++y)
+    {
+       for(unsigned int x=0; x<m_noOfPixelsX-1; ++x)
+       {
+          myfile << m_mapValues[getIndex(x,m_noOfPixelsY-1-y)] << " ";
+       }
+       myfile << m_mapValues[getIndex(m_noOfPixelsX-1,m_noOfPixelsY-1-y)] << "\n";
+    }
+//    for(unsigned int x=0; x<m_noOfPixelsX-1; ++x)
+//    {
+//       myfile << m_mapValues[getIndex(x,m_noOfPixelsY-1)] << " ";
+//    }
+//    myfile << m_mapValues[getIndex(m_noOfPixelsX-1,m_noOfPixelsY-1)];
+    myfile.close();
+
+    std::cout << TextFileName << " is saved\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -180,6 +218,7 @@ void Map::createAndSave(unsigned int i_thres, unsigned int i_sample)
        return;
     }
     createMap();
+    saveTxt();
     normalise();
     if(i_thres!=0)
     {
@@ -193,12 +232,14 @@ void Map::createAndSave(unsigned int i_thres, unsigned int i_sample)
     {
        // keep original image
     }
+    std::cout<< "Ready to save image\n";
     saveMapToImage();
 }
 
 //-----------------------------------------------------------------------------
-void Map::saveMapToImage() const
+void Map::saveMapToImage()
 {
+    std::cout << "hohohohohohohohojhokooooooo\n";
     if (m_mapValues.size()!=m_noOfPixelsX*m_noOfPixelsY)
     {
        std::cout << "Length of i_mapValues is wrong! Image map not saved\n";
@@ -210,7 +251,7 @@ void Map::saveMapToImage() const
        for(unsigned int y=0; y<m_noOfPixelsY; ++y)
        {
           int value = (m_mapValues[getIndex(x,y)]);
-          image->setPixel(x,y,qRgb(value,value,value));
+          image->setPixel(x,(m_noOfPixelsY-1-y),qRgb(value,value,value));
        }
     }
     image->save(m_name.c_str());

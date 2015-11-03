@@ -39,7 +39,9 @@ SOURCES += \
     src/Maps/SignatureDifferneceMap.cpp \
     src/Maps/AverageHeightDifference.cpp \
     src/Maps/HeightMap.cpp \
-    src/bilLib/multifile.cpp
+    src/bilLib/multifile.cpp \
+    src/Maps/IntensityMap.cpp \
+    src/Maps/IntensityMax.cpp
 
 
 INCLUDEPATH+=./include/bilLib \
@@ -97,4 +99,6 @@ HEADERS += \
     include/Maps/SignatureDifferneceMap.h \
     include/Maps/AverageHeightDifference.h \
     include/Maps/HeightMap.h \
-    include/bilLib/multifile.h
+    include/bilLib/multifile.h \
+    include/Maps/IntensityMap.h \
+    include/Maps/IntensityMax.h

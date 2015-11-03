@@ -41,12 +41,19 @@ public:
                i_z*m_noOfVoxelsX*m_noOfVoxelsY];
     }
 
-    float isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z)
+    bool isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z)
     {
        return m_intensities[i_x+i_y*m_noOfVoxelsX+
                i_z*m_noOfVoxelsX*m_noOfVoxelsY]>m_isolevel;
     }
-
+    //-------------------------------------------------------------------------
+    /// @brief method that returns the x y z indices of a the voxel that
+    ///  contains the given point
+    /// @param[in] i_x the x-coordinates of the point
+    /// @param[in] i_y the y-coordinates of the point
+    /// @param[in] i_z the z-coordinates of the point
+    //-------------------------------------------------------------------------
+    gmtl::Vec2i getIndices(float i_x, float i_y)const;
     //-------------------------------------------------------------------------
     /// @brief method that adds the itensity of a point to the voxel area
     /// @param[in] i_point the position of the point
@@ -133,6 +140,15 @@ public:
     /// to speed up testing
     //-------------------------------------------------------------------------
     Object(const std::string &i_filename);
+    //-------------------------------------------------------------------------
+    /// @brief testing constructor - used to read data exported from a file
+    /// to speed up testing
+    //-------------------------------------------------------------------------
+    Object(const std::string &i_filename,bool evaluation);
+    //-------------------------------------------------------------------------
+    /// @brief methdod that returns the length of the voxel
+    //-------------------------------------------------------------------------
+    float getVoxelLen()const{return m_lengthOfVoxel;}
 
 
 protected:
@@ -157,6 +173,10 @@ protected:
             int i_y,
             int i_z
             )const;
+    //-------------------------------------------------------------------------
+    /// @brief
+    //-------------------------------------------------------------------------
+    void readObjectFromFile(const std::string &i_filename, bool evaluation);
 
     //-------------------------------------------------------------------------
     /// @brief the min limits of the object
@@ -202,6 +222,8 @@ protected:
     //-------------------------------------------------------------------------
     double m_noiseLevel;
 
+    unsigned countIncludedPoints;
+    unsigned countNotInclPoints;
 };
 
 #endif // OBJECT_H

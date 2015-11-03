@@ -340,7 +340,9 @@ void GLData::exportToObj(
    std::string mtlName("");
    if(i_bilFileName!="")
    {
+      std::cout << "Before exporting Texture Image\n";
       exportHyperToImage(i_bilFileName,i_name,i_bands);
+      std::cout << "After exporting Texture Image\n";
       std::ofstream mtlFile;
       mtlName=i_name+".mtl";
       mtlFile.open(mtlName.c_str());
@@ -396,25 +398,25 @@ void GLData::exportToObj(
        }
        myfile <<"\n\n";
 
-       // m_classUVs are UVs used for validation datasets
-       if(m_vertices.size()/3*2+1 == m_classUVs.size())
-       {
-          // UVs has been calculated and better be saved into the file
-          for(unsigned int i=0; i<m_classUVs.size()-1; i+=2)
-          {
-             myfile << "vt " << m_classUVs[i] << " " << m_classUVs[i+1] << "\n";
-          }
-       }
-
-//       // uvs used for texturing
-//       if(m_vertices.size()/3*2+1 == m_UVs.size())
+//       // m_classUVs are UVs used for validation datasets
+//       if(m_vertices.size()/3*2+1 == m_classUVs.size())
 //       {
-//         // UVs has been calculated and better be saved into the file
-//          for(unsigned int i=0; i<m_UVs.size()-1; i+=2)
+//          // UVs has been calculated and better be saved into the file
+//          for(unsigned int i=0; i<m_classUVs.size()-1; i+=2)
 //          {
-//             myfile << "vt " << m_UVs[i] << " " << m_UVs[i+1] << "\n";
+//             myfile << "vt " << m_classUVs[i] << " " << m_classUVs[i+1] << "\n";
 //          }
 //       }
+
+       // uvs used for texturing
+       if(m_vertices.size()/3*2+1 == m_UVs.size())
+       {
+         // UVs has been calculated and better be saved into the file
+          for(unsigned int i=0; i<m_UVs.size()-1; i+=2)
+          {
+             myfile << "vt " << m_UVs[i] << " " << m_UVs[i+1] << "\n";
+          }
+       }
        for(int i=0; i<nsize; i+=3)
        {
          myfile <<"vn "<< m_normals[i]<<" "<< m_normals[i+1]

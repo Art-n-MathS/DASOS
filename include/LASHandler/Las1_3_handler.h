@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-#include "Types.h"
+#include "LAS1_3Types.h"
 #include "Object.h"
 
 class Las1_3_handler
@@ -27,9 +27,7 @@ public:
    /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]
    /// @return the implicit object which is a made by voxels
    //-------------------------------------------------------------------------
-   Object *readFileAndGetObject(float i_voxelLength,
-           const std::vector<double> &user_limits,
-           double noiseLevel,
+   void readFileAndGetObject(Object *i_obj,
            const std::string i_type
            );
    //-------------------------------------------------------------------------
@@ -52,7 +50,7 @@ protected:
    //-------------------------------------------------------------------------
    /// @brief the publi header block of the LAS1.3 file
    //-------------------------------------------------------------------------
-   Types::Public_Header_Block public_header;
+   LAS1_3Types::Public_Header_Block public_header;
    //-------------------------------------------------------------------------
    /// @brief the intensity histogram of the lasfile
    //-------------------------------------------------------------------------
@@ -60,11 +58,11 @@ protected:
    //-------------------------------------------------------------------------
    /// @brief Leica mission information
    //-------------------------------------------------------------------------
-   Types::Leica_mission_info mis_info;
+   LAS1_3Types::Leica_mission_info mis_info;
    //-------------------------------------------------------------------------
    /// @brief waveform packet descriptor
    //-------------------------------------------------------------------------
-   Types::WF_packet_Descriptor wv_info;
+   LAS1_3Types::WF_packet_Descriptor wv_info;
 
 private:
    //-------------------------------------------------------------------------

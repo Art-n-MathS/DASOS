@@ -308,30 +308,27 @@ void MarchingCubes::generateClassUVs(GLData *i_glData)
    {
       i_glData->m_classUVs[i*2  ]=(i_glData->m_vertices[i*3   ]-m_minLimits[0])/
                                   (m_maxLimits[0]-m_minLimits[0]);
-      i_glData->m_classUVs[i*2+1]=-(i_glData->m_vertices[i*3+1]-m_minLimits[1])/
+      i_glData->m_classUVs[i*2+1]=(i_glData->m_vertices[i*3+1]-m_minLimits[1])/
                                   (m_maxLimits[1]-m_minLimits[1]);
    }
 }
 
 //-----------------------------------------------------------------------------
-GLData *MarchingCubes::createPolygonisedObject()
+void MarchingCubes::createPolygonisedObject(GLData *i_gldata)
 {
    clock_t t1,t2;
    t1 =clock();
 
-   GLData *glData = new GLData;
-   glData->m_maxLimits = gmtl::Vec3f(m_maxLimits[0],m_maxLimits[1],m_maxLimits[2]);
-   glData->m_minLimits = gmtl::Vec3f(m_minLimits[0],m_minLimits[1],m_minLimits[2]);
-   m_hashTable.setGLData(glData);
-   computeVertices(glData);
-   computeNormals(glData);
-   generateClassUVs(glData);
+   i_gldata->m_maxLimits = gmtl::Vec3f(m_maxLimits[0],m_maxLimits[1],m_maxLimits[2]);
+   i_gldata->m_minLimits = gmtl::Vec3f(m_minLimits[0],m_minLimits[1],m_minLimits[2]);
+   m_hashTable.setGLData(i_gldata);
+   computeVertices(i_gldata);
+   computeNormals(i_gldata);
+   generateClassUVs(i_gldata);
 
    t2 = clock();
    float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
    std::cout << "Polygonisation took " << diff << " SECONDS!!!\n";
-
-   return glData;
 }
 
 

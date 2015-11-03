@@ -108,7 +108,7 @@ BSQReader::~BSQReader()
 }
 
 //Read 1 line for all bands [equivalent number of bytes from current position]
-void BSQReader::Readline(char* const chdata)
+void BSQReader::Readline(char* const /*chdata*/)
 {
    throw BRexception("This method is deprecated and should not be used (It doesn't even exist - maybe it should).");
 }
@@ -128,7 +128,7 @@ void BSQReader::Readlines(char* const chdata, unsigned int startline, unsigned i
    //DEBUG statement
    DEBUGPRINT("Reading Lines from BSQ...from "<<startline<<" reading "<<numlines<<" lines.");
    //number of bytes that should be read from the file
-   uint64_t nbytestoread=(this->numsamples * this->datasize * this->numbands) * numlines;
+//   uint64_t nbytestoread=(this->numsamples * this->datasize * this->numbands) * numlines;
    uint64_t bytesperline=(this->numsamples * this->datasize);
    //position at which to start reading from
    //unsigned long int pos=bytesperline * startline;
@@ -171,7 +171,7 @@ void BSQReader::Readbytes(char* const chdata, uint64_t nbytes)
 }
 
 //Reads the specified band
-int BSQReader::Readband(char* const chdata, unsigned int band)
+int BSQReader::Readband(char* const chdata, unsigned int /*band*/)
 {
    if(this->IsGood() == false)
    {

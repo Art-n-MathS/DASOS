@@ -323,16 +323,16 @@ int main (int argc, char const* argv[])
             objFileName = "22.vl1.4";
 
 
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
-//            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
+            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
 
 //            mInfo.push_back(new MapsManager::mapInfo);
 //            mInfo[mapsIndex]->type = "HYPERSPECTRAL_MEAN";
@@ -439,16 +439,16 @@ int main (int argc, char const* argv[])
 //            mInfo[mapsIndex]->samp = 0;
 //            mapsIndex++;
 
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "HEIGHT";
-//            mInfo[mapsIndex]->name = "21.HEIGHT.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "HEIGHT";
+            mInfo[mapsIndex]->name = "21.HEIGHT.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
 
 //            mInfo.push_back(new MapsManager::mapInfo);
 //            mInfo[mapsIndex]->type = "AVERAGE_HEIGHT_DIFFERENCE";
@@ -557,23 +557,25 @@ int main (int argc, char const* argv[])
    }
    Las1_3_handler lala(lasFileName);
    std::vector<double> userLimits(lala.getBoundaries());
-//   Object *obj = new Object("NewForest22.txt");
-   Object *obj = lala.readFileAndGetObject(voxelLength, userLimits, noiseLevel,type);
+
+
+   Object *obj = new Object(voxelLength,userLimits);
+   obj->setNoiseLevel(noiseLevel);
+   lala.readFileAndGetObject(obj,type);
    obj->setIsolevel(isolevel);
-   obj->exportToFile("NewForest22_vl1.4.txt");
 
    if(objFileName!="")
    {
-      GLData *glData = NULL;
+      GLData *glData = new GLData;
       if(intergalVolume)
       {
          MCwithIntegralImages mc(obj,ceil((userLimits[2]-userLimits[3])/voxelLength));
-         glData= mc.createPolygonisedObject();
+         mc.createPolygonisedObject(glData);
       }
       else
       {
          MarchingCubes mc(obj,ceil((userLimits[2]-userLimits[3])/voxelLength));
-         glData= mc.createPolygonisedObject();
+         mc.createPolygonisedObject(glData);
       }
       if(igmFileName!="")
       {
@@ -590,6 +592,7 @@ int main (int argc, char const* argv[])
     std::cout << "mapsIndex = " << mapsIndex << "\n";
     for(unsigned int i=0; i<mapsIndex; ++i)
     {
+       std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n";
        std::cout << mInfo[i]->type << "\n";
        mInfo[i]->obj = obj;
        m.createMap(mInfo[i]);
@@ -597,6 +600,7 @@ int main (int argc, char const* argv[])
    }
 
    delete obj;
+
    std::cout << "   ***   EXIT   ***\n";
    return 0;
 }

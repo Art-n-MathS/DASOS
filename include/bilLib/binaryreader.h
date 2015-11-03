@@ -52,16 +52,16 @@ public:
    virtual unsigned int GetDataSize() const {return datasize;}
    virtual unsigned int GetDataType() const {return datatype;}
 
-   virtual void Readline(char* const chdata){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);} //Read 1 line for all bands [equivalent number of bytes from current position]
+   virtual void Readline(char* const /*chdata*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);} //Read 1 line for all bands [equivalent number of bytes from current position]
    virtual void Readline(char* const chdata, unsigned int line) //Read specified line for all bands
          {Readlines(chdata,line,1);} //This is essentially a special case of readlines where numlines=1
-   virtual void Readlines(char* const chdata, unsigned int startline, unsigned int numlines){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //Read numlines lines of data from startline
-   virtual void Readbytes(char* const chdata, unsigned long int bytes){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //Read the specified number of bytes from current position
-   virtual int Readband(char* const chdata, unsigned int band){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //Reads the specified band
-   virtual int Readbandline(char* const chdata, unsigned int band, unsigned int line){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //reads the given line for the given band
+   virtual void Readlines(char* const /*chdata*/, unsigned int /*startline*/, unsigned int /*numlines*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //Read numlines lines of data from startline
+   virtual void Readbytes(char* const /*chdata*/, unsigned long int /*bytes*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //Read the specified number of bytes from current position
+   virtual int Readband(char* const /*chdata*/, unsigned int /*band*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //Reads the specified band
+   virtual int Readbandline(char* const /*chdata*/, unsigned int /*band*/, unsigned int /*line*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);}; //reads the given line for the given band
 
-   virtual double ReadCell(const unsigned int band,const unsigned int line, const unsigned int col){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);};
-   virtual void ReadlineToDoubles(double* const ddata,unsigned int line){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);};
+   virtual double ReadCell(const unsigned int /*band*/,const unsigned int /*line*/, const unsigned int /*col*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);};
+   virtual void ReadlineToDoubles(double* const /*ddata*/,unsigned int /*line*/){throw BRexception("Undefined function call: ",__PRETTY_FUNCTION__);};
 
    virtual bool IsOpen()const{if(filein==NULL){return false;} else {return true;}} //test if the binary BIL file is open
    virtual bool IsGood()const{if(ferror(filein)!=0){return false;} else if(feof(filein)!=0){return false;}else{return true;} }//Test if eof/fail/bad bits set
@@ -90,7 +90,7 @@ public:
    std::string HeaderDump(bool ret);
 
    //Including this as it is required by DEMBinFile - maybe better to inheri this class as DEMBinaryReader?
-   virtual int ReadRect(char* const chdata, const int minrow, const int maxrow,const int mincol,const int maxcol) {throw "Undefined function call.";};
+   virtual int ReadRect(char* const /*chdata*/, const int /*minrow*/, const int /*maxrow*/,const int /*mincol*/,const int /*maxcol*/) {throw "Undefined function call.";};
    //Tidy up strings passed to header file
    virtual std::string TidyForHeader(std::string totidy,bool wrapinbraces=false);
 

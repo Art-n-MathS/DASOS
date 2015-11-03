@@ -42,7 +42,7 @@ void HyperMean::createMap()
        const unsigned int noX = m_object->getNoVoxelsX();
        const unsigned int noY = m_object->getNoVoxelsY();
        unsigned int *pixPos = NULL;
-       float tempValue = 0;
+//       float tempValue = 0;
 
        // add one band to the map each time to avoid loading all the data
        // to memory

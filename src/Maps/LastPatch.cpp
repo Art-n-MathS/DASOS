@@ -27,7 +27,7 @@ void LastPatch::createMap()
          }
          if(z<=0)
          {
-            m_mapValues[getIndex(x,y)] = 0.0f;
+            m_mapValues[getIndex(x,y)] = -0.0f;
          }
          else
          {

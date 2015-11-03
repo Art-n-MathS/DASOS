@@ -20,6 +20,9 @@ public:
        std::string fodisFileName;
        std::string spectralSignature;
        std::string spectralSignatureType;
+       std::string templatesPosFileName;
+       std::string templatesNegFileName;
+       std::string fieldPlot;
     };
 
     //-------------------------------------------------------------------------

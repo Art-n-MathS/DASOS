@@ -21,7 +21,7 @@ public:
    /// @note memory is dynamic allocated and by calling the function you are
    /// responsible for freeing the memory afterwards
    //--------------------------------------------------------------------------
-   GLData *createPolygonisedObject();
+   void createPolygonisedObject(GLData *i_gldata);
    //--------------------------------------------------------------------------
    /// @param[in] default destructor
    //--------------------------------------------------------------------------

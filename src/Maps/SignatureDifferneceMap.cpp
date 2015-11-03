@@ -39,8 +39,8 @@ void SignatureDifferneceMap::createMap()
 
 
        bilLib::BinFile fileFodis(m_fodisFileName);
-       unsigned int nsampsF=bilLib::StringToUINT(fileFodis.FromHeader("samples"));
-       unsigned int nlinesF=bilLib::StringToUINT(fileFodis.FromHeader("lines"));
+//       unsigned int nsampsF=bilLib::StringToUINT(fileFodis.FromHeader("samples"));
+//       unsigned int nlinesF=bilLib::StringToUINT(fileFodis.FromHeader("lines"));
        unsigned int nbandsF=bilLib::StringToUINT(fileFodis.FromHeader("bands"));
 
        Grid *grid = new Grid(m_IGMfileName,m_object->m_lengthOfVoxel*1.8,

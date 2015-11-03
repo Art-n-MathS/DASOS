@@ -9,20 +9,22 @@
 //-----------------------------------------------------------------------------
 Object::Object(float i_voxelLength, const std::vector<double> &i_userLimits):
     m_integralVolume(0),
+    m_lengthOfVoxel(i_voxelLength),
     m_lowerLimits(gmtl::Vec3f(i_userLimits[3],i_userLimits[1],i_userLimits[5])),
     m_higherLimits(gmtl::Vec3f(i_userLimits[2]+0.0001,
                              i_userLimits[0]+0.0001,
                              i_userLimits[4]+0.0001)),
     m_isolevel(-99.9999999),
     m_noiseLevel(0.0),
-    m_lengthOfVoxel(i_voxelLength)
+    countIncludedPoints(0),
+    countNotInclPoints(0)
 {
     m_noOfVoxelsX = ceil((i_userLimits[2]-i_userLimits[3])/i_voxelLength);
     m_dis[0]= (m_higherLimits[0] - m_lowerLimits[0]);
     for(unsigned int i=0; i<3;++i)
     {
-       m_higherLimits[i]+=(i_voxelLength+0.001);
-       m_lowerLimits[i]-=(i_voxelLength+0.001);
+       m_higherLimits[i]+=(i_voxelLength+0.00001);
+       m_lowerLimits[i]-=(i_voxelLength+0.00001);
     }
     m_dis[0]= (m_higherLimits[0] - m_lowerLimits[0]);
     m_dis[1] = (m_higherLimits[1] - m_lowerLimits[1]);
@@ -44,6 +46,17 @@ Object::Object(float i_voxelLength, const std::vector<double> &i_userLimits):
     std::cout << "Object constructor : no of voxels = " << m_noOfVoxelsX << " " << m_noOfVoxelsY <<  " " << m_noOfVoxelsZ << "\n";
     std::cout << "Max Limits " << m_higherLimits[0] << " " << m_higherLimits[1] << " " << m_higherLimits[2] << "\n";
     std::cout << "Min Limits " << m_lowerLimits[0] << " " << m_lowerLimits[1] << " " << m_lowerLimits[2] << "\n";
+}
+
+//-----------------------------------------------------------------------------
+gmtl::Vec2i Object::getIndices(float i_x, float i_y) const
+{
+   gmtl::Vec2i indices;
+   indices[0] = floor((i_x-m_lowerLimits[0])
+                               /m_dis[0]*m_noOfVoxelsX);
+   indices[1] = floor((i_y-m_lowerLimits[1])
+                               /m_dis[1]*m_noOfVoxelsY);
+   return indices;
 }
 
 //-----------------------------------------------------------------------------
@@ -98,6 +111,8 @@ gmtl::Vec3f Object::getCentreOfVoxel(
                      m_lowerLimits[2]+((float)i_z-0.5f)*m_lengthOfVoxel);
 }
 
+
+
 //-----------------------------------------------------------------------------
 void Object::addItensity(const gmtl::Vec3f &point, float i_intensity)
 {
@@ -114,9 +129,14 @@ void Object::addItensity(const gmtl::Vec3f &point, float i_intensity)
          i_point[1]>m_lowerLimits[1] && i_point[1]<m_higherLimits[1] &&
          i_point[2]>m_lowerLimits[2] && i_point[2]<m_higherLimits[2])
       {
+         countIncludedPoints++;
          unsigned int index = this->getIndex(i_point);
          m_intensities[index]+=(i_intensity);
          m_noOfReturnsPerVoxel[index]++;
+      }
+      else
+      {
+         countNotInclPoints++;
       }
    }
 }
@@ -178,67 +198,86 @@ void Object::exportToFile(std::string i_filename)
 }
 
 
-//-----------------------------------------------------------------------------
-Object::Object(const std::string &i_filename)
+void Object::readObjectFromFile(const std::string &i_filename, bool evaluation)
 {
-   m_integralVolume = 0;
-   std::cout << "Object created from file\n";
-   std::ifstream mystream(i_filename.c_str());
-   if(!mystream)
-   {
-      std::cerr << "File \"" << i_filename << "\" not found.\n";
-   }
-   std::istream_iterator<std::string> it(mystream);
-   std::istream_iterator<std::string> sentinel;
+    m_integralVolume = 0;
+    std::cout << "Object created from file\n";
+    std::ifstream mystream(i_filename.c_str());
+    if(!mystream)
+    {
+       std::cerr << "File \"" << i_filename << "\" not found.\n";
+    }
+    std::istream_iterator<std::string> it(mystream);
+    std::istream_iterator<std::string> sentinel;
 
-   std::vector<std::string> words(it,sentinel);
+    std::vector<std::string> words(it,sentinel);
 
-   if(words.size()<24)
-   {
-      std::cerr << "ERROR: File \"" << i_filename
-                << "\" is not written in the correct format.\n";
-      return;
-   }
-   std::cout << words[23] << "\n";
-   if(words.size()!=(unsigned int)(24+atoi(words[23].c_str())))
-   {
+    if(words.size()<24)
+    {
        std::cerr << "ERROR: File \"" << i_filename
                  << "\" is not written in the correct format.\n";
        return;
-   }
+    }
+    std::cout << words[23] << "\n";
+    if(words.size()!=(unsigned int)(24+atoi(words[23].c_str())))
+    {
+        std::cerr << "ERROR: File \"" << i_filename
+                  << "\" is not written in the correct format.\n";
+        return;
+    }
 
-//    LowerLimits x1 y2 z3
-//    HigherLimits x5 y6 z7
-//    Isolevel Iso9
-//    NoOfVoxels x11 y12 z13
-//    Distance dx15 dy16 dz17
-//    NoiseLevel l19
-//    NumberOfIntensities Num21
-//    - All the intensities
-   m_lowerLimits[0] = atof(words[1].c_str());
-   m_lowerLimits[1] = atof(words[2].c_str());
-   m_lowerLimits[2] = atof(words[3].c_str());
-   m_higherLimits[0] = atof(words[5].c_str());
-   m_higherLimits[1] = atof(words[6].c_str());
-   m_higherLimits[2] = atof(words[7].c_str());
-   m_isolevel = atof(words[9].c_str());
-   m_noOfVoxelsX = atoi(words[11].c_str());
-   m_noOfVoxelsY = atoi(words[12].c_str());
-   m_noOfVoxelsZ = atoi(words[13].c_str());
-   m_dis[0] = atof(words[15].c_str());
-   m_dis[1] = atof(words[16].c_str());
-   m_dis[2] = atof(words[17].c_str());
-   m_noiseLevel = atof(words[19].c_str());
-   m_lengthOfVoxel = atof(words[21].c_str());
-   std::cout << m_lengthOfVoxel << "\n";
-   unsigned int inum = (unsigned int) atoi(words[23].c_str());
-   m_intensities.resize(inum);
-   for(unsigned int i = 0; i < inum; ++i)
-   {
-      m_intensities[i] = atof(words[24+i].c_str());
-   }
-//   m_lengthOfVoxel = m_dis[0]/m_noOfVoxelsX;
+ //    LowerLimits x1 y2 z3
+ //    HigherLimits x5 y6 z7
+ //    Isolevel Iso9
+ //    NoOfVoxels x11 y12 z13
+ //    Distance dx15 dy16 dz17
+ //    NoiseLevel l19
+ //    NumberOfIntensities Num21
+ //    - All the intensities
+    m_lowerLimits[0] = atof(words[1].c_str());
+    m_lowerLimits[1] = atof(words[2].c_str());
+    m_lowerLimits[2] = atof(words[3].c_str());
+    m_higherLimits[0] = atof(words[5].c_str());
+    m_higherLimits[1] = atof(words[6].c_str());
+    m_higherLimits[2] = atof(words[7].c_str());
+    m_isolevel = atof(words[9].c_str());
+    m_noOfVoxelsX = atoi(words[11].c_str());
+    m_noOfVoxelsY = atoi(words[12].c_str());
+    m_noOfVoxelsZ = atoi(words[13].c_str());
+    m_dis[0] = atof(words[15].c_str());
+    m_dis[1] = atof(words[16].c_str());
+    m_dis[2] = atof(words[17].c_str());
+    m_noiseLevel = atof(words[19].c_str());
+    m_lengthOfVoxel = atof(words[21].c_str());
+    std::cout << m_lengthOfVoxel << "\n";
+    unsigned int inum = (unsigned int) atoi(words[23].c_str());
+    if(!evaluation)
+    {
+       m_intensities.resize(inum);
+       for(unsigned int i = 0; i < inum; ++i)
+       {
+          m_intensities[i] = atof(words[24+i].c_str());
+       }
+    }
+    else
+    {
+       std::cout << "WARNING: Object has been partially created, only use this"
+                 << " option for evalueation, otherwise segmentation fault may"
+                 << " occur! creating Object\n";
+    }
+ //   m_lengthOfVoxel = m_dis[0]/m_noOfVoxelsX;
+}
 
+//-----------------------------------------------------------------------------
+Object::Object(const std::string &i_filename)
+{
+   readObjectFromFile(i_filename,false);
+}
+
+//-----------------------------------------------------------------------------
+Object::Object(const std::string &i_filename, bool evaluation)
+{
+   readObjectFromFile(i_filename,evaluation);
 }
 
 
@@ -251,6 +290,9 @@ void Object::setNoiseLevel(double i_noiseLevel)
 //-----------------------------------------------------------------------------
 void Object::normalise()
 {
+   std::cout << "======================================\n";
+   std::cout << "Points Included vs Points Not included: " << countIncludedPoints << " " << countNotInclPoints << "\n";
+   std::cout << "======================================\n";
    if(m_noOfReturnsPerVoxel.size()!=m_intensities.size())
    {
       std::cout << "Warning: Object Normalisation has already been called\n";
