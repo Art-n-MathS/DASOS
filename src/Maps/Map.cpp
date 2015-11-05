@@ -4,6 +4,8 @@
 #include <QImage>
 #include <iomanip>
 
+
+
 //-----------------------------------------------------------------------------
 Map::Map(
         const std::string i_name,
@@ -239,7 +241,6 @@ void Map::createAndSave(unsigned int i_thres, unsigned int i_sample)
 //-----------------------------------------------------------------------------
 void Map::saveMapToImage()
 {
-    std::cout << "hohohohohohohohojhokooooooo\n";
     if (m_mapValues.size()!=m_noOfPixelsX*m_noOfPixelsY)
     {
        std::cout << "Length of i_mapValues is wrong! Image map not saved\n";

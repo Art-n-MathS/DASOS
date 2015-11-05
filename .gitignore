@@ -3,3 +3,4 @@
 *.obj
 *.png
 /data/*
+*.asc

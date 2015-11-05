@@ -74,7 +74,6 @@ HEADERS += \
     include/bilLib/logger.h \
     include/LASHandler/DiscreteData.h \
     include/LASHandler/Las1_3_handler.h \
-    include/LASHandler/Types.h \
     include/Object/IntegralVolumes.h \
     include/Object/Object.h \
     include/Object/GLData.h \
@@ -101,4 +100,5 @@ HEADERS += \
     include/Maps/HeightMap.h \
     include/bilLib/multifile.h \
     include/Maps/IntensityMap.h \
-    include/Maps/IntensityMax.h
+    include/Maps/IntensityMax.h \
+    include/LASHandler/LAS1_3Types.h

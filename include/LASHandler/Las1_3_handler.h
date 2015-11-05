@@ -75,6 +75,21 @@ private:
    //-------------------------------------------------------------------------
    void read_variable_length_records();
    //-------------------------------------------------------------------------
+   /// @brief method that read Point Record Format 4
+   //-------------------------------------------------------------------------
+   void read_point_record_format_4(
+           Object *i_obj,
+           const std::string i_type
+           );
+   //-------------------------------------------------------------------------
+   /// @brief method that read Point Record Format 0
+   //-------------------------------------------------------------------------
+   void read_point_record_format_0(Object *i_obj);
+   //-------------------------------------------------------------------------
+   /// @brief method that read Point Record Format 1
+   //-------------------------------------------------------------------------
+   void read_point_record_format_1(Object *i_obj);
+   //-------------------------------------------------------------------------
    /// @brief saved here to avoid opening and closing the file multiple times
    //-------------------------------------------------------------------------
    std::ifstream lasfile;

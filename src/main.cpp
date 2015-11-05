@@ -47,8 +47,8 @@ int main (int argc, char const* argv[])
    std::string objFileName("");
    std::string fodisFileName("");
    double voxelLength = 1.8f;
-   double noiseLevel = 15.0f;
-   double isolevel = -99.999999f;
+   double noiseLevel = 25.0f;
+   double isolevel = -100.0f;
    // TYPES:
    // 0. Full-waveform
    // 1. All_Discrete
@@ -281,58 +281,24 @@ int main (int argc, char const* argv[])
             bilFileName = "data/e098211b_masked.bil";
             fodisFileName = "data/e098211b_FODIS.bil";
 
-            //22
-            lasFileName = "/local1/data/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009822.LAS";
-            igmFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.ReprojectedOSNG/e098221b_osgn.igm";
-            bilFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/01.masked_data/e098221b_masked.bil";
-            fodisFileName = "data/e098211b_FODIS.bil";
-
-//            //16
-//            lasFileName = "/local1/data/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009816.LAS";
-//            igmFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/03.ReprojectedOSNG/e098161b_osgn.igm";
-//            bilFileName = "/local1/data/scratch/mmi/2010_098_NewForest/FW10_01-098-hyperspectral-20120713/processed/01.masked_data/e098161b_masked.bil";
-//            fodisFileName = "data/e098211b_FODIS.bil";
-
-
-//            lasFileName = "/users/rsg/arsf/arsf_data/2012/flight_data/uk/RG12_10-2012_206b_Milton_Keynes/processing/delivery/RG12_10-206b-lidar-20150223/flightlines/fw_laser/las1.3/LDR-FW-RG12_10-2012-206b-07.LAS";
-//            lasFileName = "/local1/data/scratch/mmi/2010_098_NewForest/classified_fw_laser/LDR-FW-FW10_01-201009818.LAS";
-//            lasFileName = "/local1/data/scratch/mmi/FW10_01_2010_187_Dennys_wood/fw_laser/LDR-FW-FW10_01-201018713.LAS";
-//            lasFileName = "/users/rsg/arsf/arsf_data/2012/flight_data/uk/RG12_10-2012_208_Milton_Keynes/delivery/RG12_10-208-lidar-20150223/flightlines/fw_laser/las1.3/LDR-FW-RG12_10-2012-208-17.LAS";
-//            lasFileName = "/users/rsg/arsf/arsf_data/2012/flight_data/uk/RG12_10-2012_249_Luton/processing/delivery/RG12_10-249-lidar-20150223/flightlines/fw_laser/las1.3/LDR-FW-RG12_10-2012-249-03.LAS";
-//            lasFileName = "/users/rsg/arsf/arsf_data/2012/flight_data/uk/RG12_10-2012_250_Luton_Bedford/delivery/RG12_10-250-lidar-20130121/flightlines/fw_laser/las1.3/LDR-FW-RG12_10-2012-250-18.LAS";
-
-//            // Termal data
-//            lasFileName = "/local1/data/scratch/mmi/ThermalRissData/LDR140826_235340_4.LAS";
-//            igmFileName = "/local1/data/scratch/mmi/ThermalRissData/owl/o216023b_p_sct2.00_osng.igm";
-//            bilFileName = "/local1/data/scratch/mmi/ThermalRissData/owl/OWL216-14-1_proc.bil";
-
-
-
-            voxelLength = 1.4f;
-            noiseLevel = 25.0f;
-            isolevel = -100.0f;
-
-//            igmFileName = "data/e098211b_osgn.igm";
-//            bilFileName = "data/e098211b_masked.bil";
-//            fodisFileName = "data/e098211b_FODIS.bil";
             bands[0] = 140;
             bands[1] = 78;
             bands[2] = 23;
 
 
-            objFileName = "22.vl1.4";
+//            objFileName = "22.vl1.4";
 
 
-            mInfo.push_back(new MapsManager::mapInfo);
-            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
-            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL.png";
-            mInfo[mapsIndex]->band = 140;
-            mInfo[mapsIndex]->bilFileName = bilFileName;
-            mInfo[mapsIndex]->IGMfileName = igmFileName;
-            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-            mInfo[mapsIndex]->thres = 0;
-            mInfo[mapsIndex]->samp = 0;
-            mapsIndex++;
+//            mInfo.push_back(new MapsManager::mapInfo);
+//            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
+//            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL.png";
+//            mInfo[mapsIndex]->band = 140;
+//            mInfo[mapsIndex]->bilFileName = bilFileName;
+//            mInfo[mapsIndex]->IGMfileName = igmFileName;
+//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+//            mInfo[mapsIndex]->thres = 0;
+//            mInfo[mapsIndex]->samp = 0;
+//            mapsIndex++;
 
 //            mInfo.push_back(new MapsManager::mapInfo);
 //            mInfo[mapsIndex]->type = "HYPERSPECTRAL_MEAN";
@@ -450,16 +416,16 @@ int main (int argc, char const* argv[])
             mInfo[mapsIndex]->samp = 0;
             mapsIndex++;
 
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "AVERAGE_HEIGHT_DIFFERENCE";
-//            mInfo[mapsIndex]->name = "22.AVERAGE_HEIGHT_DIFFERENCE.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "AVERAGE_HEIGHT_DIFFERENCE";
+            mInfo[mapsIndex]->name = "22.AVERAGE_HEIGHT_DIFFERENCE.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
 
 
             break;
@@ -491,7 +457,7 @@ int main (int argc, char const* argv[])
 //           std::cout << buff;
            std::sprintf(buff,"%-30s %s", "-opt <on/off>", "Enables/Disables the optimisation that uses Integral Images to discard empty chunks of voxels during polygonisation. By default the optimisation is enabled.\n\n");
            std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map <type> <outputName>", "The available types are: \"NON-EMPTY_VOXELS\", \"DENSITY\", \"THICKNESS\", \"FIRST_PATCH\", \"LAST_PATCH\", \"HYPERSPECTRAL_MEAN\", \"NDVI\", \"LOWEST_RETURN\" \n\n");
+           std::sprintf(buff,"%-30s %s", "-map <type> <outputName>", "The available types are: \"AVERAGE_HEIGHT_DIFFERENCE\", \"NON-EMPTY_VOXELS\", \"DENSITY\", \"THICKNESS\", \"FIRST_PATCH\", \"LAST_PATCH\", \"HYPERSPECTRAL_MEAN\", \"NDVI\", \"LOWEST_RETURN\" \n\n");
            std::cout << buff;
            std::sprintf(buff,"%-30s %s", "-map HYPERSPECTRAL <band> <outputName>", "The hyperspectral map needs an extra parameter defining which band will be outputed\n\n");
            std::cout << buff;

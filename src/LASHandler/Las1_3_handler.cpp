@@ -32,140 +32,145 @@ Las1_3_handler::Las1_3_handler(
    lasfile.seekg((int) public_header.offset_to_point);
 
 
-   unsigned int i=0;
-   while(i<public_header.number_of_point_records)
+   if(public_header.version_minor==3)
    {
-      lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-      int wave_offset = public_header.start_of_wf_data_Packet_record +
-            point_info.byte_offset_to_wf_packet_data;
-      if( point_info.wave_packet_descriptor_index!=0 && (int)point_info.classification!=7 &&
-              (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
+      std::cout << "Adjusting max and min limits using the waveform returns\n";
+      unsigned int i=0;
+      while(i<public_header.number_of_point_records)
       {
-         char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-         if(wave_data==0)
-         {
-             std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-                       << "Program will terminate\n";
-             exit(EXIT_FAILURE);
-         }
-         int tmp = lasfile.tellg();
-
-         lasfile.seekg(wave_offset);
-
-         lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-
-         gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
-                             point_info.Y*public_header.y_scale_factor+public_header.y_offset,
-                             point_info.Z*public_header.z_scale_factor+public_header.z_offset);
-
-         float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
-         gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
-         offset *= (1000.0f * temporalSampleSpacing);
-
-
-         origin[0] = origin[0] + (double )point_info.X_t*
-                 (double )point_info.return_point_wf_location;
-         origin[1] = origin[1] + (double )point_info.Y_t*
-                 (double )point_info.return_point_wf_location;
-         origin[2] = origin[2] + (double )point_info.Z_t*
-                 (double )point_info.return_point_wf_location;
-
-         unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
-
-         gmtl::Vec3f endPoint;
-         endPoint[0] = origin[0] + noOfSamples*offset[0];
-         endPoint[1] = origin[1] + noOfSamples*offset[1];
-         endPoint[2] = origin[2] + noOfSamples*offset[2];
-
-         public_header.max_x = (origin[0]>endPoint[0]? origin[0] : endPoint[0]);
-         public_header.min_x = (origin[0]<endPoint[0]? origin[0] : endPoint[1]);
-         public_header.max_y = (origin[1]>endPoint[1]? origin[1] : endPoint[1]);
-         public_header.min_y = (origin[1]<endPoint[1]? origin[1] : endPoint[1]);
-         public_header.max_z = (origin[2]>endPoint[2]? origin[2] : endPoint[2]);
-         public_header.min_z = (origin[2]<endPoint[2]? origin[2] : endPoint[2]);
-
-         lasfile.seekg(tmp);
-         delete []wave_data;
-         break;
-      }
-      i++;
-   }
-
-
-   std::cout << " INITIALISE MIN AND MAX VALUES WHICH ARE : \n";
-   std::cout << public_header.max_x << " " << public_header.max_y << " "<<  public_header.max_z << "\n";
-   std::cout << public_header.min_x << " " << public_header.min_y << " "<<  public_header.min_z << "\n";
-
-   for(; i< public_header.number_of_point_records; ++i)
-   {
-      lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-      int wave_offset = public_header.start_of_wf_data_Packet_record +
+         lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+         int wave_offset = public_header.start_of_wf_data_Packet_record +
                point_info.byte_offset_to_wf_packet_data;
-
-      if( point_info.wave_packet_descriptor_index!=0 && (int)point_info.classification!=7 &&
-              (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
-      {
-         char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-         if(wave_data==0)
+         if( point_info.wave_packet_descriptor_index!=0 && (int)point_info.classification!=7 &&
+                 (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
          {
-             std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-                       << "Program will terminate\n";
-             exit(EXIT_FAILURE);
+            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+            if(wave_data==0)
+            {
+                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                          << "Program will terminate\n";
+                exit(EXIT_FAILURE);
+            }
+            int tmp = lasfile.tellg();
+
+            lasfile.seekg(wave_offset);
+
+            lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+
+            gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
+                                point_info.Y*public_header.y_scale_factor+public_header.y_offset,
+                                point_info.Z*public_header.z_scale_factor+public_header.z_offset);
+
+            float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
+            gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
+            offset *= (1000.0f * temporalSampleSpacing);
+
+
+            origin[0] = origin[0] + (double )point_info.X_t*
+                    (double )point_info.return_point_wf_location;
+            origin[1] = origin[1] + (double )point_info.Y_t*
+                    (double )point_info.return_point_wf_location;
+            origin[2] = origin[2] + (double )point_info.Z_t*
+                    (double )point_info.return_point_wf_location;
+
+            unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
+
+            gmtl::Vec3f endPoint;
+            endPoint[0] = origin[0] + noOfSamples*offset[0];
+            endPoint[1] = origin[1] + noOfSamples*offset[1];
+            endPoint[2] = origin[2] + noOfSamples*offset[2];
+
+            public_header.max_x = (origin[0]>endPoint[0]? origin[0] : endPoint[0]);
+            public_header.min_x = (origin[0]<endPoint[0]? origin[0] : endPoint[1]);
+            public_header.max_y = (origin[1]>endPoint[1]? origin[1] : endPoint[1]);
+            public_header.min_y = (origin[1]<endPoint[1]? origin[1] : endPoint[1]);
+            public_header.max_z = (origin[2]>endPoint[2]? origin[2] : endPoint[2]);
+            public_header.min_z = (origin[2]<endPoint[2]? origin[2] : endPoint[2]);
+
+            lasfile.seekg(tmp);
+            delete []wave_data;
+            break;
          }
-         int tmp = lasfile.tellg();
-
-         lasfile.seekg(wave_offset);
-
-         lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-
-
-         gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
-                             point_info.Y*public_header.y_scale_factor+public_header.y_offset,
-                             point_info.Z*public_header.z_scale_factor+public_header.z_offset);
-         float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
-         gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
-         offset *= (1000.0f * temporalSampleSpacing);
-
-
-         origin[0] = origin[0] + (double )point_info.X_t*
-                 (double )point_info.return_point_wf_location;
-         origin[1] = origin[1] + (double )point_info.Y_t*
-                 (double )point_info.return_point_wf_location;
-         origin[2] = origin[2] + (double )point_info.Z_t*
-                 (double )point_info.return_point_wf_location;
-
-         unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
-
-         gmtl::Vec3f endPoint;
-         endPoint[0] = origin[0] + noOfSamples*offset[0];
-         endPoint[1] = origin[1] + noOfSamples*offset[1];
-         endPoint[2] = origin[2] + noOfSamples*offset[2];
-
-         // calculate boundaries
-         public_header.max_x = (public_header.max_x>endPoint[0]? public_header.max_x : endPoint[0]);
-         public_header.min_x = (public_header.min_x<endPoint[0]? public_header.min_x : endPoint[0]);
-         public_header.max_y = (public_header.max_y>endPoint[1]? public_header.max_y : endPoint[1]);
-         public_header.min_y = (public_header.min_y<endPoint[1]? public_header.min_y : endPoint[1]);
-         public_header.max_z = (public_header.max_z>endPoint[2]? public_header.max_z : endPoint[2]);
-         public_header.min_z = (public_header.min_z<endPoint[2]? public_header.min_z : endPoint[2]);
-
-         public_header.max_x = (origin[0]>public_header.max_x? origin[0] : public_header.max_x);
-         public_header.min_x = (origin[0]<public_header.min_x? origin[0] : public_header.min_x);
-         public_header.max_y = (origin[1]>public_header.max_y? origin[1] : public_header.max_y);
-         public_header.min_y = (origin[1]<public_header.min_y? origin[1] : public_header.min_y);
-         public_header.max_z = (origin[2]>public_header.max_z? origin[2] : public_header.max_z);
-         public_header.min_z = (origin[2]<public_header.min_z? origin[2] : public_header.min_z);
-
-
-         lasfile.seekg(tmp);
-         delete []wave_data;
-
+         i++;
       }
+
+
+      std::cout << " INITIALISE MIN AND MAX VALUES WHICH ARE : \n";
+      std::cout << public_header.max_x << " " << public_header.max_y << " "<<  public_header.max_z << "\n";
+      std::cout << public_header.min_x << " " << public_header.min_y << " "<<  public_header.min_z << "\n";
+
+      for(; i< public_header.number_of_point_records; ++i)
+      {
+         lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+         int wave_offset = public_header.start_of_wf_data_Packet_record +
+                  point_info.byte_offset_to_wf_packet_data;
+
+         if( point_info.wave_packet_descriptor_index!=0 && (int)point_info.classification!=7 &&
+                 (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
+         {
+            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+            if(wave_data==0)
+            {
+                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                          << "Program will terminate\n";
+                exit(EXIT_FAILURE);
+            }
+            int tmp = lasfile.tellg();
+
+            lasfile.seekg(wave_offset);
+
+            lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+
+
+            gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
+                                point_info.Y*public_header.y_scale_factor+public_header.y_offset,
+                                point_info.Z*public_header.z_scale_factor+public_header.z_offset);
+            float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
+            gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
+            offset *= (1000.0f * temporalSampleSpacing);
+
+
+            origin[0] = origin[0] + (double )point_info.X_t*
+                    (double )point_info.return_point_wf_location;
+            origin[1] = origin[1] + (double )point_info.Y_t*
+                    (double )point_info.return_point_wf_location;
+            origin[2] = origin[2] + (double )point_info.Z_t*
+                    (double )point_info.return_point_wf_location;
+
+            unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
+
+            gmtl::Vec3f endPoint;
+            endPoint[0] = origin[0] + noOfSamples*offset[0];
+            endPoint[1] = origin[1] + noOfSamples*offset[1];
+            endPoint[2] = origin[2] + noOfSamples*offset[2];
+
+            // calculate boundaries
+            public_header.max_x = (public_header.max_x>endPoint[0]? public_header.max_x : endPoint[0]);
+            public_header.min_x = (public_header.min_x<endPoint[0]? public_header.min_x : endPoint[0]);
+            public_header.max_y = (public_header.max_y>endPoint[1]? public_header.max_y : endPoint[1]);
+            public_header.min_y = (public_header.min_y<endPoint[1]? public_header.min_y : endPoint[1]);
+            public_header.max_z = (public_header.max_z>endPoint[2]? public_header.max_z : endPoint[2]);
+            public_header.min_z = (public_header.min_z<endPoint[2]? public_header.min_z : endPoint[2]);
+
+            public_header.max_x = (origin[0]>public_header.max_x? origin[0] : public_header.max_x);
+            public_header.min_x = (origin[0]<public_header.min_x? origin[0] : public_header.min_x);
+            public_header.max_y = (origin[1]>public_header.max_y? origin[1] : public_header.max_y);
+            public_header.min_y = (origin[1]<public_header.min_y? origin[1] : public_header.min_y);
+            public_header.max_z = (origin[2]>public_header.max_z? origin[2] : public_header.max_z);
+            public_header.min_z = (origin[2]<public_header.min_z? origin[2] : public_header.min_z);
+
+
+            lasfile.seekg(tmp);
+            delete []wave_data;
+
+         }
+      }
+      std::cout << "FINAL MIN AND MAX VALUES WHICH ARE : \n";
+      std::cout << public_header.max_x << " " << public_header.max_y << " "<<  public_header.max_z << "\n";
+      std::cout << public_header.min_x << " " << public_header.min_y << " "<<  public_header.min_z << "\n";
    }
-   std::cout << "FINAL MIN AND MAX VALUES WHICH ARE : \n";
-   std::cout << public_header.max_x << " " << public_header.max_y << " "<<  public_header.max_z << "\n";
-   std::cout << public_header.min_x << " " << public_header.min_y << " "<<  public_header.min_z << "\n";
    lasfile.close();
+   std::cout << "LAS handler initialised\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -190,6 +195,241 @@ std::vector<double> Las1_3_handler::getBoundaries()
 }
 
 //-----------------------------------------------------------------------------
+void Las1_3_handler::read_point_record_format_4(
+        Object *i_obj,
+        const std::string i_type
+        )
+{
+    LAS1_3Types::Data_Point_Record_Format_4 point_info;
+    lasfile.seekg((int) public_header.offset_to_point);
+
+    unsigned int count=0;
+    // temporarly saving discrete values that are associated with a
+    // waveform but the 1st return haven't been saved yet
+    std::vector<gmtl::Vec3f> discretePoints;
+    // the corresponding intensities of the discrete points
+    std::vector<unsigned short> discreteIntensities;
+    // the corresponding wave offsets of the dicrete points
+    std::vector<int> discreteWaveOffsets;
+
+    std::map<std::string, int> types;
+    types["FULL-WAVEFORM"] = 1;
+    types["ALL_DISCRETE"] = 2;
+    types["DISCRETE_N_WAVEFORMS"] = 3;
+    types["DISCRETE"] = 4;
+    types["AGC"] = 5;
+
+
+    std::string s(i_type);
+    std::transform(s.begin(), s.end(), s.begin(), toupper);
+
+    unsigned int countNonZeroID = 0;
+    unsigned int countZeroID = 0;
+    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+    {
+       lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+       int wave_offset = public_header.start_of_wf_data_Packet_record +
+                point_info.byte_offset_to_wf_packet_data;
+
+       if((int)point_info.classification!=7)
+       {
+          // TYPES:
+          // 1. Full-waveform
+          // 2. All_Discrete
+          // 3. Discrete_n_Waveforms
+          // 4. Discrete (associated with waveform only
+          // 5. AGC values, which are saved in the point_ID
+          switch(types[s])
+          {
+          // Waveform samples only
+          case 1:
+          {
+             if( point_info.wave_packet_descriptor_index!=0 &&
+                     (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
+             {
+                count++;
+                char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+                if(wave_data==0)
+                {
+                    std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                              << "Program will terminate\n";
+                    exit(EXIT_FAILURE);
+                }
+                int tmp = lasfile.tellg();
+                lasfile.seekg(wave_offset);
+                lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+
+                gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
+                                    point_info.Y*public_header.y_scale_factor+public_header.y_offset,
+                                    point_info.Z*public_header.z_scale_factor+public_header.z_offset);
+
+                float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
+                gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
+                offset *= (1000.0f * temporalSampleSpacing);
+
+                origin[0] = origin[0] + (double )point_info.X_t*
+                        (double )point_info.return_point_wf_location;
+                origin[1] = origin[1] + (double )point_info.Y_t*
+                        (double )point_info.return_point_wf_location;
+                origin[2] = origin[2] + (double )point_info.Z_t*
+                        (double )point_info.return_point_wf_location;
+
+                unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
+
+                unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char[noOfSamples];
+                if(waveSamplesIntensities==0)
+                {
+                    std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                    exit(EXIT_FAILURE);
+                }
+                memcpy(waveSamplesIntensities,wave_data,noOfSamples);
+
+                gmtl::Vec3f tempPosition = origin;
+                for(unsigned int j=0; j< noOfSamples; ++j)
+                {
+                  i_obj->addItensity(tempPosition,waveSamplesIntensities[j]);
+                  tempPosition+=offset;
+                }
+                lasfile.seekg(tmp);
+                delete []waveSamplesIntensities;
+                delete []wave_data;
+             }
+             break;
+          }
+          // All Discrete Points
+          case 2:
+             if((int)point_info.classification!=7)
+             {
+                i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                          point_info.Y*public_header.y_scale_factor,
+                                          point_info.Z*public_header.z_scale_factor),
+                              point_info.itensity);
+             }
+             break;
+          case 3:
+
+             break;
+          // Only Discrete Returns that have a waveform associated with the
+          case 4:
+             if (point_info.wave_packet_descriptor_index!=0 &&
+                     (int)point_info.classification!=7)
+             {
+                i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                             point_info.Y*public_header.y_scale_factor,
+                                             point_info.Z*public_header.z_scale_factor),
+                                 point_info.itensity);
+             }
+             break;
+          case 5:
+             if((int)point_info.classification!=7)
+             {
+                i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                          point_info.Y*public_header.y_scale_factor,
+                                          point_info.Z*public_header.z_scale_factor),
+                              point_info.gain);
+             }
+             break;
+
+          default:
+              //there are no more types of objects, returns an empty volume
+              std::cout <<  "WARNING: The type <" << i_type
+                        << "> does not defined a valid type of data\n";
+              break;
+          }
+       }
+       else
+       {
+           // only noise has been recorded
+       }
+
+    }
+
+    if(count==0)
+    {
+        std::cout << "no waveforms associated with that area\n";
+    }
+    else
+    {
+        std::cout << "zero AGC - non zero AGC : " << countZeroID << " " << countNonZeroID  << "\n";
+        std::cout << count << " waveforms found\n";
+        std::cout << public_header.number_of_point_records << " discrete points found\n";
+    }
+
+    discreteIntensities.clear();
+    discretePoints.clear();
+    discreteWaveOffsets.clear();
+ //   std::cout << "There are " << i_pulseManager->getNumOfAloneDiscretePoints()
+ //             << " Discrete Without Waveforms\n";
+    std::cout << "----------------------------------------------------------\n";
+}
+
+void Las1_3_handler::read_point_record_format_0(
+        Object *i_obj
+        )
+{
+    LAS1_3Types::Data_Point_Record_Format_0 point_info;
+    lasfile.seekg((int) public_header.offset_to_point);
+    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+    {
+       lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+       if((int)point_info.classification!=7)
+       {
+
+          // All Discrete Points
+           if((int)point_info.classification!=7)
+           {
+              i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
+                                        point_info.Y*public_header.y_scale_factor,
+                                        point_info.Z*public_header.z_scale_factor),
+                            point_info.itensity);
+           }
+       }
+       else
+       {
+           // only noise has been recorded
+       }
+
+    }
+
+ //   std::cout << "There are " << i_pulseManager->getNumOfAloneDiscretePoints()
+ //             << " Discrete Without Waveforms\n";
+    std::cout << "----------------------------------------------------------\n";
+}
+
+void Las1_3_handler::read_point_record_format_1(
+        Object *i_obj
+        )
+{
+    LAS1_3Types::Data_Point_Record_Format_1 point_info;
+    lasfile.seekg((int) public_header.offset_to_point);
+    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+    {
+       lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+       if((int)point_info.classification!=7)
+       {
+
+          // All Discrete Points
+           if((int)point_info.classification!=7)
+           {
+              i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor+public_header.x_offset,
+                                        point_info.Y*public_header.y_scale_factor+public_header.y_offset,
+                                        point_info.Z*public_header.z_scale_factor+public_header.z_offset),
+                            point_info.itensity);
+           }
+       }
+       else
+       {
+           // only noise has been recorded
+       }
+
+    }
+
+ //   std::cout << "There are " << i_pulseManager->getNumOfAloneDiscretePoints()
+ //             << " Discrete Without Waveforms\n";
+    std::cout << "----------------------------------------------------------\n";
+}
+
+//-----------------------------------------------------------------------------
 void Las1_3_handler::readFileAndGetObject(
         Object *i_obj,
         const std::string i_type
@@ -208,167 +448,22 @@ void Las1_3_handler::readFileAndGetObject(
       std::cerr << "Error: Memory could not be allocated\n";
       exit(EXIT_FAILURE);
    }
-   LAS1_3Types::Data_Point_Record_Format_4 point_info;
-   lasfile.seekg((int) public_header.offset_to_point);
 
-   unsigned int count=0;
-   // temporarly saving discrete values that are associated with a
-   // waveform but the 1st return haven't been saved yet
-   std::vector<gmtl::Vec3f> discretePoints;
-   // the corresponding intensities of the discrete points
-   std::vector<unsigned short> discreteIntensities;
-   // the corresponding wave offsets of the dicrete points
-   std::vector<int> discreteWaveOffsets;
-
-   std::map<std::string, int> types;
-   types["FULL-WAVEFORM"] = 1;
-   types["ALL_DISCRETE"] = 2;
-   types["DISCRETE_N_WAVEFORMS"] = 3;
-   types["DISCRETE"] = 4;
-   types["AGC"] = 5;
-
-
-   std::string s(i_type);
-   std::transform(s.begin(), s.end(), s.begin(), toupper);
-
-   unsigned int countNonZeroID = 0;
-   unsigned int countZeroID = 0;
-   for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+   if((unsigned short int)(public_header.point_data_format_ID)==4)
    {
-      lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-      int wave_offset = public_header.start_of_wf_data_Packet_record +
-               point_info.byte_offset_to_wf_packet_data;
-
-      if((int)point_info.classification!=7)
-      {
-         // TYPES:
-         // 1. Full-waveform
-         // 2. All_Discrete
-         // 3. Discrete_n_Waveforms
-         // 4. Discrete (associated with waveform only
-         // 5. AGC values, which are saved in the point_ID
-         switch(types[s])
-         {
-         // Waveform samples only
-         case 1:
-         {
-            if( point_info.wave_packet_descriptor_index!=0 &&
-                    (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
-            {
-               count++;
-               char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-               if(wave_data==0)
-               {
-                   std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-                             << "Program will terminate\n";
-                   exit(EXIT_FAILURE);
-               }
-               int tmp = lasfile.tellg();
-               lasfile.seekg(wave_offset);
-               lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-
-               gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
-                                   point_info.Y*public_header.y_scale_factor+public_header.y_offset,
-                                   point_info.Z*public_header.z_scale_factor+public_header.z_offset);
-
-               float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
-               gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
-               offset *= (1000.0f * temporalSampleSpacing);
-
-               origin[0] = origin[0] + (double )point_info.X_t*
-                       (double )point_info.return_point_wf_location;
-               origin[1] = origin[1] + (double )point_info.Y_t*
-                       (double )point_info.return_point_wf_location;
-               origin[2] = origin[2] + (double )point_info.Z_t*
-                       (double )point_info.return_point_wf_location;
-
-               unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
-
-               unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char[noOfSamples];
-               if(waveSamplesIntensities==0)
-               {
-                   std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
-                   exit(EXIT_FAILURE);
-               }
-               memcpy(waveSamplesIntensities,wave_data,noOfSamples);
-
-               gmtl::Vec3f tempPosition = origin;
-               for(unsigned int j=0; j< noOfSamples; ++j)
-               {
-                 i_obj->addItensity(tempPosition,waveSamplesIntensities[j]);
-                 tempPosition+=offset;
-               }
-               lasfile.seekg(tmp);
-               delete []waveSamplesIntensities;
-               delete []wave_data;
-            }
-            break;
-         }
-         // All Discrete Points
-         case 2:
-            if((int)point_info.classification!=7)
-            {
-               i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
-                                         point_info.Y*public_header.y_scale_factor,
-                                         point_info.Z*public_header.z_scale_factor),
-                             point_info.itensity);
-            }
-            break;
-         case 3:
-
-            break;
-         // Only Discrete Returns that have a waveform associated with the
-         case 4:
-            if (point_info.wave_packet_descriptor_index!=0 &&
-                    (int)point_info.classification!=7)
-            {
-               i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
-                                            point_info.Y*public_header.y_scale_factor,
-                                            point_info.Z*public_header.z_scale_factor),
-                                point_info.itensity);
-            }
-            break;
-         case 5:
-            if((int)point_info.classification!=7)
-            {
-               i_obj->addItensity(gmtl::Vec3f(point_info.X*public_header.x_scale_factor,
-                                         point_info.Y*public_header.y_scale_factor,
-                                         point_info.Z*public_header.z_scale_factor),
-                             point_info.gain);
-            }
-            break;
-
-         default:
-             //there are no more types of objects, returns an empty volume
-             std::cout <<  "WARNING: The type <" << i_type
-                       << "> does not defined a valid type of data\n";
-             break;
-         }
-      }
-      else
-      {
-          // only noise has been recorded
-      }
+      read_point_record_format_4(i_obj,i_type);
+   }
+   else if((unsigned short int)(public_header.point_data_format_ID)==0)
+   {
+       std::cout << "Warning:: Type ingored only discrete data exist in the file\n";
+       read_point_record_format_0(i_obj);
 
    }
-
-   if(count==0)
+   else if((unsigned short int)(public_header.point_data_format_ID)==1)
    {
-       std::cout << "no waveforms associated with that area\n";
+       std::cout << "Warning: Type ingored only discrete data exist in the file\n";
+       read_point_record_format_1(i_obj);
    }
-   else
-   {
-       std::cout << "zero AGC - non zero AGC : " << countZeroID << " " << countNonZeroID  << "\n";
-       std::cout << count << " waveforms found\n";
-       std::cout << public_header.number_of_point_records << " discrete points found\n";
-   }
-
-   discreteIntensities.clear();
-   discretePoints.clear();
-   discreteWaveOffsets.clear();
-//   std::cout << "There are " << i_pulseManager->getNumOfAloneDiscretePoints()
-//             << " Discrete Without Waveforms\n";
-   std::cout << "----------------------------------------------------------\n";
    lasfile.close();
    i_obj->normalise();
 }
@@ -385,15 +480,15 @@ void Las1_3_handler::read_public_header()
    // if not program terminates because it cannot handle that case
    if((public_header.global_encoding & 2 ) !=2 )
    {
-      std::cerr << "Waveform Data Packets are not saved in this file.\n"
-                << "Program will terminate\n";
-      exit(EXIT_FAILURE);
+      std::cerr << "Waveform Data Packets are not saved in this file.\n";
+//      exit(EXIT_FAILURE);
    }
 
    // test version of the file. version should be 1.3
-   if (public_header.version_major!=1 || public_header.version_minor!=3)
+   if (!(public_header.version_major==1 && (public_header.version_minor==3
+                                            || public_header.version_minor==0)))
    {
-      std::cerr << "Incorrect version. Only 1.3 are allowed.\n"
+      std::cerr << "Incorrect version. Only 1.3 and 1.0 are allowed.\n"
                 << "Program will terminate\n";
       exit(EXIT_FAILURE);
   }
