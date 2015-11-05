@@ -1,15 +1,15 @@
-This project is funded by the Centre for Digital Entertainement and Plymouth Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC LICENSE, Version 3. For any publications or public use please reference the related paper "ALIGNMENT OF HYPERSPECTRAL IMAGERY AND FULL-WAVEFORM LIDAR DATA FOR VISUALISATION AND CLASSIFICATION PURPOSES", which was presented at the 36th International Symposium of Remote Sensing of the Enviroment 2015. 
+This project is funded by the Centre for Digital Entertainement and Plymouth Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC LICENSE, Version 3. 
 
 For any publications and research please reference the following paper:
 Miltiadou M., Warren M. A., Grant M., Brown M., 2015, Alignment of Hyperspectral Imagery and full-waveform LiDAR data for visualisation and classification purposes, 36th International Symposium of Remote Sensing of the enviroment
 Available at: http://meetingorganizer.copernicus.org/ISRSE36/ISRSE36-158-2.pdf
 
-For testing the system, please download and copy the sample data inside the 'data' folder.
-These data were collected by the NERC Airborne Research and Survey
+For testing the system, please download and copy the sample data inside a folder named 'data'.
+"These data were collected by the NERC Airborne Research and Survey
 Facility (ARSF). Copyright is held by the UK Natural Environment
 Research Council (NERC). The data are free for non-commercial use,
 NERC-ARSF must be acknowledged in any publications, software or other
-media that make use of these data.
+media that make use of these data."
 Available at: https://rsg.pml.ac.uk/shared_files/arsf/DASOS/
 
 Dependancies:
@@ -34,8 +34,6 @@ DASOS User Quide:
 
 -bil <bilFileName>             The name/directory of the bil file that contains the hyperspectral cube.
 
--fodis <fodisFileName>         The name/directory of the fodis files required for the NDVI map
-
 -obj <objFileName>             The name of the .obj file where the polygon representation of the LiDAR file will be exported to. It's optional and when not defined the data are not polygonised. Further it exports a texture when the hyperspectral data are also defined
 
 -rgb <band1> <band2> <band3>   Defines the 3 bands of the hyperpectral images that will be used for texturing the polygon mesh. If not defined the default values 140, 78 and 23 are used.
@@ -48,7 +46,7 @@ DASOS User Quide:
 
 -opt <on/off>                  Enables/Disables the optimisation that uses Integral Images to discard empty chunks of voxels during polygonisation. By default the optimisation is enabled.
 
--map <type> <outputName>       The available types are: "NON-EMPTY_VOXELS", "DENSITY", "THICKNESS", "FIRST_PATCH", "LAST_PATCH", "HYPERSPECTRAL_MEAN", "NDVI", "LOWEST_RETURN", "AVERAGE_HEIGHT_DIFFERENCE", "HEIGHT"
+-map <type> <outputName>       The available types are: "AVERAGE_HEIGHT_DIFFERENCE", "NON-EMPTY_VOXELS", "DENSITY", "THICKNESS", "FIRST_PATCH", "LAST_PATCH", "HYPERSPECTRAL_MEAN", "NDVI", "LOWEST_RETURN", "INTENSITY"
 
 -map HYPERSPECTRAL <band> <outputName> The hyperspectral map needs an extra parameter defining which band will be outputed
 
@@ -60,14 +58,17 @@ DASOS User Quide:
 
 -defaulth                      It reads one of the sample FW LAS files along with the hyperspectral and produces a coloured 3D polygon representation and all the related metrics
 
-
-
 Examples Commands:
 $:  ./DASOS -default
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -obj Polygon -vl 3
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -obj ColouredPolygon -vl 3.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness.png -map NDVI ndvi.png
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness.png -map NDVI ndvi.png -obj happy
+
+Details description of what metrics actually is comming soon.
+Bugs and potential improvements list can be found here:
+https://docs.google.com/spreadsheets/d/10yE5p463cLA_GtKkyiaWEzScW7N9cVxbPs5y0muXuZY/edit?usp=sharing
+Bug reports and questions are welcome.
 
 
 

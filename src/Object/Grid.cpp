@@ -75,7 +75,6 @@ void Grid::readIGMandFindMinsMaxs(const std::string &i_IGMfileName)
        bilLib::BinFile file(i_IGMfileName);
        unsigned char dataType =
                bilLib::StringToUINT(file.FromHeader("data type"));
-       std::cout << ((int)dataType) << " --------------------------------------------------\n";
        if(dataType!=5)
        {
           std::cout << "Class Grid only accept bil files with data type 5\n";
@@ -86,7 +85,6 @@ void Grid::readIGMandFindMinsMaxs(const std::string &i_IGMfileName)
        m_nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
        m_nlines=bilLib::StringToUINT(file.FromHeader("lines"));
        // calculate the number of squares that corresponds to x,y axes
-       std::cout << "OWL igm file " << m_nlines << " " << m_nsamps << "\n";
 
        unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
        if(nbands<3)

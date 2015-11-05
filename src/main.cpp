@@ -73,6 +73,7 @@ int main (int argc, char const* argv[])
    // ["LAST_PATCH"] = 11;
    // ["HEIGHT"] = 12;
    // ["AVERAGE_HEIGHT_DIFFERENCE"] = 13;
+   // INTENSITY
 
    MapsManager m;
    unsigned int mapsIndex=0;
@@ -286,124 +287,124 @@ int main (int argc, char const* argv[])
             bands[2] = 23;
 
 
-//            objFileName = "22.vl1.4";
+            objFileName = "LDR-FW-FW10_01-201009821";
 
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
+            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "HYPERSPECTRAL_MEAN";
+            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL_MEAN.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "THICKNESS";
+            mInfo[mapsIndex]->name = "21.THICKNESS.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "NON-EMPTY_VOXELS";
+            mInfo[mapsIndex]->name = "16.NON-EMPTY_VOXELS.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "DENSITY";
+            mInfo[mapsIndex]->name = "22.DENSITY.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+            bands[0] = 140;
+            bands[1] = 78;
+            bands[2] = 30;
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "NDVI";
+            mInfo[mapsIndex]->name = "16.NDVI.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "FIRST_PATCH";
+            mInfo[mapsIndex]->name = "16.FIRST_PATCH.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
+
+
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "LOWEST_RETURN";
+            mInfo[mapsIndex]->name = "22.LOWEST_RETURN.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
 
 //            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "HYPERSPECTRAL";
-//            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL.png";
+//            mInfo[mapsIndex]->type = "SPECTRAL_SIGNATURE";
+//            mInfo[mapsIndex]->name = "21.SPECTRAL_SIGNATURE.png";
 //            mInfo[mapsIndex]->band = 140;
 //            mInfo[mapsIndex]->bilFileName = bilFileName;
 //            mInfo[mapsIndex]->IGMfileName = igmFileName;
 //            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+//            mInfo[mapsIndex]->spectralSignatureType = "ASTER";
 //            mInfo[mapsIndex]->thres = 0;
 //            mInfo[mapsIndex]->samp = 0;
+//            mInfo[mapsIndex]->spectralSignature = "/users/rsg/mmi/Documents/VisLAS1.3-No3/spectral_signatures/jhu.becknic.vegetation.trees.conifers.solid.conifer.spectrum.txt";
 //            mapsIndex++;
 
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "HYPERSPECTRAL_MEAN";
-//            mInfo[mapsIndex]->name = "21.HYPERSPECTRAL_MEAN.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "THICKNESS";
-//            mInfo[mapsIndex]->name = "21.THICKNESS.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "NON-EMPTY_VOXELS";
-//            mInfo[mapsIndex]->name = "16.NON-EMPTY_VOXELS.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "DENSITY";
-//            mInfo[mapsIndex]->name = "22.DENSITY.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-//            bands[0] = 140;
-//            bands[1] = 78;
-//            bands[2] = 30;
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "NDVI";
-//            mInfo[mapsIndex]->name = "16.NDVI.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "FIRST_PATCH";
-//            mInfo[mapsIndex]->name = "16.FIRST_PATCH.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "LOWEST_RETURN";
-//            mInfo[mapsIndex]->name = "22.LOWEST_RETURN.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
-
-////            mInfo.push_back(new MapsManager::mapInfo);
-////            mInfo[mapsIndex]->type = "SPECTRAL_SIGNATURE";
-////            mInfo[mapsIndex]->name = "21.SPECTRAL_SIGNATURE.png";
-////            mInfo[mapsIndex]->band = 140;
-////            mInfo[mapsIndex]->bilFileName = bilFileName;
-////            mInfo[mapsIndex]->IGMfileName = igmFileName;
-////            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-////            mInfo[mapsIndex]->spectralSignatureType = "ASTER";
-////            mInfo[mapsIndex]->thres = 0;
-////            mInfo[mapsIndex]->samp = 0;
-////            mInfo[mapsIndex]->spectralSignature = "/users/rsg/mmi/Documents/VisLAS1.3-No3/spectral_signatures/jhu.becknic.vegetation.trees.conifers.solid.conifer.spectrum.txt";
-////            mapsIndex++;
-
-//            mInfo.push_back(new MapsManager::mapInfo);
-//            mInfo[mapsIndex]->type = "LAST_PATCH";
-//            mInfo[mapsIndex]->name = "16.LAST_PATCH.png";
-//            mInfo[mapsIndex]->band = 140;
-//            mInfo[mapsIndex]->bilFileName = bilFileName;
-//            mInfo[mapsIndex]->IGMfileName = igmFileName;
-//            mInfo[mapsIndex]->fodisFileName =fodisFileName;
-//            mInfo[mapsIndex]->thres = 0;
-//            mInfo[mapsIndex]->samp = 0;
-//            mapsIndex++;
+            mInfo.push_back(new MapsManager::mapInfo);
+            mInfo[mapsIndex]->type = "LAST_PATCH";
+            mInfo[mapsIndex]->name = "16.LAST_PATCH.png";
+            mInfo[mapsIndex]->band = 140;
+            mInfo[mapsIndex]->bilFileName = bilFileName;
+            mInfo[mapsIndex]->IGMfileName = igmFileName;
+            mInfo[mapsIndex]->fodisFileName =fodisFileName;
+            mInfo[mapsIndex]->thres = 0;
+            mInfo[mapsIndex]->samp = 0;
+            mapsIndex++;
 
             mInfo.push_back(new MapsManager::mapInfo);
             mInfo[mapsIndex]->type = "HEIGHT";
@@ -457,7 +458,7 @@ int main (int argc, char const* argv[])
 //           std::cout << buff;
            std::sprintf(buff,"%-30s %s", "-opt <on/off>", "Enables/Disables the optimisation that uses Integral Images to discard empty chunks of voxels during polygonisation. By default the optimisation is enabled.\n\n");
            std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map <type> <outputName>", "The available types are: \"AVERAGE_HEIGHT_DIFFERENCE\", \"NON-EMPTY_VOXELS\", \"DENSITY\", \"THICKNESS\", \"FIRST_PATCH\", \"LAST_PATCH\", \"HYPERSPECTRAL_MEAN\", \"NDVI\", \"LOWEST_RETURN\" \n\n");
+           std::sprintf(buff,"%-30s %s", "-map <type> <outputName>", "The available types are: \"AVERAGE_HEIGHT_DIFFERENCE\", \"NON-EMPTY_VOXELS\", \"DENSITY\", \"THICKNESS\", \"FIRST_PATCH\", \"LAST_PATCH\", \"HYPERSPECTRAL_MEAN\", \"NDVI\", \"LOWEST_RETURN\" , \"INTENSITY\" \n\n");
            std::cout << buff;
            std::sprintf(buff,"%-30s %s", "-map HYPERSPECTRAL <band> <outputName>", "The hyperspectral map needs an extra parameter defining which band will be outputed\n\n");
            std::cout << buff;
@@ -467,9 +468,6 @@ int main (int argc, char const* argv[])
            std::cout << buff;
            std::sprintf(buff,"%-30s %s", "-default", "It reads one of the sample FW LAS files and produces a 3D polygon representation and all the related maps\n\n");
            std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-defaulth", "It reads one of the sample FW LAS files along with the hyperspectral and produces a coloured 3D polygon representation and all the related metrics\n\n\n\n");
-           std::cout << buff;
-
            std::cout << "This project is funded by the Centre for Digital Entertainment and Plymouth Marine Laboratory.\n"
                      << "The code is released under the "
 
