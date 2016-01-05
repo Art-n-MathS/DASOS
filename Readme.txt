@@ -44,7 +44,7 @@ DASOS User Quide:
 
 -iso <isolevel>                The isolevel defines boundaries of the implicit object. The voxel values lies inside the range [-100,100] and everything greater than the isolevel is considered to be inside the object. Default value is -99.9
 
--opt <on/off>                  Enables/Disables the optimisation that uses Integral Images to discard empty chunks of voxels during polygonisation. By default the optimisation is enabled.
+-opt <on/off>                  Enables/Disables the optimisation. By default the optimisation is enabled.
 
 -map <type> <outputName>       The available types are: "AVERAGE_HEIGHT_DIFFERENCE", "NON-EMPTY_VOXELS", "DENSITY", "THICKNESS", "FIRST_PATCH", "LAST_PATCH", "HYPERSPECTRAL_MEAN", "NDVI", "LOWEST_RETURN", "INTENSITY"
 
