@@ -4,8 +4,7 @@
 #include <gmtl/VecOps.h>
 
 //-----------------------------------------------------------------------------
-MarchingCubes::MarchingCubes(
-        Object *i_obj,
+MarchingCubes::MarchingCubes(Volume *i_obj,
         unsigned int i_x
         ):
     m_obj(i_obj),
@@ -104,7 +103,6 @@ void MarchingCubes::Polygonise(
    values[5] = m_obj->functionValue(points[5]);
    values[6] = m_obj->functionValue(points[6]);
    values[7] = m_obj->functionValue(points[7]);
-
 
    if (values[0] <= isolevel) cubeindex |= 1;
    if (values[1] <= isolevel) cubeindex |= 2;
@@ -259,7 +257,7 @@ void MarchingCubes::computeNormals(GLData *i_glData
 {
   // resize the normals, so that the number of normals is equal to the number of vertices
   // each vertex should have each own normal.
-  i_glData->m_normals.resize(i_glData->m_vertices.size());
+  i_glData->m_normals.resize(i_glData->m_vertices.size(),0.0f);
 
   const std::vector<float>& vertices = i_glData->m_vertices;
   const std::vector<int>& indices = i_glData->m_indices;
@@ -281,20 +279,21 @@ void MarchingCubes::computeNormals(GLData *i_glData
     gmtl::Vec3f AC = C-A;
     gmtl::cross(normal,AB,AC);
 
+
     // add the normal to all the vertices of that triangle
     if (gmtl::length(normal)>0.0001f)
     {
-       i_glData->m_normals[indices[i]*3  ]-=normal[0];
-       i_glData->m_normals[indices[i]*3+1]-=normal[1];
-       i_glData->m_normals[indices[i]*3+2]-=normal[2];
+       i_glData->m_normals[indices[i]*3  ]+=normal[0];
+       i_glData->m_normals[indices[i]*3+1]+=normal[1];
+       i_glData->m_normals[indices[i]*3+2]+=normal[2];
 
-       i_glData->m_normals[indices[i+1]*3  ]-=normal[0];
-       i_glData->m_normals[indices[i+1]*3+1]-=normal[1];
-       i_glData->m_normals[indices[i+1]*3+2]-=normal[2];
+       i_glData->m_normals[indices[i+1]*3  ]+=normal[0];
+       i_glData->m_normals[indices[i+1]*3+1]+=normal[1];
+       i_glData->m_normals[indices[i+1]*3+2]+=normal[2];
 
-       i_glData->m_normals[indices[i+2]*3  ]-=normal[0];
-       i_glData->m_normals[indices[i+2]*3+1]-=normal[1];
-       i_glData->m_normals[indices[i+2]*3+2]-=normal[2];
+       i_glData->m_normals[indices[i+2]*3  ]+=normal[0];
+       i_glData->m_normals[indices[i+2]*3+1]+=normal[1];
+       i_glData->m_normals[indices[i+2]*3+2]+=normal[2];
     }
   }
   std::cout << "Normals calculated\n";
@@ -316,8 +315,8 @@ void MarchingCubes::generateClassUVs(GLData *i_glData)
 //-----------------------------------------------------------------------------
 void MarchingCubes::createPolygonisedObject(GLData *i_gldata)
 {
-   clock_t t1,t2;
-   t1 =clock();
+//   clock_t t1,t2;
+//   t1 =clock();
 
    i_gldata->m_maxLimits = gmtl::Vec3f(m_maxLimits[0],m_maxLimits[1],m_maxLimits[2]);
    i_gldata->m_minLimits = gmtl::Vec3f(m_minLimits[0],m_minLimits[1],m_minLimits[2]);
@@ -326,9 +325,9 @@ void MarchingCubes::createPolygonisedObject(GLData *i_gldata)
    computeNormals(i_gldata);
    generateClassUVs(i_gldata);
 
-   t2 = clock();
-   float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
-   std::cout << "Polygonisation took " << diff << " SECONDS!!!\n";
+//   t2 = clock();
+//   float diff= ((float)t2-(float)t1) / CLOCKS_PER_SEC;
+//   std::cout << "Polygonisation took " << diff << " SECONDS!!!\n";
 }
 
 

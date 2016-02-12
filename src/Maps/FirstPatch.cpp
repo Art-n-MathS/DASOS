@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 FirstPatch::FirstPatch(
         const std::string i_name,
-        Object *i_obj
+        Volume *i_obj
         ):
     Map(i_name,i_obj)
 {
@@ -36,11 +36,11 @@ void FirstPatch::createMap()
                  z2++;
                  z1++;
              }
-             m_mapValues[getIndex(x,y)] = float(z2);
+             m_mapValues[getIndex(x,y)] = float(z2)*m_object->getVoxelLen();
           }
           else
           {
-             m_mapValues[getIndex(x,y)] = 0;
+             m_mapValues[getIndex(x,y)] = -0.0f;
           }
           z2=0;
           if((unsigned int) z1!= m_noOfPixelsZ)
@@ -59,7 +59,7 @@ void FirstPatch::createMap()
           }
           if(z2==m_noOfPixelsZ-z1 && m_noOfPixelsZ-z2-z1<3)
           {
-             m_mapValues[getIndex(x,y)]=0;
+             m_mapValues[getIndex(x,y)]=-0.0f;
           }
        }
     }

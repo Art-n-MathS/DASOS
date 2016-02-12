@@ -87,6 +87,7 @@ void GLData::createUVsBIL(const std::string &i_bilFilename)
 //-----------------------------------------------------------------------------
 void GLData::createUVsIGM(const std::string &i_igmFile)
 {
+   std::cout << "Creating UVs from IGM file\n";
    if(i_igmFile=="")
    {
       return;
@@ -122,7 +123,8 @@ gmtl::Vec3f GLData::getVertex(unsigned int i_index)
 }
 
 //-----------------------------------------------------------------------------
-void GLData::exportHyperToImage(
+void GLData::
+exportHyperToImage(
         const std::string &i_fName,
         std::string i_name,
         const std::vector<unsigned short> &i_bands
@@ -149,10 +151,11 @@ void GLData::exportHyperToImage(
                   file.FromHeader("data type"));
       unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
       unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
+      unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
 
       unsigned int gLsamples = nsamps+((4-(nsamps%4))%4);
 
-      std::cout << "bil file lines samples " << nlines << " " << nsamps << "\n";
+      std::cout << "bil file lines samples " << nlines << " " << nsamps << " " << nbands <<"\n";
 
       if (dataType == 4)// 32-bit floating point
       {
@@ -386,7 +389,7 @@ void GLData::exportToObj(
        int vsize = m_vertices.size();
        int nsize = m_normals.size();
        int isize = m_indices.size();
-       if(mtlName!="")
+//       if(mtlName!="")
        {
           myfile << "mtllib " << mtlName <<"\n\n";
        }

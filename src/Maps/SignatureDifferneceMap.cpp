@@ -5,7 +5,7 @@
 #include <algorithm>
 //--------------------------------------------------------------------------
 SignatureDifferneceMap::SignatureDifferneceMap(const std::string &i_name,
-        Object *i_obj,
+        Volume *i_obj,
         const std::string &i_bilFileName,
         const std::string &i_IGMfileName,
         const std::string &i_fodisFileName,
@@ -43,7 +43,7 @@ void SignatureDifferneceMap::createMap()
 //       unsigned int nlinesF=bilLib::StringToUINT(fileFodis.FromHeader("lines"));
        unsigned int nbandsF=bilLib::StringToUINT(fileFodis.FromHeader("bands"));
 
-       Grid *grid = new Grid(m_IGMfileName,m_object->m_lengthOfVoxel*1.8,
+       Grid *grid = new Grid(m_IGMfileName,m_object->getVoxelLen()*1.8,
                              m_object->getMinLimits());
 
        std::vector<float> reflectances(nbands*4);
@@ -72,7 +72,7 @@ void SignatureDifferneceMap::createMap()
        reflectances.resize(nbands);
        std::fill(reflectances.begin(),reflectances.end(),0.0f);
        unsigned int *pixPos = NULL;
-       const float vl(m_object->m_lengthOfVoxel);
+       const float vl(m_object->getVoxelLen());
        const gmtl::Vec3f &mins = m_object->getMinLimits();
 
        for(unsigned s=0; s<m_object->getNoVoxelsX(); ++s)

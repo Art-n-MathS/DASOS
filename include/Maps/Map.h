@@ -3,13 +3,9 @@
 
 #include <vector>
 #include <string>
-#include <Object.h>
+#include "Volume.h"
 #include <iostream>
 
-//--------------------------------------------------------------------------
-/// Special thanks to Dr. Daniel Clewley for helping me to export files into
-/// a .asc format, making the use of DASOS easier
-//--------------------------------------------------------------------------
 
 
 class Map
@@ -20,7 +16,7 @@ public:
    /// @param[in] i_name the name of the map image to be saved
    /// @param[in] i_obj the object that the map with derived from
    //--------------------------------------------------------------------------
-   Map(const std::string i_name,Object *i_obj);
+   Map(const std::string i_name,Volume *i_obj);
    //--------------------------------------------------------------------------
    /// @brief copy constructor
    /// @param[in] i_map map to be copied
@@ -74,7 +70,7 @@ private:
    /// @brief method that saves the map values before normalisation into
    /// a text file
    //--------------------------------------------------------------------------
-   void saveTxt();
+   void saveAsc();
    //--------------------------------------------------------------------------
    /// @brief method that normalises the values to be between 0 and 255
    //--------------------------------------------------------------------------
@@ -138,7 +134,7 @@ protected:
    //--------------------------------------------------------------------------
    /// @brief object of our interest, for where the maps are derived
    //--------------------------------------------------------------------------
-   Object *m_object;
+   Volume *m_object;
    //--------------------------------------------------------------------------
    /// @brief the number of pixels in the x axis
    //--------------------------------------------------------------------------

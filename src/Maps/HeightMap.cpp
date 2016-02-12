@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 HeightMap::HeightMap(
         const std::string i_name,
-        Object *i_obj
+        Volume *i_obj
         ):
     Map(i_name,i_obj)
 {
@@ -31,11 +31,11 @@ void HeightMap::createMap()
           }
           if(z1==m_noOfPixelsZ)
           {
-             m_mapValues[getIndex(x,y)] =-0.2;
+             m_mapValues[getIndex(x,y)] =-0.0f;
           }
           else
           {
-             m_mapValues[getIndex(x,y)] = float(m_noOfPixelsZ)-float(z1);
+             m_mapValues[getIndex(x,y)] = m_object->getMaxLimits()[2]-float(z1)*m_object->getVoxelLen();
           }
        }
     }

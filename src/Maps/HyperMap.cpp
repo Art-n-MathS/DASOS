@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 HyperMap::HyperMap(
         const std::string &i_name,
-        Object *i_obj,
+        Volume *i_obj,
         const unsigned short int i_band,
         const std::string &i_bilFileName,
         const std::string &i_IGMfileName
@@ -71,7 +71,7 @@ void HyperMap::createMap()
 {
    Grid *grid = new Grid(m_IGMfileName,30);
    const gmtl::Vec3f &mins = m_object->getMinLimits();
-   const float vl(m_object->m_lengthOfVoxel);
+   const float vl(m_object->getVoxelLen());
 
    std::cout << vl << "\n -----------------------------------\n";
 

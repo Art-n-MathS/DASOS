@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 IntensityMax::IntensityMax(
         const std::string i_name,
-        Object *i_obj
+        Volume *i_obj
         ):
     Map(i_name,i_obj)
 {

@@ -3,9 +3,8 @@
 #include "binfile.h"
 
 //--------------------------------------------------------------------------
-HyperMean::HyperMean(
-        const std::string &i_name,
-        Object *i_obj,
+HyperMean::HyperMean(const std::string &i_name,
+        Volume *i_obj,
         const std::string &i_bilFileName,
         const std::string &i_IGMfileName
         ):
@@ -35,7 +34,7 @@ void HyperMean::createMap()
 
        Grid *grid = new Grid(m_IGMfileName,30);
        const gmtl::Vec3f &mins = m_object->getMinLimits();
-       const float vl(m_object->m_lengthOfVoxel);
+       const float vl(m_object->getVoxelLen());
 
 
        unsigned short int *m_hyperData = new unsigned short int[nlines*nsamps];

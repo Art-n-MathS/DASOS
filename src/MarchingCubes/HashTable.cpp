@@ -14,7 +14,8 @@ HashTable::HashTable():m_currentIndex(0)
 {}
 
 //-----------------------------------------------------------------------------
-std::string HashTable::convert (float number){
+std::string HashTable::convert (float number)
+{
     std::stringstream buff;
     buff.precision(6);
      buff<<number;
@@ -28,8 +29,7 @@ void HashTable::setGLData(GLData *i_glData)
 }
 
 //-----------------------------------------------------------------------------
-unsigned int HashTable::getIndex(const gmtl::Vec3f &i_vertex
-        )
+unsigned int HashTable::getIndex(const gmtl::Vec3f &i_vertex)
 {
    std::string input = convert(i_vertex[0]) + " " + convert(i_vertex[1])
            + " " + convert(i_vertex[2]);

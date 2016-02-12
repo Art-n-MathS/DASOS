@@ -4,7 +4,7 @@ TARGET=DASOS
 
 CONFIG += console
 
-CONFIG -= app_bundle
+#CONFIG -= app_bundle
 
 SOURCES += \
     src/main.cpp \
@@ -14,15 +14,11 @@ SOURCES += \
     src/bilLib/bsq.cpp \
     src/bilLib/commonfunctions.cpp \
     src/bilLib/logger.cpp \
-    src/LASHandler/DiscreteData.cpp \
     src/LASHandler/Las1_3_handler.cpp \
-    src/Object/IntegralVolumes.cpp \
-    src/Object/Object.cpp \
     src/Object/GLData.cpp \
     src/Object/Grid.cpp \
     src/MarchingCubes/HashTable.cpp \
     src/MarchingCubes/MarchingCubes.cpp \
-    src/MarchingCubes/MCwithIntegralImages.cpp \
     src/Maps/DensityMap.cpp \
     src/Maps/HyperMap.cpp \
     src/Maps/HyperMean.cpp \
@@ -40,18 +36,32 @@ SOURCES += \
     src/Maps/AverageHeightDifference.cpp \
     src/Maps/HeightMap.cpp \
     src/bilLib/multifile.cpp \
+    src/Maps/TreeCrowns.cpp \
+    src/Maps/TreeCrownsTemplates.cpp \
+    src/Maps/TreeCrownsWith2Templates.cpp \
     src/Maps/IntensityMap.cpp \
-    src/Maps/IntensityMax.cpp
+    src/Maps/IntensityMax.cpp \
+    src/svm/svm.cpp \
+    src/LASHandler/PW_handler.cpp \
+    src/Object/Volume.cpp \
+    src/Object/Volume1DArray.cpp \
+    src/Object/VolumeFactory.cpp \
+    src/LASHandler/PW_descriptor.cpp \
+    src/LASHandler/PW_scannerVLR.cpp \
+    src/LASHandler/PW_lookUpTable.cpp \
+    src/Object/DtmBilReader.cpp
 
 
 INCLUDEPATH+=./include/bilLib \
              ./include/LASHandler \
              ./include/Object \
              ./include/MarchingCubes \
-             ./include/Maps
+             ./include/Maps\
+             ./include/svm \
 
 
 INCLUDEPATH += "/users/rsg/mmi/gmtl-0.6.1/build/include/gmtl-0.6.1/"
+INCLUDEPATH += "C:\Users\milto\Adobe Flash Builder 4.6\Documents\EngD\DASOS_testing2-master\gmtl-0.6.1"
 
 #INCLUDEPATH += /usr/local/include/opencv
 #LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui
@@ -59,7 +69,7 @@ INCLUDEPATH += "/users/rsg/mmi/gmtl-0.6.1/build/include/gmtl-0.6.1/"
 
 QMAKE_CXXFLAGS += -std=c++11
 
-#CONFIG += c++11
+
 
 DEPENDPATH+=include
 
@@ -72,16 +82,12 @@ HEADERS += \
     include/bilLib/bsq.h \
     include/bilLib/commonfunctions.h \
     include/bilLib/logger.h \
-    include/LASHandler/DiscreteData.h \
     include/LASHandler/Las1_3_handler.h \
-    include/Object/IntegralVolumes.h \
-    include/Object/Object.h \
     include/Object/GLData.h \
     include/Object/Grid.h \
     include/MarchingCubes/HashTable.h \
     include/MarchingCubes/MarchingCubes.h \
     include/MarchingCubes/MCTables.h \
-    include/MarchingCubes/MCwithIntegralImages.h \
     include/Maps/DensityMap.h \
     include/Maps/HyperMap.h \
     include/Maps/HyperMean.h \
@@ -99,6 +105,27 @@ HEADERS += \
     include/Maps/AverageHeightDifference.h \
     include/Maps/HeightMap.h \
     include/bilLib/multifile.h \
+    include/Maps/TreeCrowns.h \
+    include/Maps/TreeCrownsTemplates.h \
+    include/Maps/TreeCrownsWith2Templates.h \
     include/Maps/IntensityMap.h \
     include/Maps/IntensityMax.h \
-    include/LASHandler/LAS1_3Types.h
+    include/svm/svm.h \
+    include/LASHandler/PWTypes.h \
+    include/LASHandler/PW_handler.h \
+    include/LASHandler/LAS1_3Types.h \
+    include/Object/Volume.h \
+    include/Object/Volume1DArray.h \
+    include/Object/VolumeFactory.h \
+    include/LASHandler/PW_descriptor.h \
+    include/LASHandler/PW_scannerVLR.h \
+    include/LASHandler/PW_lookUpTable.h \
+    include/Object/DtmBilReader.h
+
+
+DISTFILES += \
+    src/svm/svm_predict.c \
+    src/svm/svm_scale.c \
+    src/svm/svm_train.c \
+    src/MarchingCubes/MCwithIntegralImages.cpp \
+    include/MarchingCubes/MCwithIntegralImages.h

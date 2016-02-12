@@ -1,7 +1,7 @@
 #ifndef MARCHINGCUBES_H
 #define MARCHINGCUBES_H
 
-#include "Object.h"
+#include "Volume.h"
 #include "GLData.h"
 #include "HashTable.h"
 
@@ -14,7 +14,7 @@ public:
    /// @param[in] i_obj object to be polygonised
    /// @param[in] i_x the number of cubes in the x-axis
    //--------------------------------------------------------------------------
-   MarchingCubes(Object *i_obj, unsigned int i_x);
+   MarchingCubes(Volume *i_obj, unsigned int i_x);
    //--------------------------------------------------------------------------
    /// @brief method that polygonises the object and returns its vertices,
    /// indices, normals etc
@@ -25,7 +25,7 @@ public:
    //--------------------------------------------------------------------------
    /// @param[in] default destructor
    //--------------------------------------------------------------------------
-   ~MarchingCubes();
+   virtual ~MarchingCubes();
 
 
 
@@ -99,7 +99,7 @@ protected:
    //--------------------------------------------------------------------------
    /// @brief object to be polygonised
    //--------------------------------------------------------------------------
-   Object *m_obj;
+   Volume *m_obj;
    //--------------------------------------------------------------------------
    /// @brief number of cubes in x-axis
    //--------------------------------------------------------------------------

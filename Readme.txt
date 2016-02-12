@@ -1,6 +1,6 @@
 This project is funded by the Centre for Digital Entertainement and Plymouth Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC LICENSE, Version 3. 
 
-For any publications and research please reference the following paper:
+For any publications using DASOS, please reference the following paper:
 Miltiadou M., Warren M. A., Grant M., Brown M., 2015, Alignment of Hyperspectral Imagery and full-waveform LiDAR data for visualisation and classification purposes, 36th International Symposium of Remote Sensing of the enviroment
 Available at: http://meetingorganizer.copernicus.org/ISRSE36/ISRSE36-158-2.pdf
 
@@ -25,38 +25,43 @@ $: make
 
 Instructions on how to use the software:
 $: ./DASOS --help
+
 DASOS User Quide:
 ---------------------
 
--las <lasFileName>             The name/directory of LAS file to be loaded and it's compulsory
+-las <lasFileName>             The name/directory of LAS file to be loaded and it's compulsory (expection apply when a volume or a pulsewave file is loaded). The program only supports LAS1.3 with waveform packet format 4 while waveforms can either be internally saved into the las file or expetrnal saved into a .wdp file. 
 
--igm <igmFileName>             The name/directory of the igm file that defines the geolocaiton of the hyperspectral pixels.
+-pw <pulsewavesFileName>       loads an a pulsewave file instead of a LAS or an exported volume
 
--bil <bilFileName>             The name/directory of the bil file that contains the hyperspectral cube.
+-igm <igmFileName>             The name/directory of the .igm file that defines the geolocaiton of the hyperspectral pixels.
 
--obj <objFileName>             The name of the .obj file where the polygon representation of the LiDAR file will be exported to. It's optional and when not defined the data are not polygonised. Further it exports a texture when the hyperspectral data are also defined
+-bil <bilFileName>             The name/directory of the .bil file that contains the hyperspectral cube.
+
+-obj <objFileName>             The name of the .obj file where the polygon representation of the LiDAR file will be exported to. It's optional and when not defined the data are not polygonised. Further it exports a texture when the hyperspectral data are also defined if hyperspectral images are also loaded. Please note, that a bug was currently detected into the algorithm, so it's possible to get some unexpected results with that command.
 
 -rgb <band1> <band2> <band3>   Defines the 3 bands of the hyperpectral images that will be used for texturing the polygon mesh. If not defined the default values 140, 78 and 23 are used.
 
 -vl <voxelLength>              The length of the voxels in meters. Default value is 3.2m
 
--nl <noiseLevel>               The threshold that separates noise from the actual data in the waveforms.Default value is 25
+-nl <noiseLevel>               The threshold that separates noise from the actual data in the waveforms.Default value is 25. Please note that the intensity of each wavesample haven't been transformed to GHZ yet. According to the LAS file specifications there is a way to do, but that will be included in future releases of DASOS.
 
--iso <isolevel>                The isolevel defines boundaries of the implicit object. The voxel values lies inside the range [-100,100] and everything greater than the isolevel is considered to be inside the object. Default value is -99.9
+-iso <isolevel>                The isolevel defines boundaries of the implicit object. 
 
--opt <on/off>                  Enables/Disables the optimisation. By default the optimisation is enabled.
-
--map <type> <outputName>       The available types are: "AVERAGE_HEIGHT_DIFFERENCE", "NON-EMPTY_VOXELS", "DENSITY", "THICKNESS", "FIRST_PATCH", "LAST_PATCH", "HYPERSPECTRAL_MEAN", "NDVI", "LOWEST_RETURN", "INTENSITY"
+-map <type> <outputName>      The available types are: \"NON-EMPTY_VOXELS\", \"DENSITY\", \"THICKNESS\", \"FIRST_PATCH\", \"AVERAGE_HEIGHT_DIFFERENCE\", \"LAST_PATCH\", \"HYPERSPECTRAL_MEAN\", \"NDVI\", \"LOWEST_RETURN\" , \"FIELDPLOT\", \"ALL_FW\". All the maps are exported into .asc format and can be loaded int QGIS and other software packages. The ALL_FW option generates one metrics for each available full-waveform LiDAR related metrics and their names are the given outputName+metricsType+.asc
 
 -map HYPERSPECTRAL <band> <outputName> The hyperspectral map needs an extra parameter defining which band will be outputed
 
--map SPECTRAL_SIGNATURE <outputName> -signature <type> <signature_directory>  The spectral signature map gives the square spectral difference between the signature and each pixel. The type is either "ASTER" or "USGS!".
-
 -map <type> -thres <threshold> <outputName>  A threshold is optional and can be added to any type of maps. Always added before the <outputname>
 
--default                       It reads one of the sample FW LAS files and produces a 3D polygon representation and all the related maps
+-userLimits <MaxNorthY> <MinNorthY> <MaxEastX> <MinEastX> User define Limits of the area of interest.
 
--defaulth                      It reads one of the sample FW LAS files along with the hyperspectral and produces a coloured 3D polygon representation and all the related metrics
+-exportVolume <volumeFileName> exports the volume into a txt file to speed up future interpolation of the data.
+
+-volume <volumeFileName>       loads an exported volume instead of reading a LAS or pulsewave file
+
+-userLimits <maxNorthY> <minNorthY> <maxEastX> <minEastX> User define Limits of the area of interest
+
+-dtm <dtlFileNameIn_.bil_format> subtract the pre-calculated dtm from each waveform sample before importing it to the volume. Please note that the format should be .bil and it currently only supports float pointing numbers saved into the .bil and probably specific files. 
 
 Examples Commands:
 $:  ./DASOS -default
@@ -65,11 +70,7 @@ $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -obj ColouredPolygon -vl 3.5 
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness.png -map NDVI ndvi.png
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness.png -map NDVI ndvi.png -obj happy
 
-Details description of what metrics actually is comming soon.
-Bugs and potential improvements list can be found here:
+Please note that this is a research software generated for supporting my thesis. Therefore it's possible that many file formats depend on my specific input data and that bugs may also exists. Identified bugs potential improvements list can be found here:
 https://docs.google.com/spreadsheets/d/10yE5p463cLA_GtKkyiaWEzScW7N9cVxbPs5y0muXuZY/edit?usp=sharing
-Bug reports and questions are welcome.
-
-
 
 

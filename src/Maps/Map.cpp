@@ -1,15 +1,13 @@
 #include "Map.h"
 #include <iostream>
 #include <fstream>
-#include <QImage>
+//#include <QImage>
 #include <iomanip>
-
-
+#include <math.h>
 
 //-----------------------------------------------------------------------------
-Map::Map(
-        const std::string i_name,
-        Object *i_obj
+Map::Map(const std::string i_name,
+        Volume *i_obj
         ):
     m_name(i_name),
     m_object(i_obj),
@@ -146,7 +144,13 @@ void Map::sample(unsigned int i_samp)
 void Map::normalise()
 {
    unsigned int i=-1;
-   while (m_mapValues[++i]<0.0001);
+   while (i<m_mapValues.size()-1 && m_mapValues[++i]<0.0001);
+   if(i==m_mapValues.size()-1)
+   {
+      std::cout << "ERROR all the values of the map are empty!\n";
+      return;
+   }
+
    float min = m_mapValues[i];
    float max = m_mapValues[i];
    for(++i;i<m_mapValues.size(); ++i)
@@ -161,7 +165,8 @@ void Map::normalise()
    }
    if(max-min < 0.0000001)
    {
-      std::cout << "WARNING: Map cannot be normalised because all values are zero\n";
+      std::cout << "WARNING: Map cannot be normalised because all values are equal\n";
+      std::cout << "max min = " << max << " " << min << "\n";
       return;
    }
    std::cout << "max min = " << max << " " << min << "\n";
@@ -179,7 +184,7 @@ void Map::normalise()
 }
 
 //-----------------------------------------------------------------------------
-void Map::saveTxt()
+void Map::saveAsc()
 { 
     std::string TextFileName = m_name + ".asc";
     std::ofstream myfile;
@@ -191,8 +196,6 @@ void Map::saveTxt()
            << "\ncellsize "  << m_object->getVoxelLen()
            << "\nNODATA_value -0\n";
 
-//    myfile << "ncols 184\nnrows 1424\nxllcorner 435299\nyllcorner 100985\ncellsize 3.5\nNODATA_value -0\n";
-
     for(unsigned y=0; y<m_noOfPixelsY; ++y)
     {
        for(unsigned int x=0; x<m_noOfPixelsX-1; ++x)
@@ -201,11 +204,6 @@ void Map::saveTxt()
        }
        myfile << m_mapValues[getIndex(m_noOfPixelsX-1,m_noOfPixelsY-1-y)] << "\n";
     }
-//    for(unsigned int x=0; x<m_noOfPixelsX-1; ++x)
-//    {
-//       myfile << m_mapValues[getIndex(x,m_noOfPixelsY-1)] << " ";
-//    }
-//    myfile << m_mapValues[getIndex(m_noOfPixelsX-1,m_noOfPixelsY-1)];
     myfile.close();
 
     std::cout << TextFileName << " is saved\n";
@@ -220,7 +218,7 @@ void Map::createAndSave(unsigned int i_thres, unsigned int i_sample)
        return;
     }
     createMap();
-    saveTxt();
+    saveAsc();
     normalise();
     if(i_thres!=0)
     {
@@ -241,22 +239,22 @@ void Map::createAndSave(unsigned int i_thres, unsigned int i_sample)
 //-----------------------------------------------------------------------------
 void Map::saveMapToImage()
 {
-    if (m_mapValues.size()!=m_noOfPixelsX*m_noOfPixelsY)
-    {
-       std::cout << "Length of i_mapValues is wrong! Image map not saved\n";
-       return;
-    }
-    QImage *image =new QImage(m_noOfPixelsX, m_noOfPixelsY,QImage::Format_RGB16);
-    for(unsigned int x=0; x<m_noOfPixelsX; ++x)
-    {
-       for(unsigned int y=0; y<m_noOfPixelsY; ++y)
-       {
-          int value = (m_mapValues[getIndex(x,y)]);
-          image->setPixel(x,(m_noOfPixelsY-1-y),qRgb(value,value,value));
-       }
-    }
-    image->save(m_name.c_str());
-    delete image;
+//    if (m_mapValues.size()!=m_noOfPixelsX*m_noOfPixelsY)
+//    {
+//       std::cout << "Length of i_mapValues is wrong! Image map not saved\n";
+//       return;
+//    }
+//    QImage *image =new QImage(m_noOfPixelsX, m_noOfPixelsY,QImage::Format_RGB16);
+//    for(unsigned int x=0; x<m_noOfPixelsX; ++x)
+//    {
+//       for(unsigned int y=0; y<m_noOfPixelsY; ++y)
+//       {
+//          int value = (m_mapValues[getIndex(x,y)]);
+//          image->setPixel(x,(m_noOfPixelsY-1-y),qRgb(value,value,value));
+//       }
+//    }
+//    image->save(m_name.c_str());
+//    delete image;
 }
 
 //-----------------------------------------------------------------------------

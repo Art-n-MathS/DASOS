@@ -2,11 +2,21 @@
 #include "binfile.h"
 #include <math.h>
 
+
 //-----------------------------------------------------------------------------
 Grid::Grid(const std::string &i_IGMfileName,
         const unsigned short i_samplingRate
            ): m_Xs(NULL), m_Ys(NULL)
 {
+   for(unsigned int i=0; i<100; ++i)
+   {
+      std::cout << "WARNING: Read below:\n";
+   }
+   std::cout << "WARNING: YOU ARE CREATING A GRID CLASS WHILE ONE OF ITS "
+             << "FUNCTIONS has been commented because count function of "
+             << "unordered_multimap was not working and I couldn't test it. "
+             << "if you are seen this message please contact me at "
+             << "milto_miltiadou@hotmail.com . Thanks. \n";
    if(i_IGMfileName!="")
    {
       readIGMandFindMinsMaxs(i_IGMfileName);
@@ -151,29 +161,30 @@ void Grid::fillGrid()
 
 //-----------------------------------------------------------------------------
 unsigned short int Grid::pixIndicesOfSquare(
-        const gmtl::Vec2f &i_point,
-        unsigned int **i_pixPos
+        const gmtl::Vec2f &/*i_point*/,
+        unsigned int **/*i_pixPos*/
         ) const
 {
-   if(m_Xs==NULL || m_Ys==NULL)
-   {
-      std::cout << "WARNING: grid haven't been initialised proberly\n";
-      return 0;
-   }
-   const unsigned int x = float((i_point[0]-m_min[0])/
-                                (m_max[0]-m_min[0])*(float)m_nX);
-   const unsigned int y = float((i_point[1]-m_min[1])/
-                                (m_max[1]-m_min[1])*(float)m_nY);
-   unsigned short int noOfPoints = m_map.count(getKeyOfSquare(x,y));
-   (*i_pixPos) = new unsigned int [noOfPoints];
-   auto itsElements = m_map.equal_range(getKeyOfSquare(x,y));
-   unsigned short int count = 0;
-   for (auto it = itsElements.first; it != itsElements.second; ++it)
-   {
-      (*i_pixPos)[count] = it->second;
-      count++;
-   }
-   return noOfPoints;
+//   if(m_Xs==NULL || m_Ys==NULL)
+//   {
+//      std::cout << "WARNING: grid haven't been initialised proberly\n";
+//      return 0;
+//   }
+//   const unsigned int x = float((i_point[0]-m_min[0])/
+//                                (m_max[0]-m_min[0])*(float)m_nX);
+//   const unsigned int y = float((i_point[1]-m_min[1])/
+//                                (m_max[1]-m_min[1])*(float)m_nY);
+//   unsigned short int noOfPoints = m_map.count(getKeyOfSquare(x,y));
+//   (*i_pixPos) = new unsigned int [noOfPoints];
+//   auto itsElements = m_map.equal_range(getKeyOfSquare(x,y));
+//   unsigned short int count = 0;
+//   for (auto it = itsElements.first; it != itsElements.second; ++it)
+//   {
+//      (*i_pixPos)[count] = it->second;
+//      count++;
+//   }
+//   return noOfPoints;
+    return 0;
 }
 
 //-----------------------------------------------------------------------------

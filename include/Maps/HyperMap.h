@@ -16,7 +16,7 @@ public:
     //-------------------------------------------------------------------------
     HyperMap(
             const std::string &i_name,
-            Object *i_obj,
+            Volume *i_obj,
             const unsigned short int i_band,
             const std::string &i_bilFileName, const std::string &i_IGMfileName
             );

@@ -2,6 +2,7 @@
 #define THICKNESSMAP_H
 
 #include "Map.h"
+#include "Volume.h"
 
 class NonEmptyVoxelsMap : public Map
 {
@@ -9,7 +10,7 @@ public:
     //-------------------------------------------------------------------------
     /// @brief default constructor
     //-------------------------------------------------------------------------
-    NonEmptyVoxelsMap(const std::string i_name, Object *i_obj);
+    NonEmptyVoxelsMap(const std::string i_name, Volume *i_obj);
     //-------------------------------------------------------------------------
     /// @brief default destructor
     //-------------------------------------------------------------------------

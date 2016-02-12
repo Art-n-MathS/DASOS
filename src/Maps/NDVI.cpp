@@ -5,7 +5,7 @@
 //-----------------------------------------------------------------------------
 NDVI::NDVI(
         const std::string &i_name,
-        Object *i_obj,
+        Volume *i_obj,
         const std::string &i_bilFileName,
         const std::string &i_IGMfileName,
         const std::string &i_fodisFileName
@@ -32,10 +32,10 @@ void NDVI::createMap()
         unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
         unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
         unsigned int nbands=bilLib::StringToUINT(file.FromHeader("bands"));
-        Grid *grid = new Grid(m_IGMfileName,m_object->m_lengthOfVoxel*1.8,
+        Grid *grid = new Grid(m_IGMfileName,m_object->getVoxelLen()*1.8,
         m_object->getMinLimits());
         const gmtl::Vec3f &mins = m_object->getMinLimits();
-        const float vl(m_object->m_lengthOfVoxel);
+        const float vl(m_object->getVoxelLen());
         unsigned short int *m_hyperData = new unsigned short int[nlines*nsamps];
         const unsigned int noX = m_object->getNoVoxelsX();
         const unsigned int noY = m_object->getNoVoxelsY();

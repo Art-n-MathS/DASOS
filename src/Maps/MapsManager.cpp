@@ -12,35 +12,55 @@
 #include "TerrainModel.h"
 #include "HeightMap.h"
 #include "AverageHeightDifference.h"
+#include "TreeCrowns.h"
+#include "TreeCrownsWith2Templates.h"
 #include "IntensityMap.h"
 #include "IntensityMax.h"
 #include <map>
 #include <algorithm>
 
 //-----------------------------------------------------------------------------
-MapsManager::MapsManager():m_map(0)
+MapsManager::MapsManager():m_map(0),
+    m_FWMetrics({"NON-EMPTY_VOXELS",
+                 "DENSITY",
+                 "LOWEST_RETURN,HEIGHT",
+                 "HEIGHT",
+                 "LAST_PATCH",
+                 "FIRST_PATCH",
+                 "AVERAGE_HEIGHT_DIFFERENCE",
+                 "INTENSITY",
+                 "INTENSITY_MAX"
+                })
 {
-    m_types["NON-EMPTY_VOXELS"] = 1;
-    m_types["DENSITY"]   = 2;
-    m_types["THICKNESS"]    = 3;
-    m_types["HYPERSPECTRAL"] = 4;
-    m_types["HYPERSPECTRAL_MEAN"] = 5;
-    m_types["LOWEST_RETURN"] = 6;
-    m_types["SPECTRAL_SIGNATURE"] = 7;
-//    m_types["HYPERSPECTRAL_STD"] = 8;
-    m_types["FIRST_PATCH"] = 9;
-    m_types["NDVI"] = 10;
-    m_types["LAST_PATCH"] = 11;
-    m_types["HEIGHT"] = 12;
-    m_types["AVERAGE_HEIGHT_DIFFERENCE"] = 13;
-    m_types["TREE_CROWNS"] = 14;
-    m_types["TREE_CROWNS_2TEMPLATES"] = 15;
-    m_types["INTENSITY"] = 16;
-    m_types["INTENSITY_MAX"] = 17;
-    m_types["PLOT_FIELD_PLOT"] = 18;
-
+   // The types should aggree with the fw metrics list
+   m_types =
+   {
+      {"NON-EMPTY_VOXELS",1},
+      {"DENSITY",2},
+      {"THICKNESS",3},
+      {"HYPERSPECTRAL",4},
+      {"HYPERSPECTRAL_MEAN",5},
+      {"LOWEST_RETURN",6},
+      {"SPECTRAL_SIGNATURE",7},
+//      {"HYPERSPECTRAL_STD",8},
+      {"FIRST_PATCH",9},
+      {"NDVI",10},
+      {"LAST_PATCH",11},
+      {"HEIGHT",12},
+      {"AVERAGE_HEIGHT_DIFFERENCE",13},
+      {"TREE_CROWNS",14},
+      {"TREE_CROWNS_2TEMPLATES",15},
+      {"INTENSITY",16},
+      {"INTENSITY_MAX",17},
+      {"FIELDPLOT",18}
+   };
 }
 
+//-----------------------------------------------------------------------------
+const std::vector<std::string> &MapsManager::getNamesOfFWMetrics()const
+{
+   return m_FWMetrics;
+}
 
 //-----------------------------------------------------------------------------
 void MapsManager::createMap(
@@ -124,19 +144,19 @@ void MapsManager::createMap(
        std::cout << "Average Height Difference Map\n";
        m_map = new AverageHeightDifference(m_infoOfMap->name,m_infoOfMap->obj);
        break;
-//   case 14:
-//       std::cout << "Tree Crowns Detection\n";
-//       m_map = new TreeCrowns(m_infoOfMap->name,
-//                              m_infoOfMap->obj,
-//                              m_infoOfMap->templatesPosFileName);
-//       break;
-//   case 15:
-//       std::cout<<"Tree Crowns Detection with positive & negative templates\n";
-//       m_map = new TreeCrownsWith2Templates(m_infoOfMap->name,
-//                                            m_infoOfMap->obj,
-//                                            m_infoOfMap->templatesPosFileName,
-//                                            m_infoOfMap->templatesNegFileName);
-//       break;
+   case 14:
+       std::cout << "Tree Crowns Detection\n";
+       m_map = new TreeCrowns(m_infoOfMap->name,
+                              m_infoOfMap->obj,
+                              m_infoOfMap->templatesPosFileName);
+       break;
+   case 15:
+       std::cout<<"Tree Crowns Detection with positive & negative templates\n";
+       m_map = new TreeCrownsWith2Templates(m_infoOfMap->name,
+                                            m_infoOfMap->obj,
+                                            m_infoOfMap->templatesPosFileName,
+                                            m_infoOfMap->templatesNegFileName);
+       break;
    case 16:
        std::cout << "Intensity Average Map\n";
        m_map = new IntensityMap(m_infoOfMap->name,m_infoOfMap->obj);
@@ -145,11 +165,6 @@ void MapsManager::createMap(
        std::cout << "Intensity Max Map\n";
        m_map = new IntensityMax(m_infoOfMap->name,m_infoOfMap->obj);
        break;
-//   case 18:
-//       std::cout << "Plotting Field plot on a Height map\n";
-//       m_map = new FieldPlotOnHeightMap(m_infoOfMap->name,m_infoOfMap->obj,
-//                                        m_infoOfMap->fieldPlot);
-//       break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";
       break;

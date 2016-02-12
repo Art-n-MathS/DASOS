@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 DensityMap::DensityMap(
         const std::string i_name,
-        Object *i_obj
+        Volume *i_obj
         ):
     Map(i_name,i_obj)
 {
@@ -52,7 +52,7 @@ void DensityMap::createMap()
           }
           else
           {
-             m_mapValues[getIndex(x,y)] = 0;
+             m_mapValues[getIndex(x,y)] = -0.0f;
           }
        }
     }

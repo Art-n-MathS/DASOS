@@ -17,6 +17,7 @@
 #include <gmtl/Vec.h>
 #include <string>
 #include <unordered_map>
+#include <iostream>
 
 
 class Grid

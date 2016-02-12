@@ -290,6 +290,8 @@ public:
       unsigned int temporal_sample_spacing;              //   4 bytes  3
       double digitizer_gain;                             //   8 bytes  4
       double digitizer_offset;                           //   8 bytes  5
+      // added to identify descriptors
+      unsigned char id;                                  //   1 byte
    }WF_packet_Descriptor;
 #pragma pack(pop)
 
@@ -314,4 +316,3 @@ public:
 
 
 #endif // LAS13TYPES_H
-

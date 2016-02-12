@@ -4,8 +4,7 @@
 #include <iostream>
 
 //-----------------------------------------------------------------------------
-MCwithIntegralImages::MCwithIntegralImages(
-        Object *i_obj,
+MCwithIntegralImages::MCwithIntegralImages(Volume *i_obj,
         unsigned int i_x
         ):
     MarchingCubes(i_obj,i_x)
@@ -123,7 +122,13 @@ void MCwithIntegralImages::computeVertices(GLData *i_glData)
          continue;
       }
       // check if area is empty and discard if it is
-      if(currentCube.m_mins[2]==0 || currentCube.m_mins[1]==0 || currentCube.m_mins[0]==0 ||m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]-1,currentCube.m_mins[1]-1,currentCube.m_mins[2]-1,currentCube.m_lens[0]+1,currentCube.m_lens[1]+1,currentCube.m_lens[2]+1)>integralIsolevel)
+      if(currentCube.m_mins[2]==0 || currentCube.m_mins[1]==0 || currentCube.m_mins[0]==0
+              ||m_obj->m_integralVolume->getSumOfArea(currentCube.m_mins[0]-1,
+                                                      currentCube.m_mins[1]-1,
+                                                      currentCube.m_mins[2]-1,
+                                                      currentCube.m_lens[0]+1,
+                                                      currentCube.m_lens[1]+1,
+                                                      currentCube.m_lens[2]+1)>integralIsolevel)
       {
       }
       else

@@ -2,6 +2,7 @@
 #define MCWITHINTEGRALIMAGES_H
 
 #include "MarchingCubes.h"
+#include "Volume.h"
 
 class MCwithIntegralImages : public MarchingCubes
 {
@@ -12,7 +13,7 @@ public:
     /// @param[in] i_obj object to be polygonised
     /// @param[in] i_x the number of cubes in the x-axis
     //--------------------------------------------------------------------------
-    MCwithIntegralImages(Object *i_obj, unsigned int i_x);
+    MCwithIntegralImages(Volume *i_obj, unsigned int i_x);
 
     //--------------------------------------------------------------------------
     /// @brief method that polygonises the object and save its vertices into the

@@ -4,7 +4,7 @@
 //-----------------------------------------------------------------------------
 LastPatch::LastPatch(
         const std::string i_name,
-        Object *i_obj
+        Volume *i_obj
         ):
     Map(i_name,i_obj)
 {
@@ -42,7 +42,7 @@ void LastPatch::createMap()
                   break;
                }
             }
-            m_mapValues[getIndex(x,y)] = zz;
+            m_mapValues[getIndex(x,y)] = zz *m_object->getVoxelLen();
          }
       }
    }

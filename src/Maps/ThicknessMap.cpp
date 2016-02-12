@@ -3,7 +3,7 @@
 //-----------------------------------------------------------------------------
 ThicknessMap::ThicknessMap(
         const std::string i_name,
-        Object *i_obj
+        Volume *i_obj
         ):
     Map(i_name,i_obj)
 {
@@ -42,11 +42,11 @@ void ThicknessMap::createMap()
                    break;
                 }
             }
-            m_mapValues[getIndex(x,y)] = float(m_noOfPixelsZ - z1 - z2);
+            m_mapValues[getIndex(x,y)] = float(m_noOfPixelsZ - z1 - z2)*m_object->getVoxelLen();
          }
          else
          {
-            m_mapValues[getIndex(x,y)] = 0;
+            m_mapValues[getIndex(x,y)] = -0.0f;
          }
       }
    }

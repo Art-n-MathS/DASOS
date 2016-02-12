@@ -10,7 +10,7 @@ public:
    /// @brief default constructor
    //--------------------------------------------------------------------------
    HyperMean(const std::string &i_name,
-           Object *i_obj,
+           Volume *i_obj,
            const std::string &i_bilFileName,
            const std::string &i_IGMfileName
            );
