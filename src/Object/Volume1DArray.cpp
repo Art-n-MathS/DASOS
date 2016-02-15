@@ -1,131 +1,139 @@
 #include "Volume1DArray.h"
-
-#include <iostream>
 #include <math.h>
-#include <limits>
-#include <assert.h>
 #include <iostream>
-#include <algorithm>
 #include <fstream>
 #include <iterator>
 #include <iomanip>
-#include <string>
-#include <exception>      // std::exception
-
 
 //-----------------------------------------------------------------------------
 Volume1DArray::Volume1DArray(
         float i_voxelLength,
         const std::vector<double> &i_user_limits,
         const std::string &i_type
-        ) : Volume(i_voxelLength,i_user_limits,i_type)
+        ) :
+    Volume(i_voxelLength,i_user_limits,i_type),
+    m_noOfSamplesPerVoxel(NULL)
 {
-    m_intensities.resize(m_noOfVoxelsX*m_noOfVoxelsY*m_noOfVoxelsZ,0.0f);
-    std::fill(m_intensities.begin(),m_intensities.end(),0.0f);
-    m_noOfReturnsPerVoxel.resize(m_intensities.size(),0);
-    std::fill(m_noOfReturnsPerVoxel.begin(),m_noOfReturnsPerVoxel.end(),0);
-    std::cout << m_intensities.size() << " the size \n";
+    m_noOfSamplesPerVoxel=new std::unordered_map<unsigned long int, unsigned int> ;
 }
 
 
 //-----------------------------------------------------------------------------
-Volume1DArray::Volume1DArray(const std::string &i_filename):Volume(i_filename)
+Volume1DArray::Volume1DArray(
+        const std::string &i_filename
+        ):Volume(i_filename)
 {
    readObjectFromFile(i_filename,m_evaluation);
 }
 
 //-----------------------------------------------------------------------------
-Volume1DArray::Volume1DArray(
-        const std::string &i_filename,
-        bool evaluation
-        ) : Volume(i_filename,evaluation)
-{
-
-}
-
-//-----------------------------------------------------------------------------
 void Volume1DArray::compare(Volume */*i_obj*/)
 {
-//   unsigned int diff = 0;
-//   if(i_obj->m_intensities.size() != m_intensities.size())
-//   {
-//      return;
-//   }
-//   for(unsigned int i=0; i<m_intensities.size(); ++i)
-//   {
-//      if(i_obj->m_intensities[i]<m_intensities[i]-0.001f || i_obj->m_intensities[i]>m_intensities[i]+0.001f)
-//      {
-//         diff++;
-//      }
-//   }
-//   std::cout << "Difference = " << diff << " / " << m_intensities.size() << "\n";
+   std::cout << "VolumeSeriesOfHashedOctrees::compare haven't been implemented yet \n";
 }
-
 
 //-----------------------------------------------------------------------------
 float Volume1DArray::functionValue(const gmtl::Vec3f &i_point)
 {
-   // in case the object is empty then it will always return 0
-   if(m_intensities.size()==0)
+   unsigned long int key = getIndex(i_point);
+   std::unordered_map<unsigned long int, float>::iterator got =m_intensities.find(key);
+   if(got==m_intensities.end())
    {
-      return 0.0;
+      return 0.0f;
    }
-   // shift values such that the lower point is considered to be the (0,0,0)
-   // used to match the actual coordinated with the index of the corresponding
-   // voxel
-
-   unsigned int myIndexfloor = getIndex(i_point);
-
-   if(myIndexfloor>=m_intensities.size())
+   else
    {
-      std::cout<<"ERROR : Point outside limits "<<myIndexfloor
-              <<" / "<<m_intensities.size()<<"\n";
+      return got->second;
    }
-   double value = m_intensities[myIndexfloor];
-
-//   assert(value==value);
-//   assert(value!=std::numeric_limits<float>::infinity());
-//   assert(value!=-std::numeric_limits<float>::infinity());
-
-  return value;
-}
-
-//-------------------------------------------------------------------------
-float Volume1DArray::getIntensity(unsigned int i_x, unsigned int i_y, unsigned int i_z)
-{
-   return m_intensities[i_x+i_y*m_noOfVoxelsX+
-           i_z*m_noOfVoxelsX*m_noOfVoxelsY];
 }
 
 //-----------------------------------------------------------------------------
-bool Volume1DArray::isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z)
+float Volume1DArray::getIntensity(
+        unsigned int i_x,
+        unsigned int i_y,
+        unsigned int i_z
+        )
 {
-   return m_intensities[i_x+i_y*m_noOfVoxelsX+
-           i_z*m_noOfVoxelsX*m_noOfVoxelsY]>m_isolevel;
-}
-
-
-//-----------------------------------------------------------------------------
-void Volume1DArray::addItensityTypeVol(const gmtl::Vec3f &i_point, float i_intensity)
-{
-   if(m_noOfReturnsPerVoxel.size()==0)
+   unsigned long int key=i_x+i_y*m_noOfVoxelsX+i_z*m_noOfVoxelsX*m_noOfVoxelsY;
+   std::unordered_map<unsigned long int, float>::iterator got =m_intensities.find(key);
+   if(got==m_intensities.end())
    {
-      std::cout << "IntegralVolume has been normalised. So no more intensities"
-                << " can be added\n";
-      return;
+      return 0.0f;
    }
-   unsigned int index = this->getIndex(i_point);
-   m_noOfReturnsPerVoxel[index]++;
-   float noOfRe = m_noOfReturnsPerVoxel[index];
-   m_intensities[index]=(noOfRe-1)/noOfRe*m_intensities[index] + float(i_intensity)/noOfRe;
+   else
+   {
+      return got->second;
+   }
 }
-
 
 //-----------------------------------------------------------------------------
 void Volume1DArray::normalise()
 {
-   m_noOfReturnsPerVoxel.clear();
+   delete m_noOfSamplesPerVoxel;
+   m_noOfSamplesPerVoxel=NULL;
 }
+
+//-----------------------------------------------------------------------------
+bool Volume1DArray::isInside(
+        unsigned int i_x,
+        unsigned int i_y,
+        unsigned int i_z
+        )
+{
+   unsigned long int key=i_x+i_y*long(m_noOfVoxelsX)+i_z*long(m_noOfVoxelsX)*long(m_noOfVoxelsY);
+   std::unordered_map<unsigned long int, float>::iterator got =m_intensities.find(key);
+   if(got==m_intensities.end())
+   {
+      return false;
+   }
+   else
+   {
+      return got->second>m_isolevel;
+   }
+}
+
+//-----------------------------------------------------------------------------
+void Volume1DArray::addItensityTypeVol(
+        const gmtl::Vec3f &i_point,
+        float i_intensity
+        )
+{
+   if(m_noOfSamplesPerVoxel==NULL)
+   {
+      std::cout << "WARNING:After normalisationm no intensity can be added\n";
+      return;
+   }
+   unsigned long int key = getIndex(i_point);
+
+
+   // check if it already exist in the table:
+   std::unordered_map<unsigned long int, float>::iterator got =m_intensities.find(key);
+   std::unordered_map<unsigned long int,unsigned int>::iterator got2 =
+                                            m_noOfSamplesPerVoxel->find(key);
+
+   if(got==m_intensities.end())
+   {
+      std::pair<unsigned long int, float> pair(key,i_intensity);
+      m_intensities.insert(pair);
+      std::pair<unsigned long int, unsigned int> pairNoOfSamples(key,1);
+      m_noOfSamplesPerVoxel->insert(pairNoOfSamples);
+   }
+   else
+   {
+      // add intensity to current one and increment number of samples
+      if(got2!=m_noOfSamplesPerVoxel->end())
+      {
+         got2->second++;
+         float noOfRe = got2->second;
+         got->second=(noOfRe-1)/noOfRe*got->second + i_intensity/noOfRe;
+      }
+      else
+      {
+         std::cout << "WARNING: number of samples should existed\n";
+      }
+   }
+}
+
 //-----------------------------------------------------------------------------
 void Volume1DArray::exportToFile(
         std::string i_filename,
@@ -158,37 +166,47 @@ void Volume1DArray::exportToFile(
     myfile << "Distance " << m_dis[0] << " " << m_dis[1] << " " << m_dis[2] << "\n";
     myfile << "NoiseLevel " << m_noiseLevel << "\n";
     myfile << "VoxelLength " << m_lengthOfVoxel << "\n";
-    myfile << "NumberOfIntensities " << m_intensities.size() << "\n";
+    myfile << "NumberOfIntensities " << m_noOfVoxelsX*m_noOfVoxelsY*m_noOfVoxelsZ << "\n";
 
+    unsigned int nI = m_noOfVoxelsX * m_noOfVoxelsY *m_noOfVoxelsZ;
+
+    std::cout << "Start exporting file\n";
     if(i_compression)
     {
        myfile << "Compression true\n";
-       for(unsigned int i=0; i<m_intensities.size();++i)
+       for(unsigned int i=0; i<nI; ++i)
        {
-          if(m_intensities[i]<0.000001 && m_intensities[i]>-0.000001)
+          std::unordered_map<unsigned long int, float>::const_iterator got = m_intensities.find(i);
+          if(got==m_intensities.end())
           {
              unsigned int noOfZeros(0);
-             while (i+noOfZeros<m_intensities.size() &&
-                    m_intensities[i+noOfZeros]<0.000001 &&
-                    m_intensities[i+noOfZeros]>-0.000001)
+             while(got==m_intensities.end() && (i+noOfZeros<nI))
              {
+                got = m_intensities.find(i+noOfZeros);
                 ++noOfZeros;
              }
              i+=noOfZeros;
-             myfile << "0x" << noOfZeros << " ";
           }
           else
           {
-             myfile << m_intensities[i] << " ";
+             myfile << got->second << " ";
           }
        }
     }
     else
     {
        myfile << "Compression false\n";
-       for(unsigned int i=0; i<m_intensities.size(); ++i)
+       for(unsigned int i=0; i<nI; ++i)
        {
-          myfile << m_intensities[i] << " ";
+          std::unordered_map<unsigned long int, float>::const_iterator got = m_intensities.find(i);
+          if(got==m_intensities.end())
+          {
+             myfile << "0 ";
+          }
+          else
+          {
+             myfile << got->second << " ";
+          }
        }
     }
     myfile << "\n\n";
@@ -201,8 +219,6 @@ void Volume1DArray::readObjectFromFile(
         bool evaluation
         )
 {
-    try{
-
     std::cout << "Object created from file\n";
     std::ifstream mystream(i_filename.c_str());
     if(!mystream)
@@ -220,6 +236,12 @@ void Volume1DArray::readObjectFromFile(
                  << "\" is not written in the correct format.\n";
        return;
     }
+
+    for(unsigned int i=0; i<200; ++i)
+    {
+       std::cout << words[i] << " " ;
+    }
+    std::cout << "\n";
 
     // LowerLimits x y z
     // HigherLimits x y z
@@ -247,25 +269,22 @@ void Volume1DArray::readObjectFromFile(
     m_noiseLevel = atof(words[19].c_str());
     m_lengthOfVoxel = atof(words[21].c_str());
 
+    unsigned int noOfIntensities  = m_noOfVoxelsX*m_noOfVoxelsY*m_noOfVoxelsZ;
     bool isFileCompressed = (words[25] == "true");
-
-    std::cout << " PAssiging this test";
-    unsigned int inum =(unsigned int) atoi(words[23].c_str());
+    unsigned int inum = (unsigned int) atoi(words[23].c_str());
     if(!evaluation)
     {
-       m_intensities.resize(inum);
-       std::fill(m_intensities.begin(),m_intensities.end(),0.0f);
+       unsigned int wordsIndex = 26;
        if(isFileCompressed)
        {
-          unsigned int wordsIndex = 26;
           std::cout << "File compressed\n";
-          for(unsigned int i=0; i<m_intensities.size();++i)
+          for(unsigned int i=0; i<noOfIntensities;++i)
           {
              if(words[wordsIndex].substr(0,1)=="0")
              {
                 //compressed value
                 unsigned int len = atoi(words[wordsIndex].substr(2,words[wordsIndex].length()-2).c_str());
-                if(wordsIndex+len>m_intensities.size())
+                if(wordsIndex+len>noOfIntensities)
                 {
                    std::cout << "ERROR: reach end of file but not all intensities has been read\n";
                    return;
@@ -277,8 +296,9 @@ void Volume1DArray::readObjectFromFile(
              {
                 if(wordsIndex<words.size())
                 {
-                   m_intensities[i] = atof(words[wordsIndex].c_str());
-                   ++wordsIndex;
+                    std::pair<unsigned long int, float> pair(i,atof(words[wordsIndex].c_str()));
+                    m_intensities.insert(pair);
+                    ++wordsIndex;
                 }
                 else
                 {
@@ -290,17 +310,26 @@ void Volume1DArray::readObjectFromFile(
        }
        else
        {
-           std::cout << "26 + " << words[23] << " = " << words.size() << "\n";
-           if(words.size()!=(unsigned int)(26+atoi(words[23].c_str())))
-           {
-               std::cerr << "ERROR: File \"" << i_filename
-                         << "\" is not written in the correct format.\n";
-               return;
-           }
+          std::cout << "26 + " << words[23] << " = " << words.size() << "\n";
+          if(words.size()!=(unsigned int)(26+atoi(words[23].c_str())))
+          {
+             std::cerr << "ERROR: File \"" << i_filename
+                       << "\" is not written in the correct format.\n";
+             return;
+          }
           std::cout << "File is not compressed\n";
           for(unsigned int i = 0; i < inum; ++i)
           {
-             m_intensities[i] = atof(words[26+i].c_str());
+             float inten = atof(words[26+i].c_str());
+             if(inten>0.0000001)
+             {
+                std::pair<unsigned long int, float> pair(i,atof(words[26+i].c_str()));
+                m_intensities.insert(pair);
+             }
+             else
+             {
+                // intensity is equal to zero, no need to be added in the hash
+             }
           }
         }
     }
@@ -310,13 +339,6 @@ void Volume1DArray::readObjectFromFile(
                  << " option for evalueation, otherwise segmentation fault may"
                  << " occur! creating Object\n";
     }
- //   m_lengthOfVoxel = m_dis[0]/m_noOfVoxelsX;
-    }
-    catch (std::exception& e)
-    {
-       std::cerr << "exception caught: " << e.what() << '\n';
-    }
-
 }
 
 
@@ -324,6 +346,9 @@ void Volume1DArray::readObjectFromFile(
 //-----------------------------------------------------------------------------
 Volume1DArray::~Volume1DArray()
 {
-
+   if(m_noOfSamplesPerVoxel!=NULL)
+   {
+      delete m_noOfSamplesPerVoxel;
+   }
 }
 
