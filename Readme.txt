@@ -1,4 +1,4 @@
-DASOS released Date: 14/02/2016
+DASOS released Date: 19/02/2016
 
 This project is funded by the Centre for Digital Entertainement and Plymouth 
 Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC
