@@ -15,7 +15,6 @@ HyperMean::HyperMean(const std::string &i_name,
 
 }
 
-/// TO DO : test it properly
 //--------------------------------------------------------------------------
 void HyperMean::createMap()
 {
@@ -26,7 +25,6 @@ void HyperMean::createMap()
           std::cout<<"WARNING: hyperspectral files have not been loaded\n";
           return;
        }
-       std::cout << "m_bilFileName = " << m_bilFileName << "\n";
        bilLib::BinFile file(m_bilFileName);
        unsigned int nsamps=bilLib::StringToUINT(file.FromHeader("samples"));
        unsigned int nlines=bilLib::StringToUINT(file.FromHeader("lines"));
@@ -41,7 +39,6 @@ void HyperMean::createMap()
        const unsigned int noX = m_object->getNoVoxelsX();
        const unsigned int noY = m_object->getNoVoxelsY();
        unsigned int *pixPos = NULL;
-//       float tempValue = 0;
 
        // add one band to the map each time to avoid loading all the data
        // to memory

@@ -15,7 +15,6 @@ AverageHeightDifference::AverageHeightDifference(
 //-----------------------------------------------------------------------------
 void AverageHeightDifference::createMap()
 {
-   std::cout << "start generating Average Height Difference map\n";
    std::vector<float> heightValues(m_noOfPixelsX*m_noOfPixelsY);
    for(unsigned int x=0; x<m_noOfPixelsX; ++x)
    {
@@ -44,7 +43,6 @@ void AverageHeightDifference::createMap()
       }
    }
 
-   std::cout <<"hello world\n";
    for(unsigned int x=1; x<m_noOfPixelsX-1; ++x)
    {
       for(unsigned int y=1; y<m_noOfPixelsY-1; ++y)
@@ -74,7 +72,6 @@ void AverageHeightDifference::createMap()
       }
    }
 
-   std::cout <<"hello world\n";
    // left up corner
    if(heightValues[0]>0.0001f)
    {
@@ -125,11 +122,6 @@ void AverageHeightDifference::createMap()
        m_mapValues[0]=fabs(heightValues[0]-m_mapValues[0]/div);
    }
    /// TO DO: WRITE ABOUT THE REST OF THE EDGES
-
-
-
-
-   std::cout << "finished generating Average Height Difference map\n";
 
 }
 

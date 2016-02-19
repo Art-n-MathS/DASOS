@@ -1,4 +1,4 @@
-#include "Volume1DArray.h"
+#include "VolumeHashed1DArray.h"
 #include <math.h>
 #include <iostream>
 #include <fstream>
@@ -6,20 +6,18 @@
 #include <iomanip>
 
 //-----------------------------------------------------------------------------
-Volume1DArray::Volume1DArray(
+VolumeHashed1DArray::VolumeHashed1DArray(
         float i_voxelLength,
         const std::vector<double> &i_user_limits,
         const std::string &i_type
         ) :
-    Volume(i_voxelLength,i_user_limits,i_type),
-    m_noOfSamplesPerVoxel(NULL)
+    Volume(i_voxelLength,i_user_limits,i_type)
 {
-    m_noOfSamplesPerVoxel=new std::unordered_map<unsigned long int, unsigned int> ;
 }
 
 
 //-----------------------------------------------------------------------------
-Volume1DArray::Volume1DArray(
+VolumeHashed1DArray::VolumeHashed1DArray(
         const std::string &i_filename
         ):Volume(i_filename)
 {
@@ -27,13 +25,13 @@ Volume1DArray::Volume1DArray(
 }
 
 //-----------------------------------------------------------------------------
-void Volume1DArray::compare(Volume */*i_obj*/)
+void VolumeHashed1DArray::compare(Volume */*i_obj*/)
 {
    std::cout << "VolumeSeriesOfHashedOctrees::compare haven't been implemented yet \n";
 }
 
 //-----------------------------------------------------------------------------
-float Volume1DArray::functionValue(const gmtl::Vec3f &i_point)
+float VolumeHashed1DArray::functionValue(const gmtl::Vec3f &i_point)
 {
    unsigned long int key = getIndex(i_point);
    std::unordered_map<unsigned long int, float>::iterator got =m_intensities.find(key);
@@ -48,7 +46,7 @@ float Volume1DArray::functionValue(const gmtl::Vec3f &i_point)
 }
 
 //-----------------------------------------------------------------------------
-float Volume1DArray::getIntensity(
+float VolumeHashed1DArray::getIntensity(
         unsigned int i_x,
         unsigned int i_y,
         unsigned int i_z
@@ -67,14 +65,13 @@ float Volume1DArray::getIntensity(
 }
 
 //-----------------------------------------------------------------------------
-void Volume1DArray::normalise()
+void VolumeHashed1DArray::normalise()
 {
-   delete m_noOfSamplesPerVoxel;
-   m_noOfSamplesPerVoxel=NULL;
+   m_noOfSamplesPerVoxel.clear();
 }
 
 //-----------------------------------------------------------------------------
-bool Volume1DArray::isInside(
+bool VolumeHashed1DArray::isInside(
         unsigned int i_x,
         unsigned int i_y,
         unsigned int i_z
@@ -93,12 +90,12 @@ bool Volume1DArray::isInside(
 }
 
 //-----------------------------------------------------------------------------
-void Volume1DArray::addItensityTypeVol(
+void VolumeHashed1DArray::addItensityTypeVol(
         const gmtl::Vec3f &i_point,
         float i_intensity
         )
 {
-   if(m_noOfSamplesPerVoxel==NULL)
+   if(m_noOfSamplesPerVoxel.empty() && !m_noOfSamplesPerVoxel.empty())
    {
       std::cout << "WARNING:After normalisationm no intensity can be added\n";
       return;
@@ -109,19 +106,19 @@ void Volume1DArray::addItensityTypeVol(
    // check if it already exist in the table:
    std::unordered_map<unsigned long int, float>::iterator got =m_intensities.find(key);
    std::unordered_map<unsigned long int,unsigned int>::iterator got2 =
-                                            m_noOfSamplesPerVoxel->find(key);
+                                            m_noOfSamplesPerVoxel.find(key);
 
    if(got==m_intensities.end())
    {
       std::pair<unsigned long int, float> pair(key,i_intensity);
       m_intensities.insert(pair);
       std::pair<unsigned long int, unsigned int> pairNoOfSamples(key,1);
-      m_noOfSamplesPerVoxel->insert(pairNoOfSamples);
+      m_noOfSamplesPerVoxel.insert(pairNoOfSamples);
    }
    else
    {
       // add intensity to current one and increment number of samples
-      if(got2!=m_noOfSamplesPerVoxel->end())
+      if(got2!=m_noOfSamplesPerVoxel.end())
       {
          got2->second++;
          float noOfRe = got2->second;
@@ -135,7 +132,7 @@ void Volume1DArray::addItensityTypeVol(
 }
 
 //-----------------------------------------------------------------------------
-void Volume1DArray::exportToFile(
+void VolumeHashed1DArray::exportToFile(
         std::string i_filename,
         bool i_compression
         )
@@ -186,6 +183,7 @@ void Volume1DArray::exportToFile(
                 ++noOfZeros;
              }
              i+=noOfZeros;
+             myfile << "0x" <<noOfZeros << " ";
           }
           else
           {
@@ -214,7 +212,7 @@ void Volume1DArray::exportToFile(
 }
 
 //-----------------------------------------------------------------------------
-void Volume1DArray::readObjectFromFile(
+void VolumeHashed1DArray::readObjectFromFile(
         const std::string &i_filename,
         bool evaluation
         )
@@ -236,12 +234,6 @@ void Volume1DArray::readObjectFromFile(
                  << "\" is not written in the correct format.\n";
        return;
     }
-
-    for(unsigned int i=0; i<200; ++i)
-    {
-       std::cout << words[i] << " " ;
-    }
-    std::cout << "\n";
 
     // LowerLimits x y z
     // HigherLimits x y z
@@ -344,11 +336,7 @@ void Volume1DArray::readObjectFromFile(
 
 
 //-----------------------------------------------------------------------------
-Volume1DArray::~Volume1DArray()
+VolumeHashed1DArray::~VolumeHashed1DArray()
 {
-   if(m_noOfSamplesPerVoxel!=NULL)
-   {
-      delete m_noOfSamplesPerVoxel;
-   }
 }
 

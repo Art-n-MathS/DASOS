@@ -23,12 +23,13 @@
 MapsManager::MapsManager():m_map(0),
     m_FWMetrics({"NON-EMPTY_VOXELS",
                  "DENSITY",
-                 "LOWEST_RETURN,HEIGHT",
+                 "THICKNESS",
+                 "LOWEST_RETURN",
                  "HEIGHT",
                  "LAST_PATCH",
                  "FIRST_PATCH",
                  "AVERAGE_HEIGHT_DIFFERENCE",
-                 "INTENSITY",
+                 "INTENSITY_AVG",
                  "INTENSITY_MAX"
                 })
 {
@@ -50,9 +51,11 @@ MapsManager::MapsManager():m_map(0),
       {"AVERAGE_HEIGHT_DIFFERENCE",13},
       {"TREE_CROWNS",14},
       {"TREE_CROWNS_2TEMPLATES",15},
-      {"INTENSITY",16},
+      {"INTENSITY_AVG",16},
       {"INTENSITY_MAX",17},
+      {"FIELDPLOT",18},
       {"FIELDPLOT",18}
+
    };
 }
 
@@ -115,13 +118,6 @@ void MapsManager::createMap(
                    m_infoOfMap->spectralSignature,
                    m_infoOfMap->spectralSignatureType);
        break;
-   case 8:
-//       std::cout << "Hyperspectral Standard Deviations\n";
-//       m_map = new HyperStandardDeviation
-//               (m_infoOfMap->name,m_infoOfMap->obj,
-//                m_infoOfMap->bilFileName,m_infoOfMap->IGMfileName,
-//                m_infoOfMap->fodisFileName);
-       break;
    case 9:
        std::cout << "Length of first continues patch of non empty voxels\n";
        m_map = new FirstPatch(m_infoOfMap->name,m_infoOfMap->obj);
@@ -164,6 +160,8 @@ void MapsManager::createMap(
    case 17:
        std::cout << "Intensity Max Map\n";
        m_map = new IntensityMax(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
+   case 18:
        break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";

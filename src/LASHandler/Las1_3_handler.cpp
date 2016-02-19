@@ -27,145 +27,18 @@ Las1_3_handler::Las1_3_handler(
    }
    read_public_header();
    read_variable_length_records();
-
-   // set volume boundaries :
-//   LAS1_3Types::Data_Point_Record_Format_4 point_info;
-//   m_lasfile.seekg((int) public_header.offset_to_point);
-
-
-//   if(public_header.version_minor==3)
-//   {
-//      std::cout << "Adjusting max and min limits using the waveform returns\n";
-//      unsigned int i=0;
-//      while(i<public_header.number_of_point_records)
-//      {
-//         lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-//         int wave_offset = public_header.start_of_wf_data_Packet_record +
-//               point_info.byte_offset_to_wf_packet_data;
-//         if( point_info.wave_packet_descriptor_index!=0 && (int)point_info.classification!=7 &&
-//                 (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
-//         {
-//            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-//            if(wave_data==0)
-//            {
-//                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-//                          << "Program will terminate\n";
-//                exit(EXIT_FAILURE);
-//            }
-//            int tmp = lasfile.tellg();
-
-//            lasfile.seekg(wave_offset);
-
-//            lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-
-//            gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
-//                                point_info.Y*public_header.y_scale_factor+public_header.y_offset,
-//                                point_info.Z*public_header.z_scale_factor+public_header.z_offset);
-
-//            float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
-//            gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
-//            offset *= (1000.0f * temporalSampleSpacing);
-
-
-//            origin[0] = origin[0] + (double )point_info.X_t*
-//                    (double )point_info.return_point_wf_location;
-//            origin[1] = origin[1] + (double )point_info.Y_t*
-//                    (double )point_info.return_point_wf_location;
-//            origin[2] = origin[2] + (double )point_info.Z_t*
-//                    (double )point_info.return_point_wf_location;
-
-//            unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
-
-//            gmtl::Vec3f endPoint;
-//            endPoint[0] = origin[0] + noOfSamples*offset[0];
-//            endPoint[1] = origin[1] + noOfSamples*offset[1];
-//            endPoint[2] = origin[2] + noOfSamples*offset[2];
-
-//            public_header.max_x = (origin[0]>endPoint[0]? origin[0] : endPoint[0]);
-//            public_header.min_x = (origin[0]<endPoint[0]? origin[0] : endPoint[1]);
-//            public_header.max_y = (origin[1]>endPoint[1]? origin[1] : endPoint[1]);
-//            public_header.min_y = (origin[1]<endPoint[1]? origin[1] : endPoint[1]);
-//            public_header.max_z = (origin[2]>endPoint[2]? origin[2] : endPoint[2]);
-////            public_header.min_z = (origin[2]<endPoint[2]? origin[2] : endPoint[2]);
-
-//            lasfile.seekg(tmp);
-//            delete []wave_data;
-//            break;
-//         }
-//         i++;
-//      }
-
-
-//      for(; i< public_header.number_of_point_records; ++i)
-//      {
-//         lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-//         int wave_offset = public_header.start_of_wf_data_Packet_record +
-//                  point_info.byte_offset_to_wf_packet_data;
-
-//         if( point_info.wave_packet_descriptor_index!=0 && (int)point_info.classification!=7 &&
-//                 (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
-//         {
-//            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-//            if(wave_data==0)
-//            {
-//                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-//                          << "Program will terminate\n";
-//                exit(EXIT_FAILURE);
-//            }
-//            int tmp = lasfile.tellg();
-
-//            lasfile.seekg(wave_offset);
-
-//            lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-
-
-//            gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
-//                                point_info.Y*public_header.y_scale_factor+public_header.y_offset,
-//                                point_info.Z*public_header.z_scale_factor+public_header.z_offset);
-//            float temporalSampleSpacing = ((int)wv_info.temporal_sample_spacing)/1000.0f;
-//            gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
-//            offset *= (1000.0f * temporalSampleSpacing);
-
-
-//            origin[0] = origin[0] + (double )point_info.X_t*
-//                    (double )point_info.return_point_wf_location;
-//            origin[1] = origin[1] + (double )point_info.Y_t*
-//                    (double )point_info.return_point_wf_location;
-//            origin[2] = origin[2] + (double )point_info.Z_t*
-//                    (double )point_info.return_point_wf_location;
-
-//            unsigned int noOfSamples = point_info.wf_packet_size_in_bytes;
-
-//            gmtl::Vec3f endPoint;
-//            endPoint[0] = origin[0] + noOfSamples*offset[0];
-//            endPoint[1] = origin[1] + noOfSamples*offset[1];
-//            endPoint[2] = origin[2] + noOfSamples*offset[2];
-
-//            // calculate boundaries
-//            public_header.max_x = (public_header.max_x>endPoint[0]? public_header.max_x : endPoint[0]);
-//            public_header.min_x = (public_header.min_x<endPoint[0]? public_header.min_x : endPoint[0]);
-//            public_header.max_y = (public_header.max_y>endPoint[1]? public_header.max_y : endPoint[1]);
-//            public_header.min_y = (public_header.min_y<endPoint[1]? public_header.min_y : endPoint[1]);
-//            public_header.max_z = (public_header.max_z>endPoint[2]? public_header.max_z : endPoint[2]);
-//            public_header.min_z = (public_header.min_z<endPoint[2]? public_header.min_z : endPoint[2]);
-
-//            public_header.max_x = (origin[0]>public_header.max_x? origin[0] : public_header.max_x);
-//            public_header.min_x = (origin[0]<public_header.min_x? origin[0] : public_header.min_x);
-//            public_header.max_y = (origin[1]>public_header.max_y? origin[1] : public_header.max_y);
-//            public_header.min_y = (origin[1]<public_header.min_y? origin[1] : public_header.min_y);
-//            public_header.max_z = (origin[2]>public_header.max_z? origin[2] : public_header.max_z);
-//            public_header.min_z = (origin[2]<public_header.min_z? origin[2] : public_header.min_z);
-
-
-//            lasfile.seekg(tmp);
-//            delete []wave_data;
-
-//         }
-//      }
-//      std::cout << "FINAL MIN AND MAX VALUES WHICH ARE : \n";
-//      std::cout << public_header.max_x << " " << public_header.max_y << " "<<  public_header.max_z << "\n";
-//      std::cout << public_header.min_x << " " << public_header.min_y << " "<<  public_header.min_z << "\n";
-//   }
+   if(m_areWFInternal)
+   {
+     m_lasfile.seekg(0,std::ios::end);
+     m_wvFileLenght = m_lasfile.tellg();
+   }
+   else
+   {
+      m_wdpFile.open(m_wdpFilename.c_str(),std::ios::binary);
+      m_wdpFile.seekg(0,std::ios::end);
+      m_wvFileLenght = m_wdpFile.tellg();
+      m_wdpFile.close();
+   }
    m_lasfile.close();
 }
 
@@ -268,14 +141,34 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
             std::cout << "ERROR: no wf descriptor exist in the vlr\n";
             return;
          }
-         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = wv_info[0];
+
          switch(types[s])
          {
          // Waveform samples only
          case 1:
          {
-            if( point_info.wave_packet_descriptor_index!=0 &&
-                    (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
+             LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+             if(wv_info.size()==1)
+             {
+                currentDescpriptor = wv_info[0];
+             }
+             else
+             {
+                for(unsigned int i=0; i< wv_info.size();++i)
+                {
+                   if(point_info.wave_packet_descriptor_index == wv_info[i]->id)
+                   {
+                      currentDescpriptor = wv_info[i];
+                   }
+                }
+             }
+             if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
+             {
+                break;
+             }
+            if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
+                    point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
+                    wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
             {
                count++;
                char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
@@ -498,15 +391,37 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
             std::cout << "ERROR: no wf descriptor exist in the vlr\n";
             return;
          }
-         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = wv_info[0];
          switch(types[s])
          {
          // Waveform samples only
          case 1:
          {
-            if( point_info.wave_packet_descriptor_index!=0 &&
-                    (unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1 )
+            LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+            if(wv_info.size()==1)
             {
+               currentDescpriptor = wv_info[0];
+            }
+            else
+            {
+               for(unsigned int i=0; i< wv_info.size();++i)
+               {
+                  if(point_info.wave_packet_descriptor_index == wv_info[i]->id)
+                  {
+                     currentDescpriptor = wv_info[i];
+                  }
+               }
+            }
+
+            if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
+            {
+               break;
+            }
+
+            if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
+                point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
+                wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
+            {
+
                count++;
                char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
                if(wave_data==0)
@@ -806,6 +721,13 @@ void Las1_3_handler::read_public_header()
 //-----------------------------------------------------------------------------
 void Las1_3_handler::read_variable_length_records()
 {
+   for(unsigned int i=0; i<wv_info.size();++i)
+   {
+      if(wv_info[i]!=NULL)
+      {
+         delete wv_info[i];
+      }
+   }
    LAS1_3Types::Variable_Length_Record_Header headdata_rec;
    for(unsigned int i=0; i<public_header.number_of_variable_lenght_records;
       ++i)
@@ -859,8 +781,17 @@ void Las1_3_handler::read_variable_length_records()
             std::cerr << "ERROR: LAS1_3_handler: failed to allocate memory\n";
             continue;
          }
-         unsigned int id = headdata_rec.record_ID-100;
+         unsigned int id = int(headdata_rec.record_ID)-99;
          waveInfo->id = id;
+//         std::cout << "    ***   " << int(headdata_rec.record_ID) << "   ***\n";
+//         std::cout << "waveInfo->bits_per_sample : " << int(waveInfo->bits_per_sample) << "\n";
+//         std::cout << "waveInfo->number_of_samples : " << int(waveInfo->number_of_samples)  << "\n";
+//         std::cout << "waveInfo->digitizer_gain : " << int(waveInfo->digitizer_gain) << "\n";
+//         std::cout << "waveInfo->digitizer_offset  : " << int(waveInfo->digitizer_offset) << "\n";
+//         std::cout << "waveInfo->temporal_sample_spacing : " << int(waveInfo->temporal_sample_spacing) << "\n";
+//         std::cout << "waveInfo->id : " <<  int(waveInfo->id) << "\n";
+//         std::cout << "waveInfo->wf_compression_type : " << int(waveInfo->wf_compression_type) << "\n";
+
          wv_info.push_back(waveInfo);
       }
    }
@@ -925,4 +856,3 @@ Las1_3_handler::~Las1_3_handler()
        }
     }
 }
-

@@ -23,6 +23,7 @@
 #include "PW_handler.h"
 #include <unordered_map>
 
+
 #include "binfile.h"
 #include  "commonfunctions.h"
 #include "DtmBilReader.h"
@@ -36,7 +37,6 @@ int main (int argc, char const* argv[])
    std::string bilFileName("");
    std::string objFileName("");
    std::string fodisFileName("");
-   std::string fieldplotFileName("");
    std::string templateOutputFileName("");
    std::string templateType("");
    gmtl::Vec3i templateSize;
@@ -46,11 +46,13 @@ int main (int argc, char const* argv[])
    std::string volumeFileName("");
    std::string dtmFileName("");
    std::vector<std::string> pwFiles;
-   std::string volumeType("1D_ARRAY");
-   double voxelLength = 4.2f;
+   std::string volumeType("hashed_1D_array");
+   double voxelLength = 2.5f;
    double noiseLevel = 25.0f;
-   double isolevel = 0.1f;
+   double isolevel = 0.0f;
    std::string mapsAll("");
+   std::string csvSamples("");
+
    // TYPES:
    // 0. Full-waveform
    // 1. All_Discrete
@@ -64,18 +66,6 @@ int main (int argc, char const* argv[])
    bands[1] = 78;
    bands[2] = 23;
    std::vector<MapsManager::mapInfo *> mInfo;
-   // ["NON-EMPTY VOXELS"] = 1;
-   // ["DENSITY"]   = 2;
-   // ["THICKNESS"]    = 3;
-   // ["HYPERSPECTRAL"] = 4;
-   // ["HYPERSPECTRAL MEAN"] = 5;
-   // ["LOWEST_RETURN"] = 6;
-   // ["SPECTRAL_SIGNATURE"] = 7;
-   // ["FIRST_PATCH"] = 9;
-   // ["NDVI"] = 10;
-   // ["LAST_PATCH"] = 11;
-   // ["HEIGHT"] = 12;
-   // ["AVERAGE_HEIGHT_DIFFERENCE"] = 13;
 
    MapsManager m;
    unsigned int mapsIndex=0;
@@ -145,7 +135,8 @@ int main (int argc, char const* argv[])
    tags["-stype"] = 21; /// -stype <structure_type>
    // used to make surface flat
    tags["-dtm"]= 22; /// -dtm <dtm_fileName>
-
+   // exports 10 samples into a .csv file
+   tags["-pulseSamples"]=23;  /// -pulseSamples <filename.csv>
 
 
    try
@@ -277,8 +268,7 @@ int main (int argc, char const* argv[])
 
            if(s=="FIELDPLOT" && argvIndex+1<argc)
            {
-              mInfo[mapsIndex]->fieldplot = std::string(argv[argvIndex]);
-              argvIndex++;
+              break;
            }
 
            // <output_name>
@@ -313,70 +303,20 @@ int main (int argc, char const* argv[])
         }
         case 12: // "--help"
         {
-           std::cout<< "DASOS User Quide:\n"
-           << "---------------------\n\n";
-
-           char buff[2000];
-           std::sprintf(buff,"%-30s %s", "-las <lasFileName>", "The name/directory of LAS file to be loaded and it's compulsory (expection apply when a volume or a pulsewave file is loaded)\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-pw <pulsewavesFileName>", "loads an a pulsewave file instead of a LAS or an exported volume\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-igm <igmFileName>", "The name/directory of the igm file that defines the geolocaiton of the hyperspectral pixels.\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-bil <bilFileName>", "The name/directory of the bil file that contains the hyperspectral cube.\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-obj <objFileName>", "The name of the .obj file where the polygon representation of the LiDAR file will be exported to. It's optional and when not defined the data are not polygonised. Further it exports a texture when the hyperspectral data are also defined\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-rgb <band1> <band2> <band3>", "Defines the 3 bands of the hyperpectral images that will be used for texturing the polygon mesh. If not defined the default values 140, 78 and 23 are used.\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-vl <voxelLength>", "The length of the voxels in meters. Default value is 3.2m\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-nl <noiseLevel>", "The threshold that separates noise from the actual data in the waveforms.Default value is 25\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-iso <isolevel>", "The isolevel defines boundaries of the implicit object. The voxel values lies inside the range [-100,100] and everything greater than the isolevel is considered to be inside the object. Default value is -99.9\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-otype <dataType>", "The type of data to be inserted. The options are: \"full-waveform\", \"all_discrete\", \"discrete_n_waveforms\", \"discrete\" and they are not case sensitive. The default value is \"full-waveform\"\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map <type> <outputName>", "The available types are: \"NON-EMPTY_VOXELS\", \"DENSITY\", \"THICKNESS\", \"FIRST_PATCH\", \"AVERAGE_HEIGHT_DIFFERENCE\", \"LAST_PATCH\", \"HYPERSPECTRAL_MEAN\", \"NDVI\", \"LOWEST_RETURN\" , \"FIELDPLOT\", \"ALL_FW\". The ALL_FW option generates one metrics for each available full-waveform LiDAR related metrics and their names are the given outputName+metricsType+.png \n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map HYPERSPECTRAL <band> <outputName>", "The hyperspectral map needs an extra parameter defining which band will be outputed\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map SPECTRAL_SIGNATURE <outputName> -signature <type> <signature_directory> ", "The spectral signature map gives the square spectral difference between the signature and each pixel. The type is either \"ASTER\" or \"USGS!\".\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-map <type> -thres <threshold> <outputName>", " A threshold is optional and can be added to any type of maps. Always added before the <outputname>\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-default", "It reads one of the sample FW LAS files and produces a 3D polygon representation and all the related maps\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-userLimits <MaxNorthY> <MinNorthY> <MaxEastX> <MinEastX>", "User define Limits of the area of interest\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-exportVolume <volumeFileName>", "exports the volume into a txt file to speed up future interpolation of the data\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-volume <volumeFileName>", "loads an exported volume instead of reading a LAS or pulsewave file\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-templates <type> <sizeX> <sizeY> <sizeZ> <input_fieldPlot_image> <output_templatesName>", "takes as input an image that indicates the positions of the tree (or features of our interest) with red colour (255,0,0) and exports a list of templates accoridng to the given type (svm, nn or rd) and template size\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-stype <structure_type>", "defines the type of structure that the volume will be saved into. The options are: , \"1D_ARRAY\", \"HASHED_1D_ARRAY\", \"OCTREE\"  , \"INTEGRAL_VOLUMES\" , \"INTEGRAL_TREE\" , \"HASHED_OCTREE\" , \"SERIES_OF_HASHED_OCTREES\" \n\n");
-           std::cout << buff;
-           // -templates <type> <sizeX> <sizeY> <sizeZ> <input_fieldPlot_image> <output_templatesName>
-           std::sprintf(buff,"%-30s %s", "-dtm <dtmFileName>", "used a dtm file to make the surface flat. dtm file must be a .bil file\n\n");
-           std::cout << buff;
-           std::sprintf(buff,"%-30s %s", "-userLimits <maxNorthY> <minNorthY> <maxEastX> <minEastX>", "User define Limits of the area of interest\n\n\n\n");
-           std::cout << buff;
-
-           // choose type of structure, types = 1D_ARRAY OCTREE  INTEGRAL_VOLUMES IV_TREE HASHED_OCTREE SERIES_OF_HASHED_OCTREES
-           tags["-stype"] = 21; /// -stype <structure_type>
-
-           std::cout << "This project is funded by the Centre for Digital Entertainment and Plymouth Marine Laboratory.\n"
-                     << "The code is released under the GPL_v1.3 licence and "
-                     << "the following paper should be cited in any publication: \n"
-                     << "Miltiadou, M., et al. \"ALIGNMENT OF HYPERSPECTRAL IMAGERY AND FULL-WAVEFORM LIDAR DATA FOR VISUALISATION AND CLASSIFICATION PURPOSES.\" International Archives of the Photogrammetry, Remote Sensing & Spatial Information Sciences (2015).\n";
-
-//                     << "The sample data were collected by the NERC Airborne Research and Survey\n"
-//                     << "Facility (ARSF). Copyright is held by the UK Natural Environment\n"
-//                     << "Research Council (NERC). The data are free for non-commercial use,\n"
-//                     << "NERC-ARSF must be acknowledged in any publications, software or other\n"
-//                     << "media that make use of these data\n";
-           return 0;
+           std::fstream readmeFile;
+           readmeFile.open("README.txt");
+           if(!readmeFile.is_open())
+           {
+              std::cerr<<"ERROR: README.txt file doesn't exist.\n"
+                       <<"Please look at previous versions of DAOS for instructions\n";
+              return EXIT_FAILURE;
+           }
+           std::string line;
+           while(std::getline(readmeFile,line))
+           {
+              std::cout << line << "\n";
+           }
+           return EXIT_SUCCESS;
            break;
         }
         case 13: // -las
@@ -384,7 +324,6 @@ int main (int argc, char const* argv[])
            argvIndex++;
            while (argvIndex<argc)
            {
-              std::cout << argv[argvIndex] << "\n";
               if(argv[argvIndex][0]!='-')
               {
                  lasFiles.push_back(std::string(argv[argvIndex]));
@@ -412,11 +351,10 @@ int main (int argc, char const* argv[])
            argvIndex ++;
            if (argvIndex<argc)
            {
-              fieldplotFileName = argv[argvIndex];
            }
            break;
         }
-        case 16: // -export_volume <'c'> <exportedVolumeFileName>;
+        case 16: // -exportVolume <'c'> <exportedVolumeFileName>;
         {
            argvIndex++;
            if (argvIndex<argc)
@@ -451,7 +389,6 @@ int main (int argc, char const* argv[])
            argvIndex++;
            while (argvIndex<argc)
            {
-              std::cout << argv[argvIndex] << "\n";
               if(argv[argvIndex][0]!='-')
               {
                  pwFiles.push_back(std::string(argv[argvIndex]));
@@ -474,7 +411,6 @@ int main (int argc, char const* argv[])
               userLimits[2] = atof(argv[argvIndex-1]);
               userLimits[1] = atof(argv[argvIndex-2]);
               userLimits[0] = atof(argv[argvIndex-3]);
-              std::cout << "user Limits: " << userLimits[0] << " " << userLimits[1] << " " << userLimits[2] << " " << userLimits[3] << "\n";
            }
            break;
         }
@@ -519,6 +455,15 @@ int main (int argc, char const* argv[])
            }
            break;
         }
+        case 23: // -pulseSamples <filename.csv>
+        {
+            argvIndex++;
+            if (argvIndex<argc)
+            {
+               csvSamples = argv[argvIndex];
+            }
+            break;
+        }
         default:
         {
            std::cout << "WARNING: Unkown tag: " << argv[argvIndex] << "\n";
@@ -537,26 +482,8 @@ int main (int argc, char const* argv[])
     }
 
    //INTERPRETATION OF DATA
-   // if mapsAll then add all the fw maps to mapInfo
-   if(mapsAll!="")
-   {
-      MapsManager *m;
-      m = new MapsManager;
-      const std::vector<std::string> &metricsNames = m->getNamesOfFWMetrics();
-      unsigned int noOfMetrics=metricsNames.size();
-      mInfo.resize(mapsIndex+noOfMetrics);
-      for(unsigned int i=mapsIndex; i<mInfo.size();++i)
-      {
-          mInfo[mapsIndex+i] = new MapsManager::mapInfo;
-          mInfo[mapsIndex+i]->type = metricsNames[i-mapsIndex];
-          mInfo[mapsIndex+i]->name = mapsAll + metricsNames[i-mapsIndex] + ".png";
-          mInfo[mapsIndex+i]->band = 140;
-          mInfo[mapsIndex+i]->thres = 0;
-          mInfo[mapsIndex+i]->samp = 0;
-      }
-      mapsIndex+=noOfMetrics;
-      delete m;
-   }
+
+
    Volume *vol = NULL;
 
    //--------------------------------------------------------------------------------------
@@ -564,9 +491,11 @@ int main (int argc, char const* argv[])
    //--------------------------------------------------------------------------------------
    if(lasFiles.size()==0 && volumeFileName=="" && pwFiles.size()==0)
    {
-      std::cout << "LAS, pulsewave or volume file haven't been specified\n";
+      std::cerr << "LAS, pulsewave or volume file haven't been specified\n";
+      std::cerr << "use \"DASOS -- help\" for instructions.\n";
       return EXIT_FAILURE;
    }
+
    if(lasFiles.size()!=0)
    {
       Las1_3_handler lala(lasFiles[0]);
@@ -594,6 +523,7 @@ int main (int argc, char const* argv[])
          nextLAShandler.readFileAndGetObject(vol,fileType,dtmFileName);
       }
       vol->normalise();
+
    }
    else if (volumeFileName!="")
    {
@@ -606,7 +536,7 @@ int main (int argc, char const* argv[])
       userLimits[3] = minLimits[0];
       userLimits[4] = maxLimits[2];
       userLimits[5] = maxLimits[2];
-
+      vol->setIsolevel(isolevel);
    }
    else if (pwFiles.size()!=0)
    {
@@ -676,21 +606,40 @@ int main (int argc, char const* argv[])
    //--------------------------------------------------------------------------------------
    // generate maps
    //--------------------------------------------------------------------------------------
-
-   for(unsigned int i=0; i<mapsIndex; ++i)
+   // if mapsAll then add all the fw maps to mapInfo
+   if(mapsAll!="")
+   {
+      MapsManager *m;
+      m = new MapsManager;
+      const std::vector<std::string> &metricsNames = m->getNamesOfFWMetrics();
+      unsigned int noOfMetrics=metricsNames.size();
+      for(unsigned int i=0; i<noOfMetrics;++i)
+      {
+          mInfo.push_back(new MapsManager::mapInfo);
+          mInfo[mInfo.size()-1]->type = metricsNames[i];
+          mInfo[mInfo.size()-1]->name = mapsAll + metricsNames[i];
+          mInfo[mInfo.size()-1]->band = 140;
+          mInfo[mInfo.size()-1]->thres = 0;
+          mInfo[mInfo.size()-1]->samp = 0;
+          ++mapsIndex;
+      }
+      delete m;
+   }
+   for(unsigned int i=0; i<mInfo.size(); ++i)
    {
       mInfo[i]->obj = vol;
       m.createMap(mInfo[i]);
-     delete mInfo[i];
+      delete mInfo[i];
    }
-
+   if(mInfo.size()!=0)
+   {
+      std::cout << "ALL MAPS Saved\n";
+   }
 
    if(vol!=NULL)
    {
       delete vol;
    }
-
-
    std::cout << "   ***   EXIT   ***\n";
    return 0;
 }

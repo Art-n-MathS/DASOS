@@ -2,5 +2,10 @@
 *.autosave
 *.obj
 *.png
-/data/*
+data/*
+data/LDR-FW-FW10_01-201009821.LAS
+*.vol
 *.asc
+*.xml
+
+

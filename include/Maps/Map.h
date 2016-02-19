@@ -26,39 +26,6 @@ public:
    /// @brief method that creates and saves a map image
    //--------------------------------------------------------------------------
    void createAndSave(unsigned int i_thres, unsigned int i_sample);
-
-   //--------------------------------------------------------------------------
-   /// @brief + operator add Map+Map
-   /// @param[in] &i_map the map to add
-   /// @returns the Map + i_map
-   //--------------------------------------------------------------------------
-   const Map operator + (
-           const Map &i_map
-           )const;
-
-   //--------------------------------------------------------------------------
-   /// @brief = operator equal Map = i_map
-   /// @param[in] &i_map the map to be copied
-   //--------------------------------------------------------------------------
-   Map &operator = (
-           const Map &i_map
-           );
-   //--------------------------------------------------------------------------
-   /// @brief += operator adds i_map to current map
-   /// @param[in] i_map map to be added
-   //--------------------------------------------------------------------------
-   Map &operator+=(const Map &i_map);
-   //--------------------------------------------------------------------------
-   /// @brief -= operator adds i_map to current map
-   /// @param[in] i_map map to be added
-   //--------------------------------------------------------------------------
-   Map &operator-=(const Map &i_map);
-
-   //--------------------------------------------------------------------------
-   /// @brief
-   //--------------------------------------------------------------------------
-//    Map operator+(const Map &i_map)const;
-
    //--------------------------------------------------------------------------
    /// @brief default destructor
    //--------------------------------------------------------------------------
@@ -71,27 +38,6 @@ private:
    /// a text file
    //--------------------------------------------------------------------------
    void saveAsc();
-   //--------------------------------------------------------------------------
-   /// @brief method that normalises the values to be between 0 and 255
-   //--------------------------------------------------------------------------
-   void normalise();
-   //--------------------------------------------------------------------------
-   /// @brief method that thresholds the map
-   /// @param[in] i_thres the threshold that separates the map into two
-   /// categories
-   //--------------------------------------------------------------------------
-   void threshold(unsigned int i_thres);
-   //--------------------------------------------------------------------------
-   /// @brief method that samples the map
-   /// @param[in] i_samp 2^i_samps is the number of returned samples
-   //--------------------------------------------------------------------------
-   void sample(unsigned int i_samp);
-   //--------------------------------------------------------------------------
-   /// @brief method that takes as input the values of one of the maps and
-   /// produces an image. The size of the input array should be equal to
-   /// m_noOfVoxelsX*m_noOfVoxelsY
-   //--------------------------------------------------------------------------
-   virtual void saveMapToImage();
    //--------------------------------------------------------------------------
    /// @brief method that creates a map
    //--------------------------------------------------------------------------
@@ -114,10 +60,7 @@ protected:
    /// @param[in] i_z the z coordinate of the voxel
    //--------------------------------------------------------------------------
    bool isInside(unsigned int i_x, unsigned int i_y, unsigned int i_z);
-   //--------------------------------------------------------------------------
-   /// @brief method that flips the image due to different coordinate systems
-   //--------------------------------------------------------------------------
-   void flip();
+
 
    //--------------------------------------------------------------------------
    /// @brief method that returns the index of the map

@@ -15,7 +15,7 @@ PW_handler::PW_handler(
 
 {
     m_wvs_filename.replace(m_wvs_filename.end()-3,m_wvs_filename.end(),"wvs");
-    std::cout << "\n" << i_filename << "\n";
+    std::cout << "\nReading: " << i_filename << "\n";
     plsfile.open(m_pls_filename.c_str(),std::ios::binary);
     wvsfile.open(m_wvs_filename.c_str(),std::ios::binary);
 
@@ -199,7 +199,7 @@ void PW_handler::readFileAndGetObject(Volume *i_obj,
                       ( target[2]-anchor[2])/1000.0);
 
       PW_descriptor *currentDis = NULL;
-      unsigned short int id = pulse_info.pulse_discriptor_index;
+      unsigned short int id = pulse_info.pulse_descriptor_index;
       unsigned int dIndex=0;
       for(; dIndex< m_pwDecriptors.size();++dIndex)
       {
@@ -210,7 +210,7 @@ void PW_handler::readFileAndGetObject(Volume *i_obj,
       }
       if(id==m_pwDecriptors.size())
       {
-         std::cout << "WARNING: discriptor does not exist. Pulse will be ignored\n";
+         std::cout << "WARNING: descriptor does not exist. Pulse will be ignored\n";
          continue;
       }
       else
@@ -235,7 +235,7 @@ void PW_handler::print_pointInfo(const PWTypes::PulseRecord &i_pulse_info)const
    std::cout << "Target x, y z: " << i_pulse_info.target_x << " " << i_pulse_info.target_y << " " << i_pulse_info.target_z << "\n";
    std::cout << "First Returning Sample: " << i_pulse_info.first_returning_sample << "\n";
    std::cout << "Last Returning Sample: " << i_pulse_info.last_returning_sample << "\n";
-   std::cout << "Pulse Discriptor index: " << i_pulse_info.pulse_discriptor_index << int(i_pulse_info.pulse_discriptor_index) << "\n";
+   std::cout << "Pulse Discriptor index: " << i_pulse_info.pulse_descriptor_index << int(i_pulse_info.pulse_descriptor_index) << "\n";
 //   std::cout << "Reserved " << i_pulse_info.res4_scanLineE1_scanDir1_MirFacet_2
    std::cout << "Intensity : " << (int)i_pulse_info.intensity << "\n";
    std::cout << "Classification : " << (int)i_pulse_info.classification << "\n";

@@ -31,7 +31,11 @@ public:
            const std::string i_type
            , const std::string &i_dtm);
 
-
+   //-------------------------------------------------------------------------
+   /// @brief method that prints 10 random pulses into a .csv file
+   /// @param[in] i_csvFileName the name of the csv file to be saved
+   //-------------------------------------------------------------------------
+   void saveSamples(const std::string &i_csvFileName);
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------
@@ -105,6 +109,10 @@ private:
    //--------------------------------------------------------------------------
    bool isBigEndian();
 
+   //-------------------------------------------------------------------------
+   /// @brief length of file that contains waveforms (either .LAS or .wdp)
+   //-------------------------------------------------------------------------
+   unsigned int long long m_wvFileLenght;
    //-------------------------------------------------------------------------
    /// @brief saved here to avoid opening and closing the file multiple times
    //-------------------------------------------------------------------------

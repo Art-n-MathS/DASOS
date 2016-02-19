@@ -33,9 +33,7 @@ DtmBilReader::DtmBilReader(
       m_isValid=false;
       return;
    }
-
    readHeader(i_dtm);
-
 
    // initialise volume parameters
    gmtl::Vec3f minVol = i_obj->getMinLimits();
@@ -78,10 +76,6 @@ DtmBilReader::DtmBilReader(
       dtm.read((char *) &m_heights[rV*nVolX],nVolX*sizeof(float));
    }
    dtm.close();
-   std::cout << " MINS BIL : " << m_xMin << " " << m_yMin  << "\n";
-   std::cout << " MAXS BIL : " << m_xMax << " " << m_yMax << "\n";
-   std::cout << " MINS VOL : " << minVol[0] << " " << minVol[1]  << "\n";
-   std::cout << " MAXS VOL : " << maxVol[0] << " " << maxVol[1] << "\n";
 
    // forget about bil files max min and limits, because area of
    // interest has been preloaded
@@ -89,10 +83,7 @@ DtmBilReader::DtmBilReader(
    m_yMax = maxVol[1]; m_yMin = m_yMax - m_yLen * nVolY;
    m_nColumns = nVolX;
    m_nRows = nVolY;
-   std::cout << " MINS : " << m_xMin << " " << m_yMin  << "\n";
-   std::cout << " MAXS : " << m_xMax << " " << m_yMax << "\n";
 }
-
 
 
 //-----------------------------------------------------------------------------

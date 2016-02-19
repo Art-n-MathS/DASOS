@@ -82,8 +82,8 @@ void HyperMap::createMap()
       for(unsigned int y=0; y<noY; ++y)
       {
          const gmtl::Vec2f point(mins[0]+vl/2+ vl*x,mins[1]+vl/2+vl*y) ;
-         m_mapValues[x+y*m_noOfPixelsX]=
-                 m_hyperData[grid->getClosestPixelPosition(point[0],point[1])];
+         unsigned int index = grid->getClosestPixelPosition(point[0],point[1]);
+         m_mapValues[x+y*m_noOfPixelsX]= m_hyperData[index];
       }
    }
    delete grid;
@@ -92,5 +92,8 @@ void HyperMap::createMap()
 //-----------------------------------------------------------------------------
 HyperMap::~HyperMap()
 {
-
+   if(m_hyperData!=NULL)
+   {
+      delete m_hyperData;
+   }
 }

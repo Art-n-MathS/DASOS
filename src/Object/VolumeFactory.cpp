@@ -1,16 +1,13 @@
 #include "VolumeFactory.h"
 
-#include "Volume1DArray.h"
-#include "MCwithIntegralImages.h"
-
+#include "VolumeHashed1DArray.h"
 #include <map>
 #include <iostream>
 #include <algorithm>
 
 
 VolumeFactory::typesMap VolumeFactory::types = {
-    {"1D_ARRAY", 1},
-
+    {"HASHED_1D_ARRAY",7}
 };
 
 //-----------------------------------------------------------------------------
@@ -27,8 +24,8 @@ Volume *VolumeFactory::produceVolume(
    std::transform(type.begin(), type.end(), type.begin(), toupper);
 
    switch (types[type]) {
-   case 1: // 1D_array
-      myVolume = new Volume1DArray(i_voxelLength,i_user_limits,type);
+   case 7: // HASHED_1D_ARRAY
+      myVolume = new VolumeHashed1DArray(i_voxelLength,i_user_limits,type);
       break;
    default:
       std::cout << "ERROR: Undifined type of Object\nProgram will terminate\n";
@@ -56,13 +53,16 @@ MarchingCubes *VolumeFactory::getMarchingCubes(
    {
 
       switch (types[type]) {
-      case 1: // 1D_array
-         std::cout << "WARNING: Optimisation ignored, since not supported with "
-                   << i_type << " Volume type\n";
+
+      case 7: // HASHED_1D_ARRAY
+         std::cout << "Optimisation not implemented yet!\n";
          myMC = new MarchingCubes(i_obj,i_x);
          break;
+
+
       default:
-         myMC = new MarchingCubes(i_obj,i_x);
+         std::cout << "ERROR: Undifined type of Object\nProgram will terminate\n";
+         std::exit(EXIT_FAILURE);
          break;
       }
    }
@@ -86,11 +86,12 @@ Volume * VolumeFactory::produceVolume(
     std::transform(type.begin(), type.end(), type.begin(), toupper);
 
     switch (types[type]) {
-    case 1: // 1D_array
-       myVolume = new Volume1DArray(i_filename);
+    case 7: // HASHED_1D_ARRAY
+       myVolume = new VolumeHashed1DArray(i_filename);
        break;
     default:
-       myVolume = new Volume1DArray(i_filename);
+       std::cout << "ERROR: Undifined type of Object\nProgram will terminate\n";
+       std::exit(EXIT_FAILURE);
        break;
     }
     return myVolume;
