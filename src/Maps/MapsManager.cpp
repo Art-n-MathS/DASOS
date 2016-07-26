@@ -16,6 +16,7 @@
 #include "TreeCrownsWith2Templates.h"
 #include "IntensityMap.h"
 #include "IntensityMax.h"
+#include "Metric.h"
 #include <map>
 #include <algorithm>
 
@@ -54,7 +55,7 @@ MapsManager::MapsManager():m_map(0),
       {"INTENSITY_AVG",16},
       {"INTENSITY_MAX",17},
       {"FIELDPLOT",18},
-      {"FIELDPLOT",18}
+      {"FIELDPLOT",18}     , {"METRIC", 19}
 
    };
 }
@@ -162,6 +163,10 @@ void MapsManager::createMap(
        m_map = new IntensityMax(m_infoOfMap->name,m_infoOfMap->obj);
        break;
    case 18:
+       break;
+   case 19:
+       std::cout << "Brief Discreption of the new Metric\n";
+       m_map = new Metric(m_infoOfMap->name,m_infoOfMap->obj);
        break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";

@@ -34,8 +34,11 @@ public:
    //-------------------------------------------------------------------------
    /// @brief method that prints 10 random pulses into a .csv file
    /// @param[in] i_csvFileName the name of the csv file to be saved
+   /// @param[in] i_noOfSamples the number of samples to be saved
    //-------------------------------------------------------------------------
-   void saveSamples(const std::string &i_csvFileName);
+   void saveSamples(
+           const std::string &i_csvFileName,
+           unsigned int i_noOfSamples);
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------
@@ -44,9 +47,6 @@ public:
    /// @brief default destructor
    //-------------------------------------------------------------------------
    ~Las1_3_handler();
-
-
-
 
 protected:
    //-------------------------------------------------------------------------

@@ -6,7 +6,6 @@
 #include <new>
 #include <iomanip>
 #include <iterator>
-
 #include <iostream>
 #include <fstream>
 #include <gmtl/gmtl.h>
@@ -23,6 +22,7 @@ Las1_3_handler::Las1_3_handler(
    if(!m_lasfile.is_open())
    {
       std::cerr << "File not found \n";
+      std::exit(EXIT_FAILURE);
       return;
    }
    read_public_header();
@@ -43,12 +43,159 @@ Las1_3_handler::Las1_3_handler(
 }
 
 //-----------------------------------------------------------------------------
+void Las1_3_handler::saveSamples(
+        const std::string &i_csvFileName,
+        unsigned int i_noOfSamples
+        )
+{
+   m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
+   if(!m_lasfile.is_open())
+   {
+      return;
+   }
+   if((unsigned short int)(public_header.point_data_format_ID)!=4)
+   {
+      std::cerr << "ERROR: Not supported LAS file format\n";
+      m_lasfile.close();
+      return;
+   }
+   LAS1_3Types::Data_Point_Record_Format_4 point_info;
+   m_lasfile.seekg((int) public_header.offset_to_point);
+   if(!m_areWFInternal)
+   {
+      m_wdpFile.open(m_wdpFilename.c_str(),std::ios::binary);
+      if(!m_wdpFile)
+      {
+         std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
+      }
+   }
+   std::ofstream csv;
+   csv.open(i_csvFileName.c_str());
+   csv << "Amplitude\n";
+   for(unsigned int i=0; i<i_noOfSamples &&
+       i<public_header.number_of_point_records; ++i)
+   {
+      m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+      int wave_offset = public_header.start_of_wf_data_Packet_record +
+               point_info.byte_offset_to_wf_packet_data;
+      if((int)point_info.classification!=7)
+      {
+         if(wv_info.size()==0)
+         {
+            std::cout << "ERROR: no wf descriptor exist in the vlr\n";
+            return;
+         }
+
+         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+         if(wv_info.size()==1)
+         {
+            currentDescpriptor = wv_info[0];
+         }
+         else
+         {
+            for(unsigned int i=0; i< wv_info.size();++i)
+            {
+               if(point_info.wave_packet_descriptor_index == wv_info[i]->id)
+               {
+                  currentDescpriptor = wv_info[i];
+               }
+            }
+         }
+
+         if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
+         {
+            break;
+         }
+
+         if(/*(unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&*/
+             point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
+             wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
+         {
+
+            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+            if(wave_data==0)
+            {
+                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                          << "Program will terminate\n";
+                exit(EXIT_FAILURE);
+            }
+            int tmp(0);
+            if(m_areWFInternal)
+            {
+               tmp = m_lasfile.tellg();
+               m_lasfile.seekg(wave_offset);
+               m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+            }
+            else
+            {
+               m_wdpFile.seekg(wave_offset);
+               m_wdpFile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+            }
+
+            unsigned int noOfSamples = currentDescpriptor->number_of_samples;
+            if(currentDescpriptor->bits_per_sample==8)
+            {
+               unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char
+                        [noOfSamples*currentDescpriptor->bits_per_sample/8];
+               if(waveSamplesIntensities==0)
+               {
+                   std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                  exit(EXIT_FAILURE);
+               }
+               memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
+               for(unsigned int j=0; j< noOfSamples; ++j)
+               {
+                  // save samples to csv
+                  csv << int(waveSamplesIntensities[j]) <<"\n";
+               }
+               delete []waveSamplesIntensities;
+
+            }
+            else if(currentDescpriptor->bits_per_sample==16)
+            {
+                unsigned short int *waveSamplesIntensities = new (std::nothrow) unsigned short int
+                         [noOfSamples];
+                if(waveSamplesIntensities==0)
+                {
+                    std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                   exit(EXIT_FAILURE);
+                }
+                memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
+                        currentDescpriptor->bits_per_sample/8);
+                for(unsigned int j=0; j< noOfSamples; ++j)
+                {
+                   // save samples to .csv
+                   csv << int(waveSamplesIntensities[j]) <<"\n";
+                }
+                delete []waveSamplesIntensities;
+            }
+            if(m_areWFInternal)
+            {
+               m_lasfile.seekg(tmp);
+            }
+            delete []wave_data;
+         }
+      }
+      else
+      {
+         --i;
+      }
+   }
+   csv.close();
+
+   m_lasfile.close();
+   std::cout << "CSV " << i_csvFileName << " file saved\n";
+}
+
+//-----------------------------------------------------------------------------
 std::vector<double> Las1_3_handler::getBoundaries()
 {
    m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
    if(!m_lasfile.is_open())
    {
       std::cerr << "File not found \n";
+      std::vector<double> empty(8,0);
+      return empty;
    }
    read_public_header();
    std::vector<double> boundaries(6);
@@ -166,7 +313,8 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
              {
                 break;
              }
-            if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
+
+            if(/*(unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&*/
                     point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
                     wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
             {
@@ -178,9 +326,10 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                              << "Program will terminate\n";
                    exit(EXIT_FAILURE);
                }
-               int tmp = m_lasfile.tellg();
+               unsigned long long int tmp(0);
                if(m_areWFInternal)
                {
+                  tmp = m_lasfile.tellg();
                   m_lasfile.seekg(wave_offset);
                   m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
                }
@@ -246,13 +395,15 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                    {
                      gmtl::Vec3f point(tempPosition);
                      point[2]-=dtm.getHeightOf(tempPosition[0],tempPosition[1]);
-//                     std::cout << tempPosition[2] << " " << point[2] << " " << dtm.getHeightOf(tempPosition[0],tempPosition[1])<< "\n";
                      i_obj->addItensity(point,waveSamplesIntensities[j]);
                      tempPosition+=offset;
                    }
                    delete []waveSamplesIntensities;
                }
-               m_lasfile.seekg(tmp);
+               if(m_areWFInternal)
+               {
+                  m_lasfile.seekg(tmp);
+               }
                delete []wave_data;
             }
             break;
@@ -417,7 +568,7 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                break;
             }
 
-            if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
+            if(/*(unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  && */
                 point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
                 wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
             {
@@ -430,9 +581,10 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                              << "Program will terminate\n";
                    exit(EXIT_FAILURE);
                }
-               int tmp = m_lasfile.tellg();
+               long long int tmp(0);
                if(m_areWFInternal)
                {
+                  tmp  = m_lasfile.tellg();
                   m_lasfile.seekg(wave_offset);
                   m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
                }
@@ -458,8 +610,6 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                        (double )point_info.return_point_wf_location;
 
                unsigned int noOfSamples = currentDescpriptor->number_of_samples;
-
-
 
                gmtl::Vec3f tempPosition = origin;
                if(currentDescpriptor->bits_per_sample==8)
@@ -498,7 +648,10 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                    }
                    delete []waveSamplesIntensities;
                }
-               m_lasfile.seekg(tmp);
+               if(m_areWFInternal)
+               {
+                 m_lasfile.seekg(tmp);
+               }
                delete []wave_data;
             }
             break;
@@ -643,6 +796,7 @@ void Las1_3_handler::readFileAndGetObject(
    if(!m_lasfile.is_open())
    {
       std::cerr << "File not found \n";
+      exit(EXIT_FAILURE);
    }
    read_public_header();
    read_variable_length_records();
@@ -728,6 +882,7 @@ void Las1_3_handler::read_variable_length_records()
          delete wv_info[i];
       }
    }
+   wv_info.clear();
    LAS1_3Types::Variable_Length_Record_Header headdata_rec;
    for(unsigned int i=0; i<public_header.number_of_variable_lenght_records;
       ++i)

@@ -48,7 +48,8 @@ SOURCES += \
     src/LASHandler/PW_handler.cpp \
     src/LASHandler/PW_descriptor.cpp \
     src/LASHandler/PW_lookUpTable.cpp \
-    src/LASHandler/PW_scannerVLR.cpp
+    src/LASHandler/PW_scannerVLR.cpp \
+    src/Maps/Metric.cpp
 
 
 INCLUDEPATH+=./include/bilLib \
@@ -119,4 +120,5 @@ HEADERS += \
     include/LASHandler/LAS1_3Types.h \
     include/LASHandler/PW_scannerVLR.h \
     include/LASHandler/PWTypes.h \
-    include/LASHandler/PW_lookUpTable.h
+    include/LASHandler/PW_lookUpTable.h \
+    include/Maps/Metric.h

@@ -517,7 +517,7 @@ int main (int argc, char const* argv[])
       vol = VolumeFactory::produceVolume(voxelLength,userLimits,volumeType);
       vol->setNoiseLevel(noiseLevel);
       lala.readFileAndGetObject(vol,fileType,dtmFileName);
-      for(unsigned int nextFile=1; nextFile<lasFiles.size(); ++nextFile)
+      for(unsigned int nextFile=2; nextFile<lasFiles.size(); ++nextFile)
       {
          Las1_3_handler nextLAShandler(lasFiles[nextFile]);
          nextLAShandler.readFileAndGetObject(vol,fileType,dtmFileName);
