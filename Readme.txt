@@ -136,7 +136,7 @@ https://docs.google.com/spreadsheets/d/10yE5p463cLA_GtKkyiaWEzScW7N9cVxbPs5y0muX
 For bringing potential issues in discussion please use our group:
 https://groups.google.com/forum/#!forum/dasos---the-native-full-waveform-fw-lidar-software
 
-For updates and news please follow twitter @_DASOS_
+For updates and news please follow twitter @MiltoMiltiadou
 
 
 
