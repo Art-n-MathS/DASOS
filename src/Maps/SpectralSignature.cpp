@@ -4,6 +4,7 @@
 #include <iterator>
 #include <vector>
 #include <algorithm>
+#include <math.h>
 
 //-----------------------------------------------------------------------------
 SpectralSignature::SpectralSignature(

@@ -37,6 +37,51 @@ PW_handler::PW_handler(
     wvsfile.close();
 }
 
+//-----------------------------------------------------------------------------
+void PW_handler::saveSamples(
+        const std::string &i_csvFileName,
+        unsigned int i_noOfSamples
+        )
+{
+    read_variable_length_records();
+    plsfile.open(m_pls_filename.c_str(),std::ios::binary);
+    wvsfile.open(m_wvs_filename.c_str(),std::ios::binary);
+    PWTypes::PulseRecord pulse_info;
+    plsfile.seekg((int)public_header.offset_to_pulse_data);
+
+    std::ofstream csv;
+    csv.open(i_csvFileName);
+    csv << "Amplitude\n";
+    for(unsigned int i=0; i<i_noOfSamples && i<public_header.number_of_pulses; ++i)
+    {
+       plsfile.read((char *) &pulse_info, (int)public_header.pulse_size);
+       PW_descriptor *currentDis = NULL;
+       unsigned short int id = pulse_info.pulse_discriptor_index;
+       unsigned int dIndex=0;
+       for(; dIndex< m_pwDecriptors.size();++dIndex)
+       {
+          if(id==m_pwDecriptors[dIndex]->m_id)
+          {
+             break;
+          }
+       }
+       if(id==m_pwDecriptors.size())
+       {
+          std::cout << "WARNING: descriptor does not exist. Pulse will be ignored\n";
+          continue;
+       }
+       else
+       {
+          currentDis = m_pwDecriptors[dIndex];
+          currentDis->addAmplitudes(csv,wvsfile,pulse_info.offset_to_waves);
+       }
+    }
+    std::cout << "\n";
+    plsfile.close();
+    wvsfile.close();
+    csv.close();
+    std::cout << "CSV file " << i_csvFileName << " saved\n";
+}
 
 //-----------------------------------------------------------------------------
 void PW_handler::printPublicHeader()const
@@ -75,8 +120,6 @@ void PW_handler::printPublicHeader()const
    std::cout << "t offset " << public_header.t_offset << std::endl;
    std::cout << "min t " << public_header.min_t << std::endl;
    std::cout << "max_t " << public_header.max_t << std::endl;
-
-
    std::cout << "X scale factor "  <<  public_header.x_scale_factor << std::endl;
    std::cout << "Y scale factor "  <<  public_header.y_scale_factor << std::endl;
    std::cout << "Z scale factor "  <<  public_header.z_scale_factor << std::endl;
@@ -89,8 +132,6 @@ void PW_handler::printPublicHeader()const
    std::cout << "Min Y  " <<  (double) public_header.min_y << std::endl;
    std::cout << "Max Z  " <<  (double) public_header.max_z << std::endl;
    std::cout << "Min Z  " <<  (double) public_header.min_z << std::endl;
-
-
 }
 
 //-----------------------------------------------------------------------------
@@ -117,43 +158,35 @@ void PW_handler::read_variable_length_records()
    for(unsigned int i=0; i<public_header.number_of_variable_length_records;++i)
    {
       plsfile.read((char *) &headdata_rec,VbleRec_header_length);
-//      std::cout << "headdata_rec.record_length_after_header : " << headdata_rec.record_length_after_header << "\n\n\n\n";
       char skip_record [headdata_rec.record_length_after_header];
       plsfile.read((char *) &skip_record, headdata_rec.record_length_after_header);
-//      std::cout << "   ***   " << headdata_rec.record_ID  << "   ***   ";
 
       if(headdata_rec.record_ID < 100255 && headdata_rec.record_ID >= 100000)
       {
-//         std::cout << headdata_rec.record_ID-100000 << "\n";
 
          m_scanners.push_back(new PW_scannerVLR(
                                   skip_record,
                                   headdata_rec.record_length_after_header,
                                   headdata_rec.record_ID-100000)
                               );
-//         m_scanners[m_scanners.size()-1]->print();
       }
       else  if(headdata_rec.record_ID < 200255 && headdata_rec.record_ID >= 200000)
       {
 
-//          std::cout << headdata_rec.record_ID-200000 << "\n";
          m_pwDecriptors.push_back(
                      new PW_descriptor(skip_record,
                                        headdata_rec.record_length_after_header,
                                        headdata_rec.record_ID-200000)
                      );
-//         m_pwDecriptors[m_pwDecriptors.size()-1]->print();
       }
       else  if(headdata_rec.record_ID < 300255 && headdata_rec.record_ID >= 300000)
       {
 
-//          std::cout << headdata_rec.record_ID-300000 << "\n";
          m_lookUpTables.push_back(
                      new PW_lookUpTable(skip_record,
                                         headdata_rec.record_length_after_header,
                                         headdata_rec.record_ID-300000)
                      );
-//         m_lookUpTables[m_lookUpTables.size()-1]->print();
       }
    }
    plsfile.close();
@@ -166,7 +199,6 @@ void PW_handler::readFileAndGetObject(Volume *i_obj,
         )
 {
    DtmBilReader dtm(i_dtmFileName,i_obj);
-   std::cout << i_dtmFileName << " \n ";
    read_variable_length_records();
    std::cout << "Variable Length records read, tables, scanners and descriptors saved\n";
 
@@ -199,7 +231,7 @@ void PW_handler::readFileAndGetObject(Volume *i_obj,
                       ( target[2]-anchor[2])/1000.0);
 
       PW_descriptor *currentDis = NULL;
-      unsigned short int id = pulse_info.pulse_descriptor_index;
+      unsigned short int id = pulse_info.pulse_discriptor_index;
       unsigned int dIndex=0;
       for(; dIndex< m_pwDecriptors.size();++dIndex)
       {
@@ -219,7 +251,7 @@ void PW_handler::readFileAndGetObject(Volume *i_obj,
          currentDis->readWaveform(wvsfile,pulse_info.offset_to_waves,anchor,dis,i_obj,dtm);
       }
    }
-   std::cout << "\n";
+   std::cout << "All waves Read\n";
    plsfile.close();
    wvsfile.close();
 }
@@ -235,7 +267,7 @@ void PW_handler::print_pointInfo(const PWTypes::PulseRecord &i_pulse_info)const
    std::cout << "Target x, y z: " << i_pulse_info.target_x << " " << i_pulse_info.target_y << " " << i_pulse_info.target_z << "\n";
    std::cout << "First Returning Sample: " << i_pulse_info.first_returning_sample << "\n";
    std::cout << "Last Returning Sample: " << i_pulse_info.last_returning_sample << "\n";
-   std::cout << "Pulse Discriptor index: " << i_pulse_info.pulse_descriptor_index << int(i_pulse_info.pulse_descriptor_index) << "\n";
+   std::cout << "Pulse Discriptor index: " << i_pulse_info.pulse_discriptor_index << int(i_pulse_info.pulse_discriptor_index) << "\n";
 //   std::cout << "Reserved " << i_pulse_info.res4_scanLineE1_scanDir1_MirFacet_2
    std::cout << "Intensity : " << (int)i_pulse_info.intensity << "\n";
    std::cout << "Classification : " << (int)i_pulse_info.classification << "\n";

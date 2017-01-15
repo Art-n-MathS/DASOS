@@ -167,7 +167,6 @@ void VolumeHashed1DArray::exportToFile(
 
     unsigned int nI = m_noOfVoxelsX * m_noOfVoxelsY *m_noOfVoxelsZ;
 
-    std::cout << "Start exporting file\n";
     if(i_compression)
     {
        myfile << "Compression true\n";
@@ -217,7 +216,7 @@ void VolumeHashed1DArray::readObjectFromFile(
         bool evaluation
         )
 {
-    std::cout << "Object created from file\n";
+    std::cout << "Object created from file " << i_filename << "\n";
     std::ifstream mystream(i_filename.c_str());
     if(!mystream)
     {
@@ -269,7 +268,6 @@ void VolumeHashed1DArray::readObjectFromFile(
        unsigned int wordsIndex = 26;
        if(isFileCompressed)
        {
-          std::cout << "File compressed\n";
           for(unsigned int i=0; i<noOfIntensities;++i)
           {
              if(words[wordsIndex].substr(0,1)=="0")
@@ -302,14 +300,12 @@ void VolumeHashed1DArray::readObjectFromFile(
        }
        else
        {
-          std::cout << "26 + " << words[23] << " = " << words.size() << "\n";
           if(words.size()!=(unsigned int)(26+atoi(words[23].c_str())))
           {
              std::cerr << "ERROR: File \"" << i_filename
                        << "\" is not written in the correct format.\n";
              return;
           }
-          std::cout << "File is not compressed\n";
           for(unsigned int i = 0; i < inum; ++i)
           {
              float inten = atof(words[26+i].c_str());

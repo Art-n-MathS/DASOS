@@ -4,7 +4,7 @@ TARGET=DASOS
 
 CONFIG += console
 
-#CONFIG -= app_bundle
+CONFIG -= app_bundle
 
 SOURCES += \
     src/main.cpp \
@@ -49,7 +49,9 @@ SOURCES += \
     src/LASHandler/PW_descriptor.cpp \
     src/LASHandler/PW_lookUpTable.cpp \
     src/LASHandler/PW_scannerVLR.cpp \
-    src/Maps/Metric.cpp
+    src/Maps/Metric.cpp \
+    src/Plots/Int_Plot.cpp \
+    src/Plots/Int_PlotsManager.cpp
 
 
 INCLUDEPATH+=./include/bilLib \
@@ -57,7 +59,9 @@ INCLUDEPATH+=./include/bilLib \
              ./include/Object \
              ./include/MarchingCubes \
              ./include/Maps\
-             ./include/svm
+             ./include/svm \
+             ./include/Plots
+
 
 
 INCLUDEPATH += "/users/rsg/mmi/gmtl-0.6.1/build/include/gmtl-0.6.1/"
@@ -65,6 +69,7 @@ INCLUDEPATH += "C:\Users\milto\Adobe Flash Builder 4.6\Documents\EngD\DASOS_test
 
 #INCLUDEPATH += /usr/local/include/opencv
 #LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui
+INCLUDEPATH += "/home/milto/gmtl-master"
 
 
 QMAKE_CXXFLAGS += -std=c++11
@@ -121,4 +126,6 @@ HEADERS += \
     include/LASHandler/PW_scannerVLR.h \
     include/LASHandler/PWTypes.h \
     include/LASHandler/PW_lookUpTable.h \
-    include/Maps/Metric.h
+    include/Maps/Metric.h \
+    include/Plots/Int_Plot.h \
+    include/Plots/Int_PlotsManager.h

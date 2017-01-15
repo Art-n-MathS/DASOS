@@ -25,6 +25,14 @@ public:
    //-------------------------------------------------------------------------
    std::vector<double> getBoundaries();
    //-------------------------------------------------------------------------
+   /// @brief method that prints 10 random pulses into a .csv file
+   /// @param[in] i_csvFileName the name of the csv file to be saved
+   /// @param[in] i_noOfSamples the number of samples to be saved
+   //-------------------------------------------------------------------------
+   void saveSamples(
+           const std::string &i_csvFileName,
+           unsigned int i_noOfSamples);
+   //-------------------------------------------------------------------------
    /// @param[in] i_x the number of voxels in the x dimension - the rest are
    /// calculated depending on the higher and lower x y z of the points
    /// @param[in] i_user_limits [maxNorthY, minNorthY, maxEastX, minEastX]

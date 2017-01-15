@@ -55,6 +55,15 @@ Volume::Volume(const std::string &i_filename, bool evaluation)
    readObjectFromFile(i_filename,evaluation);
 }
 
+//-----------------------------------------------------------------------------
+gmtl::Vec2f Volume::getCoordinatesMiddle(
+        unsigned int i_x,
+        unsigned int i_y
+        ) const
+{
+   return gmtl::Vec2f(m_lowerLimits[0]+i_x*m_lengthOfVoxel+m_lengthOfVoxel/2.0,
+                      m_lowerLimits[1]+i_y*m_lengthOfVoxel+m_lengthOfVoxel/2.0);
+}
 
 //-----------------------------------------------------------------------------
 double Volume::getSumOfArea(

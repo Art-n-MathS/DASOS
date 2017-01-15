@@ -6,7 +6,7 @@
 #include "binfile.h"
 #include  "commonfunctions.h"
 #include <QImage>
-
+#include <math.h>
 
 
 //-----------------------------------------------------------------------------

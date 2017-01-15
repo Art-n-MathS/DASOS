@@ -23,7 +23,7 @@
 #include "PW_handler.h"
 #include <unordered_map>
 
-
+#include "Int_PlotsManager.h"
 #include "binfile.h"
 #include  "commonfunctions.h"
 #include "DtmBilReader.h"
@@ -40,8 +40,7 @@ int main (int argc, char const* argv[])
    std::string templateOutputFileName("");
    std::string templateType("");
    gmtl::Vec3i templateSize;
-   std::string templatesImagePlot("");
-   std::string exportVolumeFileName("");
+   std::string templatesImagePlot(""), exportVolumeFileName("");
    bool volumeCompression = false;
    std::string volumeFileName("");
    std::string dtmFileName("");
@@ -52,6 +51,15 @@ int main (int argc, char const* argv[])
    double isolevel = 0.0f;
    std::string mapsAll("");
    std::string csvSamples("");
+
+   Int_PlotsManager fieldplotsManager; // manager of the plots instead of the previous one
+   std::string csvSamplesPulses_exportingFile("");
+   std::string csvImportingFieldplots(""), csvExportingTemplates("");
+   std::string volsDir("");
+   bool isFieldPlotManagerValid(false);
+
+
+   unsigned int noSamples(0);
 
    // TYPES:
    // 0. Full-waveform
@@ -132,11 +140,96 @@ int main (int argc, char const* argv[])
    // creates templates , type = svm, rd or nn
    tags ["-templates"] = 20; /// -templates <type> <sizeX> <sizeY> <sizeZ> <input_fieldPlot_image> <output_templatesName>
    // choose type of structure, types = 1D_ARRAY HASHED_1D_ARRAY OCTREE  INTEGRAL_VOLUMES INTEGRAL_TREE  HASHED_OCTREE SERIES_OF_HASHED_OCTREES
-   tags["-stype"] = 21; /// -stype <structure_type>
-   // used to make surface flat
-   tags["-dtm"]= 22; /// -dtm <dtm_fileName>
-   // exports 10 samples into a .csv file
-   tags["-pulseSamples"]=23;  /// -pulseSamples <filename.csv>
+   /// choose type of structure,
+   /// types =
+   /// * 1D_ARRAY
+   /// * HASHED_1D_ARRAY
+   /// * OCTREE
+   /// * INTEGRAL_VOLUMES
+   /// * INTEGRAL_TREE
+   /// * HASHED_OCTREE
+   /// * SERIES_OF_HASHED_OCTREES
+   tags["-stype"] = 21; // -stype <structure_type>
+   /// used to make surface flat
+   tags["-dtm"]= 22; // -dtm <dtm_fileName>
+   /// exports 10 samples into a .csv file
+   tags["-exportPulses"]=23;  // -exportPulses  <noOfPulses> <filename.csv>
+   /// imports a .csv file with fieldplots
+   tags["-icsv"]=24; // -icsv <CSVfile.csv>
+   /// directory with volumes related to the fieldplots that lie inside the csv
+   ///  file
+   tags["-vols"]=25; // // -vols <volsDir>
+   /// exports csv files with the values of the 3D priors when volsDir is
+   /// loaded then this should also be a directory
+   tags["-ocsv"] = 26; // -exportTemplatesCSV <csvFileName>
+   /// the label of the column that defines the class of each entry
+   /// (e.g. <label> = isDead)
+   tags["-column"] = 27;  // -column <label>
+   /// the name of the class (e.g. dead or alive) or "ALL". The "ALL" option is the
+   /// area of interest and generates a template for each column that lies
+   /// inside a pad area.
+   /// The <offset> parameter is optional. When it is defiend by a positive number
+   /// then all the columns with label <className> and everything within
+   /// distance less than <offset> are not included in the generation of priors
+   /// and everything else is included. It's like the option "ALL" minus the
+   /// circles with centres the trees of class <className> and radius equal to
+   /// <offset>.
+   tags["-class"] = 28; // -class <className> ?<offset>
+   /// -ttype  square <x> <y> <z> :: generates a squared template of size x,y,z
+   ///                               voxels*.  By default the systems finds the
+   ///                               first non empty voxel starting from the
+   ///                               top of the volume and the first element
+   ///                               in the y axis starts at -1 voxels.
+   /// -ttype circle <h> <r> :: generates a cylindrical template with height h
+   ///                          and radius r voxels*. By default the systems
+   ///                          finds the first non empty voxel starting from
+   ///                          the top of the volume and the first element in
+   ///                          the y axis starts at -1 voxels. If r is equal
+   ///                          to -1, then the radius is calculated according
+   ///                          to the height of the middle point.
+   tags["-ttype"] = 29;
+   /// moves y to start at the -n voxels.
+   tags["-mheight"] = 30; // -mheight <n>
+   /// the ‘raw’ option saves all the raw intensity values of the template and
+   /// the ‘processed’ option saves parameters derived from the raw intensities
+   /// Here there is a list with all the derived parameters saved using the processed option
+   /// Processed_basic:
+   /// ----------------
+   /// Height of middle column (height)
+   /// Average height (h_ave)
+   /// Max Intensity (int_max)
+   /// Min Intensity (int_min)
+   /// Average Intensity (int_ave)
+   /// Mean Intensity  (int_mean)
+   /// Standard Deviation (int_std)
+   /// Percentage of non-empty voxels (pnev)
+   /// Average Height Difference
+   /// Average Length of Top Patch (altp)
+   /// Average Length of Lower Patch (allp)
+   ///
+   /// Processed_all:
+   /// --------------
+   /// Height of middle column (height)
+   /// Average height (h_ave)
+   /// Max Intensity (int_max)
+   /// Min Intensity (int_min)
+   /// Average Intensity (int_ave)
+   /// Average Intensity (int_ave_r1, int_ave_r2, … , int_ave_rn)***
+   /// Mean Intensity  (int_mean)
+   /// Mean Intensity per row  (int_mean_r1, int_mean_r2, … , int_mean_rn)***
+   /// Standard Deviation (int_std)
+   /// Standard Deviation per row (int_std_r1, nt_std_r2, … , int_std_rn)***
+   /// Percentage of non-empty voxels (pnev)
+   /// Percentage of non-empty voxels per row (pnev_r1, pnev_r2, … , pnev_rn)***
+   /// Average Height Difference
+   /// Average Height Difference per row (ahd_r1, ahd_r2, …, ahd_rn)***
+   /// Average Length of Top Patch (altp)
+   /// Average Length of Lower Patch (allp)
+   ///
+   /// *** r1 is the topest row saved into the template
+   tags["-eparameters"] = 31; //-eparameters <raw or processed>
+
+
 
 
    try
@@ -455,14 +548,156 @@ int main (int argc, char const* argv[])
            }
            break;
         }
-        case 23: // -pulseSamples <filename.csv>
+        case 23: // -exportPulses <noOfPulses> <filename.csv>
         {
             argvIndex++;
-            if (argvIndex<argc)
+            if (argvIndex+1<argc)
             {
-               csvSamples = argv[argvIndex];
+               noSamples = atoi(argv[argvIndex]);
+               csvSamplesPulses_exportingFile = argv[++argvIndex];
             }
             break;
+        }
+        case 24: // -icsv <CSVfile.csv>
+        {
+            argvIndex++;
+            isFieldPlotManagerValid = true;
+            if (argvIndex<argc)
+            {
+               csvImportingFieldplots = argv[argvIndex];
+               fieldplotsManager.set_csvImportingFieldplots(argv[argvIndex]);
+
+            }
+           break;
+        }
+        case 25: // -vols <volsDir>
+        {
+            argvIndex++;
+            isFieldPlotManagerValid = true;
+            if (argvIndex<argc)
+            {
+               volsDir=(argv[argvIndex]);
+               fieldplotsManager.set_volsDir(argv[argvIndex]);
+            }
+           break;
+        }
+        case 26: // -ocsv <csvFileName>
+        {
+           argvIndex++;
+           isFieldPlotManagerValid = true;
+           if (argvIndex<argc)
+           {
+              csvExportingTemplates = argv[argvIndex];
+              fieldplotsManager.set_csvExportingTemplates(argv[argvIndex]);
+           }
+           break;
+        }
+        case 27: // -column <label>
+        {
+           argvIndex++;
+           isFieldPlotManagerValid = true;
+           if (argvIndex<argc)
+           {
+              fieldplotsManager.set_fcolumn(argv[argvIndex]);
+           }
+           break;
+        }
+        case 28: // -class <className>
+        {
+           argvIndex++;
+           isFieldPlotManagerValid = true;
+           if (argvIndex<argc)
+           {
+              fieldplotsManager.set_fclass(argv[argvIndex]);
+           }
+           if((argvIndex+1<argc) && argv[argvIndex+1][0]!='-')
+           {
+              argvIndex++;
+              fieldplotsManager.set_roffset(atof(argv[argvIndex]));
+           }
+           break;
+        }
+        case 29: // -ttype  square <x> <y> <z>  or
+                 // -ttype circle <h> <r>
+        {
+           argvIndex++;
+           isFieldPlotManagerValid = true;
+           if (argvIndex<argc)
+           {
+              std::string ttypeS = argv[argvIndex];
+              std::transform(ttypeS.begin(), ttypeS.end(), ttypeS.begin(), toupper);
+              if(ttypeS=="SQUARE")
+              {
+                  fieldplotsManager.set_ttype(0);
+              }
+              else if (ttypeS=="CYLINDER")
+              {
+                  fieldplotsManager.set_ttype(1);
+              }
+              else
+              {
+                 std::cerr << "WARNING: Wrong template type. It is set to 'square'.";
+                 fieldplotsManager.set_ttype(0);
+              }
+           }
+           if(((argvIndex+2<argc)&&fieldplotsManager.get_ttype()==1)
+                   || ((argvIndex+3<argc)&&fieldplotsManager.get_ttype()==0))
+           {
+              if(fieldplotsManager.get_ttype()==1) // cylinder
+              {
+                  fieldplotsManager.set_th(atoi(argv[++argvIndex]));
+                  fieldplotsManager.set_tr(atoi(argv[++argvIndex]));
+              }
+              else // square
+              {
+                 fieldplotsManager.set_tx ( atoi(argv[++argvIndex]));
+                 fieldplotsManager.set_ty ( atoi(argv[++argvIndex]));
+                 fieldplotsManager.set_tz ( atoi(argv[++argvIndex]));
+              }
+              if(fieldplotsManager.checkthrxyz())
+              {
+                 std::cerr << "ERROR: Parameters of ttype should be greater than zero. " <<
+                              "Check whether the correct number of parameters were given. " <<"\n";
+                 return EXIT_FAILURE;
+              }
+           }
+           else
+           {
+              std::cerr << "Missing Arguments for -ttype\n";
+           }
+           break;
+        }
+        case 30: // -mheight <n>
+        {
+           argvIndex++;
+           isFieldPlotManagerValid = true;
+           if (argvIndex<argc)
+           {
+              fieldplotsManager.set_mheight (atoi(argv[argvIndex]));
+           }
+           break;
+        }
+        case 31: //-eparameters <raw or processed_basic or processed_all>
+        {
+           argvIndex++;
+           isFieldPlotManagerValid = true;
+           if (argvIndex<argc)
+           {
+              std::string parType(argv[argvIndex]);
+              std::transform(parType.begin(), parType.end(), parType.begin(), toupper);
+              fieldplotsManager.set_eparameters ( (parType=="RAW")?0 :
+                           ((parType=="PROCESSED_BASIC")? 1:
+                           ((parType=="PROCESSED_ALL") ? 2:-1)));
+              if(((parType=="RAW")?0 :
+                      ((parType=="PROCESSED_BASIC")? 1:
+                      ((parType=="PROCESSED_ALL") ? 2:-1))) == -1)
+              {
+                 std::cerr << "WARNING: " << argv[argvIndex]
+                           << " is unknow type of parameters. Set to 'raw' \n";
+                 fieldplotsManager.set_eparameters (0);
+              }
+           }
+           break;
         }
         default:
         {
@@ -476,24 +711,58 @@ int main (int argc, char const* argv[])
     catch (char const* e)
     {
        std::cout << e  << std::endl;
-       std::cout << "Type Las1.3Vis --help and follow the instructions\n";
+       std::cout << "Type DASOS --help and follow the instructions\n";
        std::this_thread::sleep_for(std::chrono::milliseconds(20000));
        return EXIT_FAILURE;
     }
 
    //INTERPRETATION OF DATA
 
+   //--------------------------------------------------------------------------------------
+   // create templates from fieldplot
+   //--------------------------------------------------------------------------------------
+   // check validity of fieldplot manager
+   if(isFieldPlotManagerValid)
+   {
+       fieldplotsManager.interprateData(volumeType,isolevel);
+   }
 
    Volume *vol = NULL;
 
    //--------------------------------------------------------------------------------------
    // read filename
-   //--------------------------------------------------------------------------------------
    if(lasFiles.size()==0 && volumeFileName=="" && pwFiles.size()==0)
    {
+      if(isFieldPlotManagerValid)
+      {
+         std::cout << "   ***   EXIT   ***\n";
+         return EXIT_SUCCESS;
+      }
       std::cerr << "LAS, pulsewave or volume file haven't been specified\n";
-      std::cerr << "use \"DASOS -- help\" for instructions.\n";
+      std::cerr << "use \"DASOS --help\" for instructions.\n";
       return EXIT_FAILURE;
+   }
+
+   if(csvSamplesPulses_exportingFile!="")
+   {
+      std::cout << "Exporting pulses into " << csvSamplesPulses_exportingFile << "\n"
+                << "Pulses exported from the first file loaded\n";
+      if(lasFiles.size()!=0)
+      {
+         Las1_3_handler lala(lasFiles[0]);
+         lala.saveSamples(csvSamplesPulses_exportingFile,noSamples);
+      }
+      else if (pwFiles.size()!=0)
+      {
+         PW_handler lala(pwFiles[0]);
+         lala.saveSamples(csvSamplesPulses_exportingFile,noSamples);
+      }
+      else
+      {
+         std::cerr << "ERROR: no pulsewaves or las file loaded\n";
+         return EXIT_FAILURE;
+      }
+      return EXIT_SUCCESS;
    }
 
    if(lasFiles.size()!=0)

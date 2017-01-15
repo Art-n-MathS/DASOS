@@ -51,7 +51,13 @@ public:
            unsigned int i_y,
            unsigned int i_z
            )=0;
-
+   //-------------------------------------------------------------------------
+   /// @brief method that returns the coordinates of a given voxel
+   /// @param[in] i_x
+   /// @param[in] i_y
+   /// @returns the geospatial coordinates of (i_x,i_y)
+   //-------------------------------------------------------------------------
+   gmtl::Vec2f getCoordinatesMiddle(unsigned int i_x,unsigned int i_y)const;
    //-------------------------------------------------------------------------
    /// @brief method that adds the itensity of a point to the voxel area
    /// @param[in] i_point the position of the point

@@ -3,6 +3,8 @@
 #include "binfile.h"
 #include "commonfunctions.h"
 #include <algorithm>
+#include <math.h>
+
 //--------------------------------------------------------------------------
 SignatureDifferneceMap::SignatureDifferneceMap(const std::string &i_name,
         Volume *i_obj,

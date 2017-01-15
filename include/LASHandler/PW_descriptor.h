@@ -81,6 +81,16 @@ public:
    //-------------------------------------------------------------------------
    void print();
    //-------------------------------------------------------------------------
+   /// @brief method that returns the intensities of the samples into an array
+   /// @return the amplitudes of the pulse
+   /// @note avoid using it for many processes because it copies the
+   /// amplitudes and it is slow
+   //-------------------------------------------------------------------------
+   void addAmplitudes(std::ostream &i_csv,
+           std::ifstream &i_wvsfile,
+           long long int i_offset
+           );
+   //-------------------------------------------------------------------------
    /// @brief default destructor
    //-------------------------------------------------------------------------
    ~PW_descriptor();

@@ -37,6 +37,56 @@ PW_descriptor::PW_descriptor(
 }
 
 //-----------------------------------------------------------------------------
+void PW_descriptor::addAmplitudes(
+        std::ostream &i_csv,
+        std::ifstream &i_wvsfile,
+        long long int i_offset
+        )
+{
+    i_wvsfile.seekg(i_offset+m_compositionRecord.number_of_extra_wave_bytes);
+    unsigned int number_of_segments(0);
+    unsigned int number_of_samples(0);
+    for(unsigned int sampling=0;
+        sampling<m_compositionRecord.number_of_samplings; ++sampling)
+    {
+        if(m_samplingRecords[sampling]->type == 1) // outgoing waveform
+        {
+        }
+        else if (m_samplingRecords[sampling]->type == 2) // returning waveform
+        {
+            // get number of segments
+            unsigned short int bits_for_number_of_segments =
+                    m_samplingRecords[sampling]->bits_for_number_of_segments;
+           number_of_segments=bits_for_number_of_segments==0?
+                       m_samplingRecords[sampling]->number_of_segments:
+                       getNumber(bits_for_number_of_segments,i_wvsfile);
+
+           for(unsigned s=0; s<number_of_segments; ++s)
+           {
+              // number of samples
+              unsigned short int bits_for_number_of_samples=
+                      m_samplingRecords[sampling]->bits_for_number_of_samples;
+              number_of_samples=bits_for_number_of_samples!=0?
+                          getNumber(bits_for_number_of_samples,i_wvsfile):
+                          m_samplingRecords[sampling]->number_of_samples;
+
+
+              unsigned short int bits_per_sample = m_samplingRecords[sampling]->bits_per_sample;
+              for(unsigned i=0;i<number_of_samples;++i)
+              {
+
+                 i_csv << getNumber(bits_per_sample,i_wvsfile) << "\n";
+              }
+           }
+        }
+        else
+        {
+           std::cout << "WARNING: unrecognised sampling type of waveform";
+        }
+     }
+}
+
+//-----------------------------------------------------------------------------
 void PW_descriptor::readWaveform(
         std::ifstream &i_wvsfile,
         long long int i_offset,
@@ -95,7 +145,8 @@ void PW_descriptor::readWaveform(
                 gmtl::Vec3f point(i_anchor);
                 point[0]+=(duration_from_the_anchor * i_dis[0]);
                 point[1]+=(duration_from_the_anchor * i_dis[1]);
-                point[2]+=(duration_from_the_anchor * i_dis[2]-i_dtm.getHeightOf(point[0],point[1]));
+                point[2]+=(duration_from_the_anchor * i_dis[2]);
+                point[2]-=i_dtm.getHeightOf(point[0],point[1]);
                 unsigned int intensity = getNumber(bits_per_sample,i_wvsfile);
                 i_obj->addItensity(point,intensity);
              }

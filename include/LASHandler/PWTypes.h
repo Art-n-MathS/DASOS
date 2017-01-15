@@ -138,7 +138,7 @@ public:
       int target_z;                                      //  4 bytes   7
       short int first_returning_sample;                  //  2 bytes   8
       short int last_returning_sample;                   //  2 bytes   9
-      unsigned char pulse_descriptor_index;              //  1 byte   10
+      unsigned char pulse_discriptor_index;              //  1 byte   10
       unsigned char res4_scanLineE1_scanDir1_MirFacet_2; //  1 byte   11:14
       unsigned char intensity;                           //  1 byte   15
       unsigned char classification;                      //  1 byte   16
