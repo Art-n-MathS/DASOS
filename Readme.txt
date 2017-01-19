@@ -46,6 +46,10 @@ DASOS User Quide:
 -volume <volumeFileName>       loads an exported volume instead of reading a 
                                LAS or pulsewave file
 
+-vols <dir                     loads all the exported volume that are inside 
+                               the given directory "dir". This option must and 
+                               only be used for generating 3D priors
+
 -vl <voxelLength>              The length of the voxels in meters. Default 
                                value is 2.5m
 
@@ -70,6 +74,10 @@ DASOS User Quide:
                                .bil and it currently only supports float 
                                pointing numbers saved into the .bil with 
                                potential limitations. 
+
+-csv <fieldplots.csv>          The input csv file that lists all the trees from
+                               a number of field-plot. This is a compulsory 
+                               input for generating 3D priors;
 
 -igm <igmFileName>             The name/directory of the .igm file that defines
                                the geolocaiton of the hyperspectral pixels.
@@ -120,6 +128,43 @@ DASOS User Quide:
                               up future interpolation of the data. 'c' refers 
                               to compressed and its an implicit functionality. 
 
+-column <label>               the label of the column that defines the class of
+                              each entry (e.g. <label>= isDead)
+
+-class <className or ALL>     the name of the class (e.g. dead or alive) of 
+                              interest or ALL. If a class is chosen, then only 
+                              the columns that contain a tree of that class are
+                              taken into consideration; a prior is exported for 
+                              each tree that belongs to this class only. The 
+                              ALL option is the area of interest and generates
+                              a template for each column that lies inside the 
+                              voxelised space.
+
+-ttype square <x> <y> <z>     generates a squared prior of size x, y, z voxels.
+                              The systems finds the first non empty voxel 
+                              starting from the top of the column. By default
+                              it moves one voxel upwards and sets that to be 
+                              the top of the prior. It is highly recommended to
+                              use odd numbers, otherwise the centre of the 
+                              prior will be wrongly set and unpredicted output 
+                              values may occur.
+
+-ttype cylinder <h> <r>       generates a cylindrical template with height h 
+                              and diameter (2 × r + 1) voxels and height h. The
+                              systems finds the first non empty voxel starting
+                              from the top of the column. By default it moves 
+                              one voxel upwards and sets that to be the top of
+                              the prior.
+
+-mheight <n>                  moves the template into the y-axis n voxels 
+                              upwards instead of one which is the default. The
+                              value n must be a positive number.
+
+-eparameters <raw or processed> the ‘raw’ option saves all the intensity values
+                              of the template and the or processed> ‘processed’ 
+                              option saves parameters derived from the raw 
+                              intensities.                        
+                              
 
 
 Examples Commands:
@@ -127,6 +172,8 @@ $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -obj Polygon -vl 3
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -obj ColouredPolygon -vl 3.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness -map NDVI ndvi
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness -map NDVI ndvi -obj happy -exportVolume twiceHappy.vol
+
+Full userguide available at: https://github.com/Art-n-MathS/DASOS
 
 Please note that this is a research software generated for supporting my thesis
 Therefore it may be file formats dependant and it may contain bugs.

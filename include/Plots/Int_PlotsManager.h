@@ -16,6 +16,7 @@
 #include <string>
 #include <map>
 #include <Volume.h>
+#include <iostream>
 
 //-----------------------------------------------------------------------------
 /// @file Int_PlotsManager.h
@@ -139,7 +140,7 @@ public:
    //--------------------------------------------------------------------------
    /// @brief method that sets    eparameters
    //--------------------------------------------------------------------------
-   void set_eparameters(int i_c){eparameters=i_c;}
+   void set_eparameters(int i_c){std::cout <<i_c << "\n";eparameters=i_c;}
    //--------------------------------------------------------------------------
    /// @brief method that returns ttype
    //--------------------------------------------------------------------------

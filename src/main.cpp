@@ -174,7 +174,7 @@ int main (int argc, char const* argv[])
    /// and everything else is included. It's like the option "ALL" minus the
    /// circles with centres the trees of class <className> and radius equal to
    /// <offset>.
-   tags["-class"] = 28; // -class <className> ?<offset>
+   tags["-class"] = 28; // -class <className or AOI> ?<offset>
    /// -ttype  square <x> <y> <z> :: generates a squared template of size x,y,z
    ///                               voxels*.  By default the systems finds the
    ///                               first non empty voxel starting from the
@@ -193,40 +193,6 @@ int main (int argc, char const* argv[])
    /// the ‘raw’ option saves all the raw intensity values of the template and
    /// the ‘processed’ option saves parameters derived from the raw intensities
    /// Here there is a list with all the derived parameters saved using the processed option
-   /// Processed_basic:
-   /// ----------------
-   /// Height of middle column (height)
-   /// Average height (h_ave)
-   /// Max Intensity (int_max)
-   /// Min Intensity (int_min)
-   /// Average Intensity (int_ave)
-   /// Mean Intensity  (int_mean)
-   /// Standard Deviation (int_std)
-   /// Percentage of non-empty voxels (pnev)
-   /// Average Height Difference
-   /// Average Length of Top Patch (altp)
-   /// Average Length of Lower Patch (allp)
-   ///
-   /// Processed_all:
-   /// --------------
-   /// Height of middle column (height)
-   /// Average height (h_ave)
-   /// Max Intensity (int_max)
-   /// Min Intensity (int_min)
-   /// Average Intensity (int_ave)
-   /// Average Intensity (int_ave_r1, int_ave_r2, … , int_ave_rn)***
-   /// Mean Intensity  (int_mean)
-   /// Mean Intensity per row  (int_mean_r1, int_mean_r2, … , int_mean_rn)***
-   /// Standard Deviation (int_std)
-   /// Standard Deviation per row (int_std_r1, nt_std_r2, … , int_std_rn)***
-   /// Percentage of non-empty voxels (pnev)
-   /// Percentage of non-empty voxels per row (pnev_r1, pnev_r2, … , pnev_rn)***
-   /// Average Height Difference
-   /// Average Height Difference per row (ahd_r1, ahd_r2, …, ahd_rn)***
-   /// Average Length of Top Patch (altp)
-   /// Average Length of Lower Patch (allp)
-   ///
-   /// *** r1 is the topest row saved into the template
    tags["-eparameters"] = 31; //-eparameters <raw or processed>
 
 
@@ -677,25 +643,27 @@ int main (int argc, char const* argv[])
            }
            break;
         }
-        case 31: //-eparameters <raw or processed_basic or processed_all>
+        case 31: //-eparameters <raw or processed>
         {
            argvIndex++;
            isFieldPlotManagerValid = true;
+           std::string parType;
            if (argvIndex<argc)
            {
-              std::string parType(argv[argvIndex]);
+              parType = argv[argvIndex];
               std::transform(parType.begin(), parType.end(), parType.begin(), toupper);
               fieldplotsManager.set_eparameters ( (parType=="RAW")?0 :
-                           ((parType=="PROCESSED_BASIC")? 1:
-                           ((parType=="PROCESSED_ALL") ? 2:-1)));
+                           ((parType=="PROCESSED")? 1:
+                           ((parType=="PROCESSED") ? 1:-1)));
               if(((parType=="RAW")?0 :
-                      ((parType=="PROCESSED_BASIC")? 1:
-                      ((parType=="PROCESSED_ALL") ? 2:-1))) == -1)
+                      ((parType=="PROCESSED")? 1:
+                      ((parType=="PROCESSED") ? 1:-1))) == -1)
               {
                  std::cerr << "WARNING: " << argv[argvIndex]
                            << " is unknow type of parameters. Set to 'raw' \n";
                  fieldplotsManager.set_eparameters (0);
               }
+              std::cout << parType << " *******************\n";
            }
            break;
         }

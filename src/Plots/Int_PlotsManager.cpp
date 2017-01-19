@@ -61,7 +61,10 @@ bool Int_PlotsManager::checkValidity() const
    if (fpRadius=="")
        std::cout << "ERROR: fpRadius was not defined\n";
    if ((eparameters<0 || eparameters>3))
-       std::cout << "ERROR: eparameters only takes the values 0 1 2 \n";
+   {
+      std::cout <<  eparameters  << " parameters\n";
+      std::cout << "ERROR: eparameters only takes the values raw and processed \n";
+   }
    if ((tx<=0 || ty<=0 || tz<=0))
        std::cout << "ERROR : tx, ty and tz should be positive integer numbers\n";
    if (tr<=0 || th<=0)
@@ -357,9 +360,10 @@ bool Int_PlotsManager::isThisColumnIncluded(
    }
    return (isValid_n_insidePlot &&
            // check if they are close to boundaries
-           ((ttype==1 &&  tx>=tr && tx+tr<int(i_obj->getNoVoxelsX()) &&
-             ty>=tr && ty+tr<int(i_obj->getNoVoxelsY())) ||
-            (ttype==0 && i_x-floor(double(tx)/2.0)>=0
+           ((ttype==1 &&  i_x-tr>=0 && i_x+tr<int(i_obj->getNoVoxelsX()) &&
+             i_y>=tr && i_y+tr<int(i_obj->getNoVoxelsY())) ||
+
+            (ttype==0 && i_x-floor(double(tx)/2.0)>=0.0
              && i_x+floor(double(tx)/2.0)<int(i_obj->getNoVoxelsX()) &&
              i_y>=ty && i_y+ty<int(i_obj->getNoVoxelsY())))
            );
@@ -373,6 +377,7 @@ bool Int_PlotsManager::isInsideCylinder(
 {
    double c(tr);
    double disfromCentre=sqrt((xCol-c)*(xCol-c)+(yCol-c)*(yCol-c));
+//   std::cout << disfromCentre << " - " << tr << "\n";
    return disfromCentre<=double(tr);
 }
 
@@ -432,9 +437,11 @@ void Int_PlotsManager::printProcessedValues(
        countNonEmpty(0);
    unsigned int stillCountingZ(0);
 
-   if(i_values.size()>0) min=i_values[0];max=i_values[0];
+   if(i_values.size()>0) {min=i_values[0];max=i_values[0];}
+
    std::vector<double> valuesSortedMinToMax(i_values),disFromCentre,heights,
            firstPathLens,mirrorDiffX,mirrorDiffY,mirrorDiffZ;
+
    // Median Intensity  if size is an even number then the +1 is chosen
    std::sort(valuesSortedMinToMax.begin(),valuesSortedMinToMax.end());
    gmtl::Vec3f centralVoxel;
@@ -447,6 +454,7 @@ void Int_PlotsManager::printProcessedValues(
    {
       for(int dY=0; dY<maxY; ++dY)
       {
+         std::cout << dX << " " << dY << "  : ";
          if(ttype==0 || (ttype==1 && isInsideCylinder(dX,dY)))
          {
             zCountTop=0; stillCountingZ=0; zCountFP=0;
@@ -628,12 +636,9 @@ void Int_PlotsManager::exportPriors(
          }
       }
    }
-   else
+   else  if(eparameters==1 )
    {
-      if(eparameters>0)
-      {
-         printLabelsIn(fileWithTemplates);
-      }
+      printLabelsIn(fileWithTemplates);
    }
    fileWithTemplates <<"\n";
    fileWithTemplates << std::setprecision(3) << std::fixed;
@@ -650,6 +655,7 @@ void Int_PlotsManager::exportPriors(
       {
          if(isThisColumnIncluded(xVol,yVol,i_obj,i_plots))
          {
+            std::cout << "is column included\n";
              xyCoordinates = i_obj->getCoordinatesMiddle(xVol,yVol);
              int zVol=i_obj->getNoVoxelsZ()-1;
              for(; zVol>0; --zVol)
