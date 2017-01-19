@@ -173,7 +173,7 @@ $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -obj ColouredPolygon -vl 3.5 
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness -map NDVI ndvi
 $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_osgn.igm -bil data/e098211b_masked.bil -fodis data/e098211b_FODIS.bil -map THICKNESS thickness -map NDVI ndvi -obj happy -exportVolume twiceHappy.vol
 
-Full userguide available at: https://github.com/Art-n-MathS/DASOS
+Full userguide available at: https://github.com/Art-n-MathS/DASOS/DASOS_userGuide_v2.pdf
 
 Please note that this is a research software generated for supporting my thesis
 Therefore it may be file formats dependant and it may contain bugs.
