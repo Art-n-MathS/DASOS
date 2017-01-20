@@ -655,7 +655,6 @@ void Int_PlotsManager::exportPriors(
       {
          if(isThisColumnIncluded(xVol,yVol,i_obj,i_plots))
          {
-            std::cout << "is column included\n";
              xyCoordinates = i_obj->getCoordinatesMiddle(xVol,yVol);
              int zVol=i_obj->getNoVoxelsZ()-1;
              for(; zVol>0; --zVol)
