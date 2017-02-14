@@ -1,6 +1,8 @@
 :: go to directory
 cd C:\DASOS_userGuide\DASOS
 
+pause
+
 :: help 
 DASOS --help
 :: extract sample amplitudes for deciding noise level
@@ -55,3 +57,4 @@ DASOS -vols ..\SampleDATA\DATASET_3  -icsv ..\SampleDATA\DATASET_3\testFieldplot
 
 DASOS -vols ..\SampleDATA\DATASET_3  -icsv ..\SampleDATA\DATASET_3\testFieldplot.csv -eparameters raw -column isDead -class ALL -ttype cylinder 5 3 -ocsv templatesALLCylinder
 
+pause

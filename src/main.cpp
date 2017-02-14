@@ -363,7 +363,7 @@ int main (int argc, char const* argv[])
         case 12: // "--help"
         {
            std::fstream readmeFile;
-           readmeFile.open("README.txt");
+           readmeFile.open("Readme.txt");
            if(!readmeFile.is_open())
            {
               std::cerr<<"ERROR: README.txt file doesn't exist.\n"

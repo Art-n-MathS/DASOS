@@ -12,6 +12,7 @@
 #include <math.h>
 #include <algorithm>
 #include <functional>
+#include <assert.h>
 #include <numeric>
 
 //-----------------------------------------------------------------------------

@@ -65,7 +65,7 @@ INCLUDEPATH+=./include/bilLib \
 
 
 INCLUDEPATH += "/users/rsg/mmi/gmtl-0.6.1/build/include/gmtl-0.6.1/"
-INCLUDEPATH += "C:\Users\milto\Adobe Flash Builder 4.6\Documents\EngD\DASOS_testing2-master\gmtl-0.6.1"
+INCLUDEPATH += "C:\Users\Milto\Documents\gmtl-master"
 
 #INCLUDEPATH += /usr/local/include/opencv
 #LIBS += -L/usr/local/lib -lopencv_core -lopencv_highgui
