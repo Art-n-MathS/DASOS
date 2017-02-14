@@ -69,7 +69,6 @@ DtmBilReader::DtmBilReader(
       unsigned int bilFileIndex = (rB*m_nColumns+offsetX)*sizeof(float);
       if(bilFileIndex>m_size)
       {
-         std::cout << "ERROR: Looking for value outside the boundaries\n";
          continue;
       }
       dtm.seekg(bilFileIndex);
