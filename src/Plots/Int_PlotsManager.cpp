@@ -378,7 +378,6 @@ bool Int_PlotsManager::isInsideCylinder(
 {
    double c(tr);
    double disfromCentre=sqrt((xCol-c)*(xCol-c)+(yCol-c)*(yCol-c));
-//   std::cout << disfromCentre << " - " << tr << "\n";
    return disfromCentre<=double(tr);
 }
 
@@ -455,7 +454,6 @@ void Int_PlotsManager::printProcessedValues(
    {
       for(int dY=0; dY<maxY; ++dY)
       {
-         std::cout << dX << " " << dY << "  : ";
          if(ttype==0 || (ttype==1 && isInsideCylinder(dX,dY)))
          {
             zCountTop=0; stillCountingZ=0; zCountFP=0;
@@ -614,10 +612,10 @@ void Int_PlotsManager::exportPriors(
    if(!fileWithTemplates.is_open())
    {
       std::cerr << "ERROR: failed to generate csv file at given"
-                   " directory\n";
+                   " directory\n" << csvFileName << "\n";
       return;
    }
-   fileWithTemplates << "Index, centroid_x, centroid_y";
+   fileWithTemplates << "VolFileName, Index, centroid_x, centroid_y";
    unsigned int maxX(ttype==0?tx:tr*2+1);
    unsigned int maxY(ttype==0?ty:tr*2+1);
    unsigned int maxZ(ttype==0?tz:th);
@@ -688,7 +686,7 @@ void Int_PlotsManager::exportPriors(
              }
 
 
-             fileWithTemplates << countIncludedCols << ","  ;
+             fileWithTemplates << i_VolFileName << "," << countIncludedCols << ","  ;
              countIncludedCols++;
              std::fill(currentPrior.begin(),currentPrior.end(),0.0);
              fileWithTemplates << xyCoordinates[0] << "," << xyCoordinates[1] <<",";
