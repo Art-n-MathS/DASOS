@@ -379,7 +379,7 @@ int main (int argc, char const* argv[])
            break;
         }
         case 13: // -las
-        {        
+        {
            argvIndex++;
            while (argvIndex<argc)
            {
