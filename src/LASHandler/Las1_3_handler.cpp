@@ -15,7 +15,10 @@
 //-----------------------------------------------------------------------------
 Las1_3_handler::Las1_3_handler(
         const std::string i_filename
-        ): m_lasFilename(i_filename),i_hist(0),m_areWFInternal(true)
+        ):
+    m_lasFilename(i_filename),
+    i_hist(0),
+    m_areWFInternal(true)
 {
    std::cout << "\n" << i_filename << "\n";
    m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
@@ -41,6 +44,166 @@ Las1_3_handler::Las1_3_handler(
    }
    m_lasfile.close();
 }
+
+//-----------------------------------------------------------------------------
+void Las1_3_handler::saveSumIntensity(
+        const std::string i_intsFilename
+        )
+{
+   m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
+   if(!m_lasfile.is_open())
+   {
+      return;
+   }
+   if((unsigned short int)(public_header.point_data_format_ID)!=4)
+   {
+      std::cerr << "ERROR: Not supported LAS file format\n";
+      m_lasfile.close();
+      return;
+   }
+   LAS1_3Types::Data_Point_Record_Format_4 point_info;
+   m_lasfile.seekg((int) public_header.offset_to_point);
+   if(!m_areWFInternal)
+   {
+      m_wdpFile.open(m_wdpFilename.c_str(),std::ios::binary);
+      if(!m_wdpFile)
+      {
+         std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
+      }
+   }
+   std::ofstream csv;
+   csv.open(i_intsFilename.c_str());
+   std::cout << public_header.number_of_point_records << "\n";
+   unsigned int countIntsSums(0);
+   for(unsigned int i=0; i<public_header.number_of_point_records; ++i)
+   {
+      if(i%(int(public_header.number_of_point_records/100))==1)
+      {
+          std::cout << ".";
+      }
+      m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+      int wave_offset = public_header.start_of_wf_data_Packet_record +
+               point_info.byte_offset_to_wf_packet_data;
+      if((int)point_info.classification!=7)
+      {
+         if(wv_info.size()==0)
+         {
+            std::cout << "ERROR: no wf descriptor exist in the vlr\n";
+            return;
+         }
+
+         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+         if(wv_info.size()==1)
+         {
+            currentDescpriptor = wv_info[0];
+         }
+         else
+         {
+            for(unsigned int i=0; i< wv_info.size();++i)
+            {
+               if(point_info.wave_packet_descriptor_index == wv_info[i]->id)
+               {
+                  currentDescpriptor = wv_info[i];
+               }
+            }
+         }
+
+         if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
+         {
+             continue;
+         }
+
+         if(/*(unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&*/
+             point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
+             wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
+         {
+           char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+            if(wave_data==0)
+            {
+                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                          << "Program will terminate\n";
+                exit(EXIT_FAILURE);
+            }
+            int tmp(0);
+            if(m_areWFInternal)
+            {
+               tmp = m_lasfile.tellg();
+               m_lasfile.seekg(wave_offset);
+               m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+            }
+            else
+            {
+               m_wdpFile.seekg(wave_offset);
+               m_wdpFile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+            }
+
+            unsigned int noOfSamples = currentDescpriptor->number_of_samples;
+            if(currentDescpriptor->bits_per_sample==8)
+            {
+               unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char
+                        [noOfSamples*currentDescpriptor->bits_per_sample/8];
+               if(waveSamplesIntensities==0)
+               {
+                   std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                  exit(EXIT_FAILURE);
+               }
+               memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
+               long int sumOfInts(0);
+               if (i%5000==0)
+               {
+                  for(unsigned int j=0; j< noOfSamples; ++j)
+                  {
+                     // save samples to csv
+                     sumOfInts+=(int(waveSamplesIntensities[j]));
+                  }
+              // std::cout << noOfSamples << " : " << sumOfInts <<" " << int(waveSamplesIntensities[30])<< "\n";
+                   csv << sumOfInts <<",";
+                   countIntsSums++;
+               }
+               delete []waveSamplesIntensities;
+               if (countIntsSums%500)
+               {
+                   csv << "\n";
+               }
+
+            }
+            else if(currentDescpriptor->bits_per_sample==16)
+            {
+                unsigned short int *waveSamplesIntensities = new (std::nothrow) unsigned short int
+                         [noOfSamples];
+                if(waveSamplesIntensities==0)
+                {
+                    std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                   exit(EXIT_FAILURE);
+                }
+                memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
+                        currentDescpriptor->bits_per_sample/8);
+                for(unsigned int j=0; j< noOfSamples; ++j)
+                {
+                   // save samples to .csv
+                   csv << int(waveSamplesIntensities[j]) <<"\n";
+                }
+                delete []waveSamplesIntensities;
+            }
+            if(m_areWFInternal)
+            {
+               m_lasfile.seekg(tmp);
+            }
+            delete []wave_data;
+         }
+      }
+      else
+      {
+         --i;
+      }
+   }
+   csv.close();
+
+   m_lasfile.close();
+   std::cout << "CSV " << i_intsFilename << " file saved\n";
+}
+
+
 
 //-----------------------------------------------------------------------------
 void Las1_3_handler::saveSamples(

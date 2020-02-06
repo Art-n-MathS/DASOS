@@ -40,6 +40,25 @@
 
 //-vols /home/milto/Documents/RedGum/Volumes/0.6 -icsv "/home/milto/Documents/RedGum/Redgum Project/Trees_RedGum_WGS1984_z55_noNonExistingTrees_Correct.csv" -eparameters processed_basic -column isDead -class dead -ttype square 2 3 5 -ocsv templates
 
+// -las C:\Users\milto\Documents\TEPAK\SampleData\L004-1-M01-S1-C1_s_w_2.las -totalIn C:\Users\milto\Documents\EngD\DASOS_bugFixed2019\testResults\ints2.csv
+
+// -las "D:\RedGum\Classified_AofI\cld_150317_25_001734_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_25_001734_d.las.csv"
+
+// -las "D:\RedGum\Classified_AofI\cld_150317_25_015416_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_25_015416_d.las.csv"
+
+// -las "D:\RedGum\Classified_AofI\cld_150317_25_025509_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_25_025509_d.las.csv"
+
+// -las "D:\RedGum\Classified_AofI\cld_150317_26_073325_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_26_073325_d.las.csv"
+
+// -las "D:\RedGum\Classified_AofI\cld_150318_08_214301_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150318_08_214301_d.las.csv"
+
+// -las "D:\RedGum\Classified_AofI\cld_150317_26_061640_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_26_061640_d.las.csv"
+// -las "D:\RedGum\Classified_AofI\cld_150317_26_064524_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_26_064524_d.las.csv"
+// -las "D:\RedGum\Classified_AofI\cld_150317_26_071531_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150317_26_071531_d.las.csv"
+// -las "D:\RedGum\Classified_AofI\cld_150318_09_001510_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150318_09_001510_d.las.csv"
+// -las "D:\RedGum\Classified_AofI\cld_150323_28_234103_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150323_28_234103_d.las.csv"
+
+
 int main (int argc, char const* argv[])
 {
    // PARAMETERS
@@ -51,6 +70,7 @@ int main (int argc, char const* argv[])
    std::string fieldplotFileName("");
    std::string templateOutputFileName("");
    std::string templateType("");
+   std::string intsfileName("");
    gmtl::Vec3i templateSize;
    std::string templatesImagePlot(""), exportVolumeFileName("");
    bool volumeCompression = false;
@@ -249,7 +269,9 @@ int main (int argc, char const* argv[])
    /// *** r1 is the topest row saved into the template
    tags["-eparameters"] = 31; //-eparameters <raw or processed_basic
                               //              or processed_all>
-
+   /// exports a file with the sum of itensities per pulse seperated with comma
+   /// e.g. -las flightline.las intsfileName.csv
+   tags["-totalIn"]=32; // -totalIn <intsfileName.csv>
 
 
    try
@@ -728,6 +750,15 @@ int main (int argc, char const* argv[])
            }
            break;
         }
+        case 32: //  -totalIn <intsfileName.csv>
+        {
+           argvIndex ++;
+           if (argvIndex<argc)
+           {
+              intsfileName = argv[argvIndex];
+           }
+           break;
+        }
         default:
         {
            std::cout << "WARNING: Unkown tag: " << argv[argvIndex] << "\n";
@@ -794,6 +825,21 @@ int main (int argc, char const* argv[])
       }
       return EXIT_SUCCESS;
    }
+   if(intsfileName!="")
+   {
+      std::cout << "Exporting sum intensity of pulses into " << csvSamplesPulses_exportingFile << "\n";
+      if(lasFiles.size()!=0)
+      {
+         Las1_3_handler lala(lasFiles[0]);
+         lala.saveSumIntensity(intsfileName);
+      }
+      else
+      {
+         std::cerr << "ERROR: no pulsewaves or las file loaded\n";
+         return EXIT_FAILURE;
+      }
+      return EXIT_SUCCESS;
+   }
    std::cout << lasFiles.size() << " ----- las file size\n";
    if(lasFiles.size()!=0)
    {
@@ -818,8 +864,9 @@ int main (int argc, char const* argv[])
                 << temp_userLimits[2]<<" " << temp_userLimits[3]<<" " <<temp_userLimits[4]<<" " << temp_userLimits[5]<<"\n";
 
 
-       const std::clock_t before_Vol_Construction = std::clock();
-
+      const std::clock_t before_Vol_Construction = std::clock();
+      // -las "C:\Users\milto\Documents\TEPAK\SampleData\L004-1-M01-S1-C1_s_w_2.las" -dtm "C:\Users\milto\Documents\TEPAK\SampleData\DTM_1m_AofI.bil" -map height "C:\Users\milto\Documents\TEPAK\SampleData\height.dtm2"
+      //  userLimits[5]-=380.0;
       vol = VolumeFactory::produceVolume(voxelLength,userLimits,volumeType);
       vol->setNoiseLevel(noiseLevel);
       lala.readFileAndGetObject(vol,fileType,dtmFileName);
@@ -835,16 +882,16 @@ int main (int argc, char const* argv[])
    }
    else if (volumeFileName!="")
    {
-      vol = VolumeFactory::produceVolume(volumeFileName,volumeType);
-      gmtl::Vec3f maxLimits = vol->getMaxLimits();
-      gmtl::Vec3f minLimits = vol->getMinLimits();
-      userLimits[0] = maxLimits[1];
-      userLimits[1] = minLimits[1];
-      userLimits[2] = maxLimits[0];
-      userLimits[3] = minLimits[0];
-      userLimits[4] = maxLimits[2];
-      userLimits[5] = maxLimits[2];
-      vol->setIsolevel(isolevel);
+       vol = VolumeFactory::produceVolume(volumeFileName,volumeType);
+       gmtl::Vec3f maxLimits = vol->getMaxLimits();
+       gmtl::Vec3f minLimits = vol->getMinLimits();
+       userLimits[0] = maxLimits[1];
+       userLimits[1] = minLimits[1];
+       userLimits[2] = maxLimits[0];
+       userLimits[3] = minLimits[0];
+       userLimits[4] = maxLimits[2];
+       userLimits[5] = maxLimits[2];
+       vol->setIsolevel(isolevel);
    }
    else if (pwFiles.size()!=0)
    {

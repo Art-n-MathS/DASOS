@@ -15,7 +15,9 @@ public:
    /// @brief default constructor
    /// @param[in] i_filename the file of the name to be read
    //-------------------------------------------------------------------------
-   Las1_3_handler(const std::string i_filename);
+   Las1_3_handler(
+           const std::string i_filename
+           );
    //-------------------------------------------------------------------------
    /// @brief method that returns the min and max values that define the
    /// boundary of the scanned area
@@ -39,6 +41,12 @@ public:
    void saveSamples(
            const std::string &i_csvFileName,
            unsigned int i_noOfSamples);
+   //-------------------------------------------------------------------------
+   /// @brief method that exports the sum intensity of each pulse into .csv
+   /// @param[in] i_intsFileName the name of the file that will be exported
+   /// and will contain the sum of intensities per pulse - ignored if it is ""
+   //-------------------------------------------------------------------------
+   void saveSumIntensity(const std::string i_intsFileName);
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------
