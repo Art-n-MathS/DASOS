@@ -5,11 +5,11 @@ Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC
  LICENSE, Version 3. 
 
 For any publications using DASOS, please reference the following paper:
-Miltiadou M., Warren M. A., Grant M., Brown M., 2015, Alignment of 
-Hyperspectral Imagery and full-waveform LiDAR data for visualisation and 
-classification purposes, ISPRS Archives 36th International Symposium of
-Remote Sensing of the enviroment
-Available at: http://meetingorganizer.copernicus.org/ISRSE36/ISRSE36-158-2.pdf
+Miltiadou, Milto, et al. "Open source software DASOS: efficient accumulation, 
+analysis, and visualisation of full-waveform lidar." Seventh International 
+Conference on Remote Sensing and Geoinformation of the Environment (RSCy2019).
+Vol. 11174. International Society for Optics and Photonics, 2019.
+Available at: https://www.researchgate.net/publication/334069759_Open_source_software_DASOS_efficient_accumulation_analysis_and_visualisation_of_full-waveform_lidar
 
 For testing the system, please download the following sample here: 
 https://rsg.pml.ac.uk/shared_files/arsf/DASOS/
@@ -160,10 +160,15 @@ DASOS User Quide:
                               upwards instead of one which is the default. The
                               value n must be a positive number.
 
--eparameters <raw or processed> the ‘raw’ option saves all the intensity values
+-eparameters <raw or processed> the "raw" option saves all the intensity values
                               of the template and the or processed> ‘processed’ 
                               option saves parameters derived from the raw 
-                              intensities.                        
+                              intensities.     
+-calBoundaries <yes or no>    enable to automatically calcualate the boundaries
+                              of the volume by taking the  min and max boundaries
+                              of the discrete returns recorded withing 
+                              a file. 
+                  
                               
 
 
@@ -183,7 +188,7 @@ https://docs.google.com/spreadsheets/d/10yE5p463cLA_GtKkyiaWEzScW7N9cVxbPs5y0muX
 For bringing potential issues in discussion please use our group:
 https://groups.google.com/forum/#!forum/dasos---the-native-full-waveform-fw-lidar-software
 
-For updates and news please follow twitter @MiltoMiltiadou
+For updates and news please follow twitter @MiltoMiltiadou, @_DASOS_
 
 
 

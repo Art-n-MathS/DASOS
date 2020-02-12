@@ -20,9 +20,14 @@ public:
            );
    //-------------------------------------------------------------------------
    /// @brief method that returns the min and max values that define the
-   /// boundary of the scanned area
+   /// boundary of the scanned area as defined in the header
    //-------------------------------------------------------------------------
    std::vector<double> getBoundaries();
+   //-------------------------------------------------------------------------
+   /// @brief method that returns the min and max values that define the
+   /// boundary of the scanned area by calculating them
+   //-------------------------------------------------------------------------
+   std::vector<double> calBoundaries();
    //-------------------------------------------------------------------------
    /// @param[in] i_x the number of voxels in the x dimension - the rest are
    /// calculated depending on the higher and lower x y z of the points

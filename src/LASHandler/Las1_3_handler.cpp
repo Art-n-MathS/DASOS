@@ -57,7 +57,7 @@ void Las1_3_handler::saveSumIntensity(
    }
    if((unsigned short int)(public_header.point_data_format_ID)!=4)
    {
-      std::cerr << "ERROR: Not supported LAS file format\n";
+      std::cerr << " ++ ERROR: Not supported LAS file format\n";
       m_lasfile.close();
       return;
    }
@@ -161,7 +161,7 @@ void Las1_3_handler::saveSumIntensity(
                    countIntsSums++;
                }
                delete []waveSamplesIntensities;
-               if (countIntsSums%500)
+//               if (countIntsSums%500)
                {
                    csv << "\n";
                }
@@ -348,6 +348,80 @@ void Las1_3_handler::saveSamples(
 
    m_lasfile.close();
    std::cout << "CSV " << i_csvFileName << " file saved\n";
+}
+//-----------------------------------------------------------------------------
+std::vector<double> Las1_3_handler::calBoundaries()
+{
+   m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
+   if(!m_lasfile.is_open())
+   {
+      std::cerr << "File not found \n";
+      std::vector<double> empty(8,0);
+      return empty;
+   }
+   read_public_header();
+   std::vector<double> boundaries(6);
+   double minx(0.0),maxx(0.0),miny(0.0),maxy(0.0),minz(0.0),maxz(0.0);
+
+   if((unsigned short int)(public_header.point_data_format_ID)!=2)
+   {
+      std::cout << "calBoundaries only supported for LAS1.2 \n";
+      LAS1_3Types::Data_Point_Record_Format_2 point_info;
+      m_lasfile.seekg((int) public_header.offset_to_point);
+      if (public_header.number_of_point_records>0)
+      {
+         m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+         if((int)point_info.classification!=7)
+         {
+            // All Discrete Points
+             if((int)point_info.classification!=7)
+             {
+                gmtl::Vec3f xyz(point_info.X*public_header.x_scale_factor,
+                                           point_info.Y*public_header.y_scale_factor,
+                                           point_info.Z*public_header.z_scale_factor);
+                std::cout << point_info.X << " " <<public_header.x_scale_factor<< "\n";
+                std::cout << xyz[0] << " " << xyz[1] << " " << xyz[2] << "\n";
+                minx=xyz[0]; maxx=xyz[0];
+                miny=xyz[1]; maxy=xyz[1];
+                minz=xyz[2]; maxz=xyz[2];
+
+             }
+         }
+      }
+      for(unsigned int i=1; i< public_header.number_of_point_records; ++i)
+      {
+         m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+         if((int)point_info.classification!=7)
+         {
+
+            // All Discrete Points
+             if((int)point_info.classification!=7)
+             {
+                 gmtl::Vec3f xyz(point_info.X*public_header.x_scale_factor,
+                                            point_info.Y*public_header.y_scale_factor,
+                                            point_info.Z*public_header.z_scale_factor);
+                 minx=(minx>xyz[0])?xyz[0]:minx; maxx=(maxx<xyz[0])?xyz[0]:maxx;
+                 miny=(miny>xyz[1])?xyz[1]:miny; maxy=(maxy<xyz[1])?xyz[1]:maxy;
+                 minz=(minz>xyz[2])?xyz[2]:minz; maxz=(maxz<xyz[2])?xyz[2]:maxz;
+             }
+         }
+         else
+         {
+             // only noise has been recorded
+         }
+      }
+   }
+
+
+   // [MaxNorthY, MinNorthY, MaxEastX, MinEastX, MaxHeightZ, MinHeightZ]
+   boundaries[0] = maxy;
+   boundaries[1] = miny;
+   boundaries[2] = maxx;
+   boundaries[3] = minx;
+   boundaries[4] = maxz;
+   boundaries[5] = minz;
+   m_lasfile.close();
+   return boundaries;
 }
 
 //-----------------------------------------------------------------------------
@@ -952,6 +1026,7 @@ void Las1_3_handler::read_point_record_format_1(Volume *i_obj
 void Las1_3_handler::read_point_record_format_2(Volume *i_obj
         )
 {
+    std::cout << "Reading point data record format 2\n";
     LAS1_3Types::Data_Point_Record_Format_2 point_info;
     m_lasfile.seekg((int) public_header.offset_to_point);
     for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
@@ -959,7 +1034,6 @@ void Las1_3_handler::read_point_record_format_2(Volume *i_obj
        m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
        if((int)point_info.classification!=7)
        {
-
           // All Discrete Points
            if((int)point_info.classification!=7)
            {
@@ -967,6 +1041,7 @@ void Las1_3_handler::read_point_record_format_2(Volume *i_obj
                                         point_info.Y*public_header.y_scale_factor,
                                         point_info.Z*public_header.z_scale_factor),
                             point_info.itensity);
+
            }
        }
        else
@@ -982,6 +1057,7 @@ void Las1_3_handler::read_point_record_format_2(Volume *i_obj
 void Las1_3_handler::read_point_record_format_3(Volume *i_obj
         )
 {
+    std::cout << "Reading point data record format 3\n";
     LAS1_3Types::Data_Point_Record_Format_3 point_info;
     m_lasfile.seekg((int) public_header.offset_to_point);
     for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
@@ -989,7 +1065,6 @@ void Las1_3_handler::read_point_record_format_3(Volume *i_obj
        m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
        if((int)point_info.classification!=7)
        {
-
           // All Discrete Points
            if((int)point_info.classification!=7)
            {
@@ -1043,23 +1118,23 @@ void Las1_3_handler::readFileAndGetObject(
    }
    else if((unsigned short int)(public_header.point_data_format_ID)==0)
    {
-      std::cout << "Warning:: Type ingored only discrete data exist in the file\n";
+      std::cout << "Warning:: Type ingored only discrete data exist in the LAS1.0 file \n";
       read_point_record_format_0(i_obj);
 
    }
    else if((unsigned short int)(public_header.point_data_format_ID)==1)
    {
-      std::cout << "Warning: Type ingored only discrete data exist in the file\n";
+      std::cout << "Warning: Type ingored only discrete data exist in the LAS1.1 file\n";
       read_point_record_format_1(i_obj);
    }
    else if((unsigned short int)(public_header.point_data_format_ID)==2)
    {
-      std::cout << "Warning: Type ingored only discrete data exist in the file\n";
+      std::cout << "Warning: Type ingored only discrete data exist in the LAS1.2 file\n";
       read_point_record_format_2(i_obj);
    }
    else if((unsigned short int)(public_header.point_data_format_ID)==3)
    {
-      std::cout << "Warning: Type ingored only discrete data exist in the file\n";
+      std::cout << "Warning: Type ingored only discrete data exist in the LAS1.3 file\n";
       read_point_record_format_3(i_obj);
    }
    m_lasfile.close();
@@ -1104,6 +1179,20 @@ void Las1_3_handler::read_public_header()
       std::cerr << "Incorrect version. Only 1.3 are allowed.\n";
 
   }
+   if(public_header.x_scale_factor<0.00001 && public_header.x_scale_factor>-0.00001)
+   {
+       public_header.x_scale_factor=1.0;
+   }
+
+   if(public_header.y_scale_factor<0.00001 && public_header.y_scale_factor>-0.00001)
+   {
+       public_header.y_scale_factor=1.0;
+   }
+
+   if(public_header.z_scale_factor<0.00001 && public_header.z_scale_factor>-0.00001)
+   {
+       public_header.z_scale_factor=1.0;
+   }
 }
 
 //-----------------------------------------------------------------------------

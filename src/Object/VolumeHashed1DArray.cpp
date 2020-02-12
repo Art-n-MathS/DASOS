@@ -81,7 +81,7 @@ bool VolumeHashed1DArray::isInside(
    std::unordered_map<unsigned long int, double>::iterator got =m_intensities.find(key);
    if(got==m_intensities.end())
    {
-      return false;
+       return false;
    }
    else
    {
@@ -95,6 +95,12 @@ void VolumeHashed1DArray::addItensityTypeVol(
         double i_intensity
         )
 {
+   // check if intensity is 0 - this happens with discrete data
+   if(i_intensity<0.00001 && i_intensity>-0.000001)
+   {
+      // replace by 1.0 since a zero intensity will be merged with the non-empty voxels.
+      i_intensity = 1.0;
+   }
    if(m_noOfSamplesPerVoxel.empty() && !m_noOfSamplesPerVoxel.empty())
    {
       std::cout << "WARNING:After normalisationm no intensity can be added\n";

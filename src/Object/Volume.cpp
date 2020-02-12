@@ -105,6 +105,7 @@ void Volume::addItensity(const gmtl::Vec3f &i_point, double i_intensity)
 {
    if(i_intensity>m_noiseLevel)
    {
+//      std::cout << "Int OK - ";
       std::vector<gmtl::Vec3f> centresOfnearVoxels;
       centresOfnearVoxels.resize(8);
       std::vector<double> disFromPoint;
@@ -114,8 +115,10 @@ void Volume::addItensity(const gmtl::Vec3f &i_point, double i_intensity)
          i_point[1]>m_lowerLimits[1] && i_point[1]<m_higherLimits[1] &&
          i_point[2]>m_lowerLimits[2] && i_point[2]<m_higherLimits[2])
       {
+//         std::cout << " - inside limits\n";
          addItensityTypeVol(i_point,i_intensity);
       }
+//      std::cout << "\n";
    }
 }
 

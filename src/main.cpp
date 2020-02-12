@@ -89,6 +89,7 @@ int main (int argc, char const* argv[])
    std::string volsDir("");
    bool isFieldPlotManagerValid(false);
 
+   bool calBoundaries(false);
 
    unsigned int noSamples(0);
 
@@ -272,6 +273,10 @@ int main (int argc, char const* argv[])
    /// exports a file with the sum of itensities per pulse seperated with comma
    /// e.g. -las flightline.las intsfileName.csv
    tags["-totalIn"]=32; // -totalIn <intsfileName.csv>
+
+   /// enable to automatically calcualate the boundaries of the volume by taking the
+   /// min and max boundaries of the discrete returns recorded withing a file.
+   tags["-calBoundaries"]=33; // -calBoundaries <yes or no>
 
 
    try
@@ -759,6 +764,17 @@ int main (int argc, char const* argv[])
            }
            break;
         }
+        case 33: //  -calBoundaries <yes or no>
+        {
+           argvIndex++;
+           if (argvIndex<argc)
+           {
+              std::string parType(argv[argvIndex]);
+              std::transform(parType.begin(), parType.end(), parType.begin(), toupper);
+              calBoundaries=(parType=="YES");
+           }
+           break;
+        }
         default:
         {
            std::cout << "WARNING: Unkown tag: " << argv[argvIndex] << "\n";
@@ -789,6 +805,8 @@ int main (int argc, char const* argv[])
 
    Volume *vol = NULL; 
    double Construction_total (0);
+
+
 
    //--------------------------------------------------------------------------------------
    // read filename
@@ -849,7 +867,22 @@ int main (int argc, char const* argv[])
       {
          //then user haven't defined limits
          std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
-         userLimits = lala.getBoundaries();
+         if (calBoundaries)
+         {
+            std::cout << "Calculating boundaries of discrete returns\n";
+//            userLimits = lala.calBoundaries();
+            userLimits[0]=708587264.00;
+            userLimits[1]=612764480.00;
+            userLimits[2]=607443584.00;
+            userLimits[3]=506632352.00;
+            userLimits[4]=247611392.00;
+            userLimits[5]= 75554704.00;
+
+         }
+         else
+         {
+             userLimits = lala.getBoundaries();
+         }
       }
       else
       {
