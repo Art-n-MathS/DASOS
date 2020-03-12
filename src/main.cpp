@@ -742,10 +742,10 @@ int main (int argc, char const* argv[])
               std::string parType(argv[argvIndex]);
               std::transform(parType.begin(), parType.end(), parType.begin(), toupper);
               fieldplotsManager.set_eparameters ( (parType=="RAW")?0 :
-                           ((parType=="PROCESSED_BASIC")? 1:
+                           ((parType=="PROCESSED_BASIC" || parType=="PROCESSED")? 1:
                            ((parType=="PROCESSED_ALL") ? 2:-1)));
               if(((parType=="RAW")?0 :
-                      ((parType=="PROCESSED_BASIC")? 1:
+                      ((parType=="PROCESSED_BASIC"|| parType=="PROCESSED")? 1:
                       ((parType=="PROCESSED_ALL") ? 2:-1))) == -1)
               {
                  std::cerr << "WARNING: " << argv[argvIndex]
@@ -870,13 +870,13 @@ int main (int argc, char const* argv[])
          if (calBoundaries)
          {
             std::cout << "Calculating boundaries of discrete returns\n";
-//            userLimits = lala.calBoundaries();
-            userLimits[0]=708587264.00;
-            userLimits[1]=612764480.00;
-            userLimits[2]=607443584.00;
-            userLimits[3]=506632352.00;
-            userLimits[4]=247611392.00;
-            userLimits[5]= 75554704.00;
+           userLimits = lala.calBoundaries();
+//            userLimits[0]=708587264.00;
+//            userLimits[1]=612764480.00;
+//            userLimits[2]=607443584.00;
+//            userLimits[3]=506632352.00;
+//            userLimits[4]=247611392.00;
+//            userLimits[5]= 75554704.00;
 
          }
          else

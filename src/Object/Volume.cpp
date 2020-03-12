@@ -50,9 +50,13 @@ Volume::Volume(
 
 
 //    std::cout << "Legth of Voxels = " << m_lengthOfVoxel << "\n";
-   std::cout << "Volume constructor : no of voxels = " << m_noOfVoxelsX << " " << m_noOfVoxelsY <<  " " << m_noOfVoxelsZ << "\n";
-//    std::cout << "Max Limits " << m_higherLimits[0] << " " << m_higherLimits[1] << " " << m_higherLimits[2] << "\n";
-//    std::cout << "Min Limits " << m_lowerLimits[0] << " " << m_lowerLimits[1] << " " << m_lowerLimits[2] << "\n";
+  std::cout << "Volume constructor : no of voxels = " << m_noOfVoxelsX << " " << m_noOfVoxelsY <<  " " << m_noOfVoxelsZ << "\n";
+    std::cout << "Max Limits " << m_higherLimits[0] << " " << m_higherLimits[1] << " " << m_higherLimits[2] << "\n";
+    std::cout << "Min Limits " << m_lowerLimits[0] << " " << m_lowerLimits[1] << " " << m_lowerLimits[2] << "\n";
+    std::cout << "*Max Limits " << i_userLimits[2]+0.0001<< " " <<
+            i_userLimits[0]+0.0001<< " " <<
+            i_userLimits[4]+0.0001 << "\n";
+    std::cout << "*Min Limits " << i_userLimits[3]<< " " <<i_userLimits[1]<< " " <<i_userLimits[5] << "\n";
 
 }
 

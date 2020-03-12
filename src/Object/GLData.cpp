@@ -396,6 +396,11 @@ void GLData::exportToObj(
        {
           myfile << "mtllib " << mtlName <<"\n\n";
        }
+       if(vsize==0)
+       {
+          std::cerr << "ERROR: Object has no vertices saved into the GLDATA\n";
+          return;
+       }
        for(int i=0; i<vsize; i+=3)
        {
          myfile << "v "<< m_vertices[i  ] - offset[0]

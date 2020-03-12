@@ -147,3 +147,6 @@ HEADERS += \
     include/Object/DtmBilReader.h \
     include/Object/PairDoubleInt.h
 
+DISTFILES += \
+    main.cu
+

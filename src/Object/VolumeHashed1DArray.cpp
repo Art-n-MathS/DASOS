@@ -34,13 +34,16 @@ void VolumeHashed1DArray::compare(Volume */*i_obj*/)
 double VolumeHashed1DArray::functionValue(const gmtl::Vec3f &i_point)
 {
    unsigned long int key = getIndex(i_point);
+//   std::cout << "key=" << key << " ";
    std::unordered_map<unsigned long int, double>::iterator got =m_intensities.find(key);
    if(got==m_intensities.end())
    {
+//      std::cout << "does not exist\n";
       return 0.0f;
    }
    else
    {
+//      std::cout << got->second << "\n";
       return got->second;
    }
 }
@@ -250,9 +253,23 @@ void VolumeHashed1DArray::readObjectFromFile(
     // Compression on/off25
     // - All the intensities
  //    - All the intensities
-    m_lowerLimits[0] = atof(words[1].c_str());
-    m_lowerLimits[1] = atof(words[2].c_str());
-    m_lowerLimits[2] = atof(words[3].c_str());
+//    std::vector<float> userLimits(6,0.0);
+//    userLimits[0]=708587264.00;
+//    userLimits[1]=612764480.00;
+//    userLimits[2]=607443584.00;
+//    userLimits[3]=506632352.00;
+//    userLimits[4]=247611392.00;
+//    userLimits[5]= 75554704.00;
+//    m_lowerLimits[0] =  userLimits[3];//atof(words[1].c_str());
+//    m_lowerLimits[1] =  userLimits[1];//atof(words[2].c_str());
+//    m_lowerLimits[2] =  userLimits[5];//atof(words[3].c_str());
+//    m_higherLimits[0] = userLimits[2];// atof(words[5].c_str());
+//    m_higherLimits[1] =  userLimits[0];//atof(words[6].c_str());
+//    m_higherLimits[2] =  userLimits[4];//atof(words[7].c_str());
+
+    m_lowerLimits[0] =  atof(words[1].c_str());
+    m_lowerLimits[1] =  atof(words[2].c_str());
+    m_lowerLimits[2] =  atof(words[3].c_str());
     m_higherLimits[0] = atof(words[5].c_str());
     m_higherLimits[1] = atof(words[6].c_str());
     m_higherLimits[2] = atof(words[7].c_str());

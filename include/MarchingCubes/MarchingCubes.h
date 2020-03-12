@@ -66,7 +66,7 @@ protected:
    void Polygonise(const std::vector<gmtl::Vec3f> &points,
            double isolevel,
            GLData *i_glData
-           , std::vector<double> &values);
+           , double *values);
    //--------------------------------------------------------------------------
    /// @brief method that returns the arithmetic position of a voxel in the
    /// space given its indices
@@ -123,7 +123,7 @@ protected:
    //--------------------------------------------------------------------------
    gmtl::Vec3f m_minLimits;
 
-   HashTable m_hashTable;
+   HashTable *m_hashTable;
 
 };
 

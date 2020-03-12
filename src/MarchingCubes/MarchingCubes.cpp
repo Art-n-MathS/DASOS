@@ -14,6 +14,11 @@ MarchingCubes::MarchingCubes(Volume *i_obj,
     m_maxLimits(i_obj->getMaxLimits()[0],i_obj->getMaxLimits()[1],i_obj->getMaxLimits()[2]),
     m_minLimits(i_obj->getMinLimits()[0],i_obj->getMinLimits()[1],i_obj->getMinLimits()[2])
 {
+    m_hashTable = new HashTable;
+    std::cout << "MC:MaxLimits " << i_obj->getMaxLimits()[0]<< " "
+              <<i_obj->getMaxLimits()[1]<< " " <<i_obj->getMaxLimits()[2] << "\n";
+    std::cout << "MC:MinLimits " <<i_obj->getMinLimits()[0]<< " "
+              <<i_obj->getMinLimits()[1]<< " " <<i_obj->getMinLimits()[2] << "\n";
 }
 
 //-----------------------------------------------------------------------------
@@ -22,19 +27,19 @@ unsigned int MarchingCubes::getIndex(
         const gmtl::Vec3f &i_vertex
         )
 {
-   for(unsigned int i=0; i<i_glData->m_vertices.size(); i+=3)
-   {
-       gmtl::Vec3f v(i_glData->m_vertices[i  ],
-                   i_glData->m_vertices[i+1],
-                   i_glData->m_vertices[i+2]);
-       if(v[0]<i_vertex[0]+0.000001 && v[0]>i_vertex[0]-0.000001 &&
-          v[1]<i_vertex[1]+0.000001 && v[1]>i_vertex[1]-0.000001 &&
-          v[2]<i_vertex[2]+0.000001 && v[2]>i_vertex[2]-0.000001 )
-       {
-           return i/3;
-       }
-   }
-   return i_glData->addVertex(gmtl::Vec3f(i_vertex[0],i_vertex[1],i_vertex[2]));
+    for(unsigned int i=0; i<i_glData->m_vertices.size(); i+=3)
+    {
+        gmtl::Vec3f v(i_glData->m_vertices[i  ],
+                    i_glData->m_vertices[i+1],
+                    i_glData->m_vertices[i+2]);
+        if(v[0]<i_vertex[0]+0.000001 && v[0]>i_vertex[0]-0.000001 &&
+           v[1]<i_vertex[1]+0.000001 && v[1]>i_vertex[1]-0.000001 &&
+           v[2]<i_vertex[2]+0.000001 && v[2]>i_vertex[2]-0.000001 )
+        {
+            return i/3;
+        }
+    }
+    return i_glData->addVertex(gmtl::Vec3f(i_vertex[0],i_vertex[1],i_vertex[2]));
 }
 
 //-----------------------------------------------------------------------------
@@ -53,34 +58,28 @@ gmtl::Vec3f MarchingCubes::VertexInterp(
         const double valp2
         )
 {
-   double mu;
-   gmtl::Vec3f p;
+    double mu;
+    gmtl::Vec3f p;
 
+    mu = (isolevel - valp1) / (valp2 - valp1);
+    p[0] = p1[0] + mu * (p2[0] - p1[0]);
+    p[1] = p1[1] + mu * (p2[1] - p1[1]);
+    p[2] = p1[2] + mu * (p2[2] - p1[2]);
 
-//   mu = (isolevel - valp1) / (valp2 - valp1);
-//   p[0] = p1[0] + mu * (p2[0] - p1[0]);
-//   p[1] = p1[1] + mu * (p2[1] - p1[1]);
-//   p[2] = p1[2] + mu * (p2[2] - p1[2]);
-
-  p[0] = std::min(p1[0],p2[0]) + abs((p1[0]-p2[0])/2);
-  p[1] = std::min(p1[1],p2[1]) + abs((p1[1]-p2[1])/2);
-  p[2] = std::min(p1[2],p2[2]) + abs((p1[2]-p2[2])/2);
-
-
-   return(p);
+    return(p);
 }
 //-----------------------------------------------------------------------------
 void MarchingCubes::Polygonise(
         const std::vector<gmtl::Vec3f> &points,
         double isolevel,
         GLData *i_glData,
-        std::vector<double> &values
+        double *values
 
         )
 {
    unsigned int short cubeindex =0;
    unsigned int vertlist[12];
-
+//   std::cout << "values sum : " << values[0]+values[1]+values[2]+values[3]+values[4]+values[5]+values[6]+values[7] << " " << isolevel << "\n";
 
 
    if (values[0] <= isolevel) cubeindex |= 1;
@@ -100,62 +99,62 @@ void MarchingCubes::Polygonise(
    /* Find the vertices where the surface intersects the cube */
    if (edgeTable[cubeindex] & 1)
    {
-      vertlist[0] = m_hashTable.getIndex(
+      vertlist[0] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[0],points[1],values[0],values[1]));
    }
    if (edgeTable[cubeindex] & 2)
    {
-      vertlist[1] = m_hashTable.getIndex(
+      vertlist[1] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[1],points[2],values[1],values[2]));
    }
    if (edgeTable[cubeindex] & 4)
    {
-      vertlist[2] = m_hashTable.getIndex(
+      vertlist[2] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[2],points[3],values[2],values[3]));
    }
    if (edgeTable[cubeindex] & 8)
    {
-      vertlist[3] = m_hashTable.getIndex(
+      vertlist[3] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[3],points[0],values[3],values[0]));
    }
    if (edgeTable[cubeindex] & 16)
    {
-      vertlist[4] = m_hashTable.getIndex(
+      vertlist[4] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[4],points[5],values[4],values[5]));
    }
    if (edgeTable[cubeindex] & 32)
    {
-      vertlist[5] = m_hashTable.getIndex(
+      vertlist[5] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[5],points[6],values[5],values[6]));
    }
    if (edgeTable[cubeindex] & 64)
    {
-      vertlist[6] = m_hashTable.getIndex(
+      vertlist[6] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[6],points[7],values[6],values[7]));
    }
    if (edgeTable[cubeindex] & 128)
    {
-      vertlist[7] = m_hashTable.getIndex(
+      vertlist[7] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[7],points[4],values[7],values[4]));
    }
    if (edgeTable[cubeindex] & 256)
    {
-      vertlist[8] = m_hashTable.getIndex(
+      vertlist[8] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[0],points[4],values[0],values[4]));
    }
    if (edgeTable[cubeindex] & 512)
    {
-      vertlist[9] = m_hashTable.getIndex(
+      vertlist[9] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[1],points[5],values[1],values[5]));
    }
    if (edgeTable[cubeindex] & 1024)
    {
-      vertlist[10] = m_hashTable.getIndex(
+      vertlist[10] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[2],points[6],values[2],values[6]));
    }
    if (edgeTable[cubeindex] & 2048)
    {
-      vertlist[11] = m_hashTable.getIndex(
+      vertlist[11] = m_hashTable->getIndex(
          VertexInterp(isolevel,points[3],points[7],values[3],values[7]));
    }
    for(unsigned int i=0; triTable[cubeindex][i]!=-1;i+=3)
@@ -178,17 +177,18 @@ gmtl::Vec3f MarchingCubes::getXYZ(
         unsigned int i_z
         )
 {
-   gmtl::Vec3f result;
-   double dis = m_maxLimits[0]-m_minLimits[0];
-   dis/= (double)(m_numOfCubsX *i_x);
-   result[0] = m_minLimits[0] + ( (m_maxLimits[0] - m_minLimits[0])
-                                    / (double(m_numOfCubsX)) * (double( i_x)));
-   result[1] = m_minLimits[1] + ( (m_maxLimits[1] - m_minLimits[1])
-                                    / double(m_numOfCubsY) *(double (i_y)));
-   result[2] = m_minLimits[2] + ( (m_maxLimits[2] - m_minLimits[2])
-                                    / double(m_numOfCubsZ) *(double (i_z)));
-   return result;
+    gmtl::Vec3f result;
+    double dis = m_maxLimits[0]-m_minLimits[0];
+    dis/= (double)(m_numOfCubsX *i_x);
+    result[0] = m_minLimits[0] + ( (m_maxLimits[0] - m_minLimits[0])
+                                     / (double(m_numOfCubsX)) * (double( i_x)));
+    result[1] = m_minLimits[1] + ( (m_maxLimits[1] - m_minLimits[1])
+                                     / double(m_numOfCubsY) *(double (i_y)));
+    result[2] = m_minLimits[2] + ( (m_maxLimits[2] - m_minLimits[2])
+                                     / double(m_numOfCubsZ) *(double (i_z)));
+    return result;
 }
+
 
 //-----------------------------------------------------------------------------
 
@@ -211,7 +211,7 @@ void MarchingCubes::polygoniseXYZ(
     points[6]= getXYZ(i_x+1, i_y+1 ,i_z+1);
     points[7]= getXYZ(i_x  , i_y+1 ,i_z+1);
 
-    std::vector<double> values(8,0);
+    double *values=new double[8];
     values[0] = m_obj->functionValue(points[0]);
     values[1] = m_obj->functionValue(points[1]);
     values[2] = m_obj->functionValue(points[2]);
@@ -222,23 +222,24 @@ void MarchingCubes::polygoniseXYZ(
     values[7] = m_obj->functionValue(points[7]);
 
     Polygonise(points,i_isolevel,i_glData,values);
+    delete []  values;
 }
 
 //-----------------------------------------------------------------------------
 void MarchingCubes::computeVertices(GLData *i_glData)
 {
-   double isolevel = m_obj->getIsolevel();
+    double isolevel = m_obj->getIsolevel();
 
-   for(unsigned int x=0; x<m_numOfCubsX-1; ++x)
-   {
-      for(unsigned int y=0; y<m_numOfCubsY-1; ++y)
-      {
-         for (unsigned int z=0; z<m_numOfCubsZ-1; ++z)
-         {
-            polygoniseXYZ(x,y,z,isolevel,i_glData);
-         }
-      }
-   }
+    for(unsigned int x=0; x<m_numOfCubsX-1; ++x)
+    {
+       for(unsigned int y=0; y<m_numOfCubsY-1; ++y)
+       {
+          for (unsigned int z=0; z<m_numOfCubsZ-1; ++z)
+          {
+             polygoniseXYZ(x,y,z,isolevel,i_glData);
+          }
+       }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -310,7 +311,7 @@ void MarchingCubes::createPolygonisedObject(GLData *i_gldata)
 
    i_gldata->m_maxLimits = gmtl::Vec3f(m_maxLimits[0],m_maxLimits[1],m_maxLimits[2]);
    i_gldata->m_minLimits = gmtl::Vec3f(m_minLimits[0],m_minLimits[1],m_minLimits[2]);
-   m_hashTable.setGLData(i_gldata);
+   m_hashTable->setGLData(i_gldata);
    computeVertices(i_gldata);
 //   computeNormals(i_gldata);
    generateClassUVs(i_gldata);
@@ -324,4 +325,5 @@ void MarchingCubes::createPolygonisedObject(GLData *i_gldata)
 //-----------------------------------------------------------------------------
 MarchingCubes::~MarchingCubes()
 {
+    delete  m_hashTable;
 }
