@@ -412,7 +412,8 @@ void Int_PlotsManager::printLabelsIn(std::ofstream &i_file)
 //-----------------------------------------------------------------------------
 void Int_PlotsManager::printProcessedValues(
         std::ofstream &i_file,
-        const std::vector<double> &i_values,
+        double *i_values,
+        unsigned int lenValues,
         double i_vl,
         double i_height,
         double i_isolevel
@@ -433,9 +434,13 @@ void Int_PlotsManager::printProcessedValues(
        countNonEmpty(0);
    unsigned int stillCountingZ(0);
 
-   if(i_values.size()>0) min=i_values[0];max=i_values[0];
-   std::vector<double> valuesSortedMinToMax(i_values),disFromCentre,heights,
+   if(lenValues>0) min=i_values[0];max=i_values[0];
+   std::vector<double> valuesSortedMinToMax(lenValues),disFromCentre,heights,
            firstPathLens,mirrorDiffX,mirrorDiffY,mirrorDiffZ;
+   for(unsigned int lp=0; lp<lenValues;++lp)
+   {
+      valuesSortedMinToMax[lp] = i_values[lp];
+   }
    // Median Intensity  if size is an even number then the +1 is chosen
    std::sort(valuesSortedMinToMax.begin(),valuesSortedMinToMax.end());
    gmtl::Vec3f centralVoxel;
@@ -558,9 +563,18 @@ void Int_PlotsManager::printProcessedValues(
    i_file << "," << MeanMedianStdDis[1];          // 14. Dis_Median
    i_file << "," << MeanMedianStdDis[2];          // 15. Dis_Std
 
-   i_file << "," <<firstPathLens[                 // 16. Top_Patch_Len_Middle_Col
+   if(int(centralVoxel[0])+int(centralVoxel[1])*maxX+
+           int(centralVoxel[2])*maxX*maxY>=firstPathLens.size())
+   {
+       i_file << ",NULL" ;
+   }
+   else
+   {
+       i_file << "," <<firstPathLens[
              int(centralVoxel[0])+int(centralVoxel[1])*maxX+
-             int(centralVoxel[2])*maxX*maxY];
+             int(centralVoxel[2])*maxX*maxY];     // 16. Top_Patch_Len_Middle_Col
+   }
+
    i_file << "," << MeanMeadianStdFPLen[0];       // 17. Top_Patch_Len_Mean
    i_file << "," << MeanMeadianStdFPLen[1];       // 18. Top_Patch_Len_Median
    i_file << "," << MeanMeadianStdFPLen[2];       // 19. Top_Patch_Len_Std
@@ -638,7 +652,8 @@ void Int_PlotsManager::exportPriors(
    }
    fileWithTemplates <<"\n";
    fileWithTemplates << std::setprecision(3) << std::fixed;
-   std::vector<double> currentPrior(maxX*maxY*maxZ,0.0);
+   unsigned int lenPrior =maxX*maxY*maxZ;
+   double *currentPrior=new double[lenPrior];
 
    unsigned int x(0),y(0),z(0),
                 xVolLen(i_obj->getNoVoxelsX()),
@@ -685,7 +700,11 @@ void Int_PlotsManager::exportPriors(
 
              fileWithTemplates << countIncludedCols << ","  ;
              countIncludedCols++;
-             std::fill(currentPrior.begin(),currentPrior.end(),0.0);
+             for (unsigned int lP=0; lP<lenPrior; ++lP)
+             {
+                currentPrior[lP]=0.0;
+             }
+//             std::fill(currentPrior.begin(),currentPrior.end(),0.0);
              fileWithTemplates << xyCoordinates[0] << "," << xyCoordinates[1] <<",";
              for(unsigned int dX=0; dX<maxX ; ++dX)
              {
@@ -714,7 +733,7 @@ void Int_PlotsManager::exportPriors(
              }
              if(eparameters>0)
              {
-                printProcessedValues(fileWithTemplates,currentPrior,
+                printProcessedValues(fileWithTemplates,currentPrior,lenPrior,
                                      i_obj->getVoxelLen(),topHeight,
                                      i_obj->getIsolevel());
              }
@@ -727,6 +746,7 @@ void Int_PlotsManager::exportPriors(
          }
       }
    }
+   delete [] currentPrior;
    fileWithTemplates.close();
 }
 
@@ -773,9 +793,13 @@ void Int_PlotsManager::readVols_n_ExportPriors(
                   {
                      std::cout << "WARNING: No fieldplot passing through volume "
                                << current << "\n";
+                     if(vol!=NULL)
+                     {
+                        delete vol;
+                        vol = NULL;
+                     }
                      continue;
                   }
-
                   exportPriors(vol,currentPlots,current);
 
                   if(vol!=NULL)

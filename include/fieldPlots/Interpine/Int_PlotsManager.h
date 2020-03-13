@@ -187,7 +187,7 @@ private:
    /// @param[in] i_height the max height of the prior
    //--------------------------------------------------------------------------
    void printProcessedValues(std::ofstream &i_file,
-           const std::vector<double> &i_values,
+           double *i_values, unsigned int lenValues,
            double i_vl,
            double i_height
            , double i_isolevel);
