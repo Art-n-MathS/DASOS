@@ -733,6 +733,7 @@ void Int_PlotsManager::exportPriors(
              }
              if(eparameters>0)
              {
+                std::cout << "Printing processed Values !!!!!!\n";
                 printProcessedValues(fileWithTemplates,currentPrior,lenPrior,
                                      i_obj->getVoxelLen(),topHeight,
                                      i_obj->getIsolevel());
@@ -800,6 +801,7 @@ void Int_PlotsManager::readVols_n_ExportPriors(
                      }
                      continue;
                   }
+
                   exportPriors(vol,currentPlots,current);
 
                   if(vol!=NULL)

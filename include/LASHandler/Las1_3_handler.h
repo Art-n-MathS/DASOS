@@ -51,7 +51,10 @@ public:
    /// @param[in] i_intsFileName the name of the file that will be exported
    /// and will contain the sum of intensities per pulse - ignored if it is ""
    //-------------------------------------------------------------------------
-   void saveSumIntensity(const std::string i_intsFileName);
+   void saveSumIntensity(
+           const std::string i_intsFileName,
+           double i_noiseLevel
+           );
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------

@@ -47,7 +47,8 @@ Las1_3_handler::Las1_3_handler(
 
 //-----------------------------------------------------------------------------
 void Las1_3_handler::saveSumIntensity(
-        const std::string i_intsFilename
+        const std::string i_intsFilename,
+        double i_noiseLevel
         )
 {
    m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
@@ -71,8 +72,11 @@ void Las1_3_handler::saveSumIntensity(
          std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
       }
    }
-   std::ofstream csv;
-   csv.open(i_intsFilename.c_str());
+   std::ofstream csv060,csv120;
+   std::string strCSV120=i_intsFilename+"120.csv";
+   std::string strCSV060=i_intsFilename+"060.csv";
+   csv060.open(strCSV060.c_str());
+   csv120.open(strCSV120.c_str());
    std::cout << public_header.number_of_point_records << "\n";
    unsigned int countIntsSums(0);
    for(unsigned int i=0; i<public_header.number_of_point_records; ++i)
@@ -157,14 +161,11 @@ void Las1_3_handler::saveSumIntensity(
                      sumOfInts+=(int(waveSamplesIntensities[j]));
                   }
               // std::cout << noOfSamples << " : " << sumOfInts <<" " << int(waveSamplesIntensities[30])<< "\n";
-                   csv << sumOfInts <<",";
+                   csv060 << sumOfInts <<",";
                    countIntsSums++;
                }
                delete []waveSamplesIntensities;
-//               if (countIntsSums%500)
-               {
-                   csv << "\n";
-               }
+
 
             }
             else if(currentDescpriptor->bits_per_sample==16)
@@ -178,10 +179,52 @@ void Las1_3_handler::saveSumIntensity(
                 }
                 memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
                         currentDescpriptor->bits_per_sample/8);
-                for(unsigned int j=0; j< noOfSamples; ++j)
+                unsigned long int sumOfInts(0);
+                unsigned long int sumOfIntsNL(0);
+                unsigned int sumOfOverNL(0);
+                if (i%5000==0)
                 {
-                   // save samples to .csv
-                   csv << int(waveSamplesIntensities[j]) <<"\n";
+                   for(unsigned int j=0; j< noOfSamples; ++j)
+                   {
+                      // save samples to csv
+                      if (int(waveSamplesIntensities[j])>i_noiseLevel)
+                      {
+                         sumOfOverNL++;
+                         sumOfIntsNL+=waveSamplesIntensities[j];
+                      }
+//                      if (currentDescpriptor->number_of_samples==60)
+//                      {
+//                        csv060 << int(waveSamplesIntensities[j]) << ",";
+//                      }
+//                      else
+//                      {
+//                          csv120 << int(waveSamplesIntensities[j]) << ",";
+//                      }
+                      sumOfInts+=(int(waveSamplesIntensities[j]));
+                   }
+                   if (currentDescpriptor->number_of_samples==60)
+                   {
+                       csv060 << sumOfInts <<"," << sumOfOverNL << "," << sumOfIntsNL <<","
+                           << (double(sumOfInts)/double(sumOfOverNL)) <<","
+                           << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
+                   }
+                   else
+                   {
+                    csv120 << sumOfInts <<"," << sumOfOverNL << "," << sumOfIntsNL <<","
+                        << (double(sumOfInts)/double(sumOfOverNL)) <<","
+                        << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
+                   }
+
+                   if (currentDescpriptor->number_of_samples==60)
+                   {
+                    csv060 << "\n";
+                   }
+                   else
+                   {
+                       csv120 << "\n";
+                   }
+
+                    countIntsSums++;
                 }
                 delete []waveSamplesIntensities;
             }
@@ -197,7 +240,8 @@ void Las1_3_handler::saveSumIntensity(
          --i;
       }
    }
-   csv.close();
+   csv060.close();
+   csv120.close();
 
    m_lasfile.close();
    std::cout << "CSV " << i_intsFilename << " file saved\n";

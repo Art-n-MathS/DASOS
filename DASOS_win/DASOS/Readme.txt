@@ -1,19 +1,22 @@
 DASOS released Date: 20/01/2017
 
-This project is funded by the Centre for Digital Entertainement and Plymouth 
-Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC
- LICENSE, Version 3. 
+This project was initiated with funding from the Centre for Digital 
+Entertainement and Plymouth Marine Laboratory. Continuation is co-funded by
+the European Regional Development Fund and the Republic of Cyprus through 
+the Research Innovation Foundation (Project: OPPORTUNITY/0916/MSCA/0005) 
+
+The source code is released under the GNU GENERAL PUBLIC LICENSE, Version 3. 
 
 For any publications using DASOS, please reference the following paper:
-Miltiadou, Milto, et al. "Open source software DASOS: efficient accumulation, 
-analysis, and visualisation of full-waveform lidar." Seventh International 
+Miltiadou, Milto, et al. "Open source software DASOS: efficient accumulation,
+ analysis, and visualisation of full-waveform lidar." Seventh International 
 Conference on Remote Sensing and Geoinformation of the Environment (RSCy2019).
 Vol. 11174. International Society for Optics and Photonics, 2019.
 Available at: https://www.researchgate.net/publication/334069759_Open_source_software_DASOS_efficient_accumulation_analysis_and_visualisation_of_full-waveform_lidar
 
 For testing the system, please download the following sample here: 
-https://rsg.pml.ac.uk/shared_files/arsf/DASOS/
-"These sample data were collected by the NERC Airborne Research and Survey
+https://www.dropbox.com/sh/hzpl16gue5xvjmb/AADQsJOsqKkx0lCX4mJjvBPVa?dl=0
+"The first sample dataset was collected by the NERC Airborne Research and Survey
 Facility (ARSF). Copyright is held by the UK Natural Environment
 Research Council (NERC). The data are free for non-commercial use,
 NERC-ARSF must be acknowledged in any publications, software or other
@@ -163,11 +166,13 @@ DASOS User Quide:
 -eparameters <raw or processed> the "raw" option saves all the intensity values
                               of the template and the or processed> ‘processed’ 
                               option saves parameters derived from the raw 
-                              intensities.     
+                              intensities.  
+   
 -calBoundaries <yes or no>    enable to automatically calcualate the boundaries
                               of the volume by taking the  min and max boundaries
                               of the discrete returns recorded withing 
-                              a file. 
+                              a file.  This option only works for discrete LAS1.2
+                              data with Point Record Format 2. 
                   
                               
 
@@ -180,12 +185,9 @@ $:  ./DASOS -las data/LDR-FW-FW10_01-201009821.LAS -vl 2.5 -igm data/e098211b_os
 
 Full userguide available at: https://github.com/Art-n-MathS/DASOS/DASOS_userGuide_v2.pdf
 
-Please note that this is a research software generated for supporting my thesis
-Therefore it may be file formats dependant and it may contain bugs.
-Identified bugs potential improvements list can be found here:
-https://docs.google.com/spreadsheets/d/10yE5p463cLA_GtKkyiaWEzScW7N9cVxbPs5y0muXuZY/edit?usp=sharing
+Please note that this is a research software. It is, therefore, file formats dependant and it may contain bugs.
 
-For bringing potential issues in discussion please use our group:
+For support please use the following group:
 https://groups.google.com/forum/#!forum/dasos---the-native-full-waveform-fw-lidar-software
 
 For updates and news please follow twitter @MiltoMiltiadou, @_DASOS_

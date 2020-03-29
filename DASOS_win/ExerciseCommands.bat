@@ -1,5 +1,5 @@
 :: go to directory
-cd C:\DASOS_userGuide\DASOS
+cd C:\DASOS_userGuide\DASOS_win\DASOS
 
 pause
 

@@ -38,7 +38,7 @@
 
 #include <math.h>
 
-//-vols /home/milto/Documents/RedGum/Volumes/0.6 -icsv "/home/milto/Documents/RedGum/Redgum Project/Trees_RedGum_WGS1984_z55_noNonExistingTrees_Correct.csv" -eparameters processed_basic -column isDead -class dead -ttype square 2 3 5 -ocsv templates
+// -vols /home/milto/Documents/RedGum/Volumes/0.6 -icsv "/home/milto/Documents/RedGum/Redgum Project/Trees_RedGum_WGS1984_z55_noNonExistingTrees_Correct.csv" -eparameters processed_basic -column isDead -class dead -ttype square 2 3 5 -ocsv templates
 
 // -las C:\Users\milto\Documents\TEPAK\SampleData\L004-1-M01-S1-C1_s_w_2.las -totalIn C:\Users\milto\Documents\EngD\DASOS_bugFixed2019\testResults\ints2.csv
 
@@ -849,7 +849,7 @@ int main (int argc, char const* argv[])
       if(lasFiles.size()!=0)
       {
          Las1_3_handler lala(lasFiles[0]);
-         lala.saveSumIntensity(intsfileName);
+         lala.saveSumIntensity(intsfileName,noiseLevel);
       }
       else
       {
