@@ -1,4 +1,4 @@
-DASOS released Date: 20/01/2017
+DASOS released Date: 30/03/2020
 
 This project was initiated with funding from the Centre for Digital 
 Entertainement and Plymouth Marine Laboratory. Continuation is co-funded by
