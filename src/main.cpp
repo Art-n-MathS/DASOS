@@ -793,7 +793,7 @@ int main (int argc, char const* argv[])
     }
 
    //INTERPRETATION OF DATA
-   fieldplotsManager.printParameters();
+//   fieldplotsManager.printParameters();
    //--------------------------------------------------------------------------------------
    // create templates from fieldplot
    //--------------------------------------------------------------------------------------
