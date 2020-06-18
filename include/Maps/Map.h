@@ -34,17 +34,17 @@ public:
 
 private:
    //--------------------------------------------------------------------------
-   /// @brief method that saves the map values before normalisation into
-   /// a text file
-   //--------------------------------------------------------------------------
-   void saveAsc();
-   //--------------------------------------------------------------------------
    /// @brief method that creates a map
    //--------------------------------------------------------------------------
    virtual void createMap(){std::cout << "this should never be called\n";}
 
 
 protected:
+   //--------------------------------------------------------------------------
+   /// @brief method that saves the map values before normalisation into
+   /// a text file
+   //--------------------------------------------------------------------------
+   void saveAsc();
    //--------------------------------------------------------------------------
    /// @brief method that returns the intensity value of the voxel
    /// @param[in] i_x the x coordinate of the voxel

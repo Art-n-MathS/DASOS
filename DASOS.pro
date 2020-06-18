@@ -24,6 +24,7 @@ SOURCES += \
     src/Maps/HyperStandardDeviation.cpp \
     src/Maps/Map.cpp \
     src/Maps/MapsManager.cpp \
+    src/Maps/HeightLevels.cpp \
     src/Maps/NonEmptyVoxelsMap.cpp \
     src/Maps/ThicknessMap.cpp \
     src/Maps/FirstPatch.cpp \
@@ -92,6 +93,7 @@ DEPENDPATH+=include
 
 
 HEADERS += \
+    include/Maps/HeightLevels.h \
     include/bilLib/bil.h \
     include/bilLib/binaryreader.h \
     include/bilLib/binfile.h \

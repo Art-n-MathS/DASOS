@@ -132,6 +132,8 @@ void VolumeHashed1DArray::addItensityTypeVol(
          got2->second++;
          double noOfRe = got2->second;
          got->second=(noOfRe-1)/noOfRe*got->second + i_intensity/noOfRe;
+//         got->second=(noOfRe-1)/*/noOfRe*/*got->second + i_intensity/*/noOfRe*/;
+
       }
       else
       {

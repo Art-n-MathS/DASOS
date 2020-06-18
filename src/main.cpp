@@ -16,7 +16,8 @@
 #include <iterator>
 #include <string>
 #include <vector>
-
+#include <thread>
+#include <time.h>
 
 #include <CreateTreeTemplates.h>
 #include <TreeDetectionEvaluation.h>
@@ -59,8 +60,17 @@
 // -las "D:\RedGum\Classified_AofI\cld_150323_28_234103_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150323_28_234103_d.las.csv"
 
 
+void createMapProcess(MapsManager::mapInfo *i_info)
+{
+    MapsManager m;
+    m.createMap(i_info);
+}
+
 int main (int argc, char const* argv[])
 {
+
+    clock_t tStart1 = clock();
+
    // PARAMETERS
    std::vector<std::string> lasFiles;
    std::string igmFileName("");
@@ -107,7 +117,7 @@ int main (int argc, char const* argv[])
    bands[2] = 23;
    std::vector<MapsManager::mapInfo *> mInfo;
 
-   MapsManager m;
+   MapsManager *m =  new MapsManager;
    unsigned int mapsIndex=0;
    bool optPolygonisation = false;
 
@@ -792,6 +802,11 @@ int main (int argc, char const* argv[])
        return EXIT_FAILURE;
     }
 
+   clock_t tStop1 = clock();
+
+   std::cout << (tStop1-tStart1)/CLOCKS_PER_SEC << " ------------------------------------------ \n";
+
+
    //INTERPRETATION OF DATA
 //   fieldplotsManager.printParameters();
    //--------------------------------------------------------------------------------------
@@ -1009,8 +1024,6 @@ int main (int argc, char const* argv[])
    // if mapsAll then add all the fw maps to mapInfo
    if(mapsAll!="")
    {
-      MapsManager *m;
-      m = new MapsManager;
       const std::vector<std::string> &metricsNames = m->getNamesOfFWMetrics();
       unsigned int noOfMetrics=metricsNames.size();
       for(unsigned int i=0; i<noOfMetrics;++i)
@@ -1023,25 +1036,70 @@ int main (int argc, char const* argv[])
           mInfo[mInfo.size()-1]->samp = 0;
           ++mapsIndex;
       }
-      delete m;
    }
+
+       clock_t tStart = clock();
+
    for(unsigned int i=0; i<mInfo.size(); ++i)
    {
       mInfo[i]->obj = vol;
-      m.createMap(mInfo[i]);
-      delete mInfo[i];
-   }
-   if(mInfo.size()!=0)
-   {
-      std::cout << "ALL MAPS Saved\n";
+      createMapProcess(mInfo[i]);
+//      m->createMap(mInfo[i]);
+//      delete mInfo[i];
    }
 
+
+
+//   mInfo[0]->obj = vol;
+//   std::thread thread0(createMapProcess,mInfo[0]);
+//   mInfo[1]->obj = vol;
+//   std::thread thread1(createMapProcess,mInfo[1]);
+//   mInfo[2]->obj = vol;
+//   std::thread thread2(createMapProcess,mInfo[2]);
+//   mInfo[3]->obj = vol;
+//   std::thread thread3(createMapProcess,mInfo[3]);
+//   mInfo[4]->obj = vol;
+//   std::thread thread4(createMapProcess,mInfo[4]);
+//   mInfo[5]->obj = vol;
+//   std::thread thread5(createMapProcess,mInfo[5]);
+//   mInfo[6]->obj = vol;
+//   std::thread thread6(createMapProcess,mInfo[6]);
+//   mInfo[7]->obj = vol;
+//   std::thread thread7(createMapProcess,mInfo[7]);
+//   mInfo[8]->obj = vol;
+//   std::thread thread8(createMapProcess,mInfo[8]);
+//   mInfo[9]->obj = vol;
+//   std::thread thread9(createMapProcess,mInfo[9]);
+
+//   thread0.join();
+//   thread1.join();
+//   thread2.join();
+//   thread3.join();
+//   thread4.join();
+//   thread5.join();
+//   thread6.join();
+//   thread7.join();
+//   thread8.join();
+//   thread9.join();
+   clock_t tStop = clock();
+
+   std::cout << double((tStop-tStart)/CLOCKS_PER_SEC) << " ------------------------------------------ \n";
+
+    for(unsigned int i=0; i<mInfo.size(); ++i)
+   {
+      delete mInfo[0];
+   }
+    if(mInfo.size()!=0)
+    {
+       std::cout << "ALL MAPS Saved\n";
+    }
 
 
    if(vol!=NULL)
    {
       delete vol;
    }
+   delete m;
    std::cout << "   ***   EXIT   ***\n";
    return EXIT_SUCCESS;
 

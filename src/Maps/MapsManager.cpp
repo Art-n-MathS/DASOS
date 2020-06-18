@@ -17,6 +17,7 @@
 #include "IntensityMap.h"
 #include "IntensityMax.h"
 #include "FieldPlotOnHeightMap.h"
+#include "HeightLevels.h"
 #include <map>
 #include <algorithm>
 
@@ -31,7 +32,8 @@ MapsManager::MapsManager():m_map(0),
                  "FIRST_PATCH",
                  "AVERAGE_HEIGHT_DIFFERENCE",
                  "INTENSITY_AVG",
-                 "INTENSITY_MAX"
+                 "INTENSITY_MAX",
+                 "HEIGHT_LEVELS"
                 })
 {
    // The types should aggree with the fw metrics list
@@ -55,7 +57,8 @@ MapsManager::MapsManager():m_map(0),
       {"INTENSITY_AVG",16},
       {"INTENSITY_MAX",17},
       {"FIELDPLOT",18},
-      {"FIELDPLOT",18}
+      {"FIELDPLOT",18},
+      {"HEIGHT_LEVELS",19}
 
    };
 }
@@ -174,6 +177,10 @@ void MapsManager::createMap(
 //       m_map = new FieldPlotOnHeightMap(m_infoOfMap->name,m_infoOfMap->obj,
 //                                        m_infoOfMap->fieldplot);
 //       break;
+   case 19:
+       std::cout << "Height Levels\n";
+       m_map = new HeightLevels(m_infoOfMap->name,m_infoOfMap->obj);
+       break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";
       break;
