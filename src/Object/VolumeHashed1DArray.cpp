@@ -70,6 +70,33 @@ double VolumeHashed1DArray::getIntensityTypeVol(
 //-----------------------------------------------------------------------------
 void VolumeHashed1DArray::normalise()
 {
+//   std::cout << "Reversing Normalisation started!\n";
+//   assert(m_intensities.size()==m_noOfSamplesPerVoxel.size());
+//   long unsigned int sumOf500Samples(0);
+//   std::cout << "Assertion passed!\n";
+
+//   unsigned int over500(m_intensities.size()/500),count(0);
+//   for(const auto &x: m_noOfSamplesPerVoxel)
+//   {
+//       count++;
+//       if (count%over500==0)
+//       {
+//          sumOf500Samples+=x.second;
+//       }
+//   }
+
+//   std::cout << "Startng actual normalisation!\n";
+//   double ave(double(sumOf500Samples)/500.0);
+//   for(const auto &noSamples: m_noOfSamplesPerVoxel)
+//   {
+//      std::unordered_map<unsigned long int,double>::iterator got2 =
+//               m_intensities.find(noSamples.first);
+
+//      double rate=noSamples.second/ave;
+//      got2->second*=rate;
+//   }
+   std::cout << "Normalisation completed!\n";
+
    m_noOfSamplesPerVoxel.clear();
 }
 

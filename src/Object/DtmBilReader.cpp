@@ -18,7 +18,7 @@ DtmBilReader::DtmBilReader(
     m_isValid(true),
     m_nRows(0),
     m_nColumns(0),
-    m_nBytes(8),
+    m_nBits(32),
     m_xLen(1.0f),
     m_yLen(1.0f),
     m_xMin(0.0f),
@@ -37,6 +37,7 @@ DtmBilReader::DtmBilReader(
    }
    readHeader(i_dtm);
 
+   std::cout << "HEADER READ!!\n";
    // initialise volume parameters
    gmtl::Vec3f minVol = i_obj->getMinLimits();
    gmtl::Vec3f maxVol = i_obj->getMaxLimits();
@@ -44,7 +45,7 @@ DtmBilReader::DtmBilReader(
    minVol[0] -=vl*4;
    minVol[1] -=vl*4;
    maxVol[0] +=vl*4;
-   maxVol[0] +=vl*4;
+   maxVol[1] +=vl*4;
 
    // => read nX columns data each time
 
@@ -74,6 +75,11 @@ DtmBilReader::DtmBilReader(
       maxVol[0] = m_xMax;
    }
 
+   std::cout << "Adjusted volume limits         : " << minVol[0] << " " << minVol[1] << " " << maxVol[0] << " " << maxVol[1] << "\n";
+   std::cout << "Limits of DTM min(x,y) max(x,y): " << m_xMin    << " " << m_yMax    << " " << m_xMin    << " " << m_yMax    << "\n";
+
+   std::cout << "DTM-Volume Limits checked\n";
+
    minVol[0]=float(offsetX)*m_xLen+m_xMin;
    maxVol[1]=m_yMax - float(offsetY)*m_yLen;
 
@@ -100,10 +106,14 @@ DtmBilReader::DtmBilReader(
    std::cout << count << " " << nVolY << " *********\n";
    dtm.close();
 
-   // forget about bil files max min and limits, because area of
-   // interest has been preloaded
-   m_xMin = minVol[0]; m_xMax = m_xMin + m_xLen * nVolX;
-   m_yMax = maxVol[1]; m_yMin = m_yMax - m_yLen * nVolY;
+//   // forget about bil files max min and limits, because area of
+//   // interest has been preloaded
+//   m_xMin = minVol[0]; m_xMax = m_xMin + m_xLen * nVolX;
+//   m_yMax = maxVol[1]; m_yMin = m_yMax - m_yLen * nVolY;
+
+
+   std::cout << "Adjusted volume limits         : " << minVol[0] << " " << minVol[1] << " " << maxVol[0] << " " << maxVol[1] << "\n";
+   std::cout << "Limits of DTM min(x,y) max(x,y): " << m_xMin    << " " << m_yMax    << " " << m_xMin    << " " << m_yMax    << "\n";
    m_nColumns = nVolX;
    m_nRows = nVolY;
    std::cout << m_yMax << " ------- " << maxVol[1] << "\n";
@@ -114,6 +124,7 @@ DtmBilReader::DtmBilReader(
 //-----------------------------------------------------------------------------
 void DtmBilReader::readHeader(const std::string &i_dtm)
 {
+   std::cout << "READING HEADER :::::::::\n\n";
    std::string header(i_dtm);
    header.replace(header.end()-3,header.end(),"hdr");
    std::ifstream hdrFile;
@@ -175,7 +186,7 @@ void DtmBilReader::readHeader(const std::string &i_dtm)
          }
          break;
       case 5:  // NBITS
-         m_nBytes = atoi(words[++i].c_str())/8;
+         m_nBits = atoi(words[++i].c_str())/8;
          break;
       case 6:  // PIXELTYPE
          m_pixelType = words[++i];
@@ -189,11 +200,11 @@ void DtmBilReader::readHeader(const std::string &i_dtm)
          break;
       case 7:  // ULXMAP
          xMin = atof(words[++i].c_str());
-         std::cout << xMin << " xMin\n";
+         std::cout << xMin << " xMin +++++++++++++++++++++++++++++++++++++++\n";
          break;
       case 8:  // ULYMAP
          m_yMax = atof(words[++i].c_str());
-         std::cout << m_yMax << " xMax\n";
+         std::cout << m_yMax << " xMax +++++++++++++++++++++++++++++++++++++\n";
          break;
       case 9:  // XDIM
          m_xLen = atof(words[++i].c_str());
@@ -232,8 +243,8 @@ void DtmBilReader::readHeader(const std::string &i_dtm)
    }
    in.seekg (0, std::ios::end);
    m_size = in.tellg();
-   std::cout << m_size << " " << m_nBytes*m_nColumns*m_nRows << "\n";
-   if(m_size!=m_nBytes*m_nColumns*m_nRows)
+   std::cout << m_size << " " << m_nBits*m_nColumns*m_nRows << "\n";
+   if(m_size!=m_nBits*m_nColumns*m_nRows)
    {
       std::cout << "ERROR: size of bil file do not aggree with bytes*cols*rows\n";
       m_isValid = false;
@@ -263,16 +274,20 @@ float DtmBilReader::getHeightOf(const float i_x, const float i_y)const
    {
       return -0.0f;
    }
+   assert(m_heights.size()==m_nRows*m_nColumns);
    // get index
    long long int x = floor((i_x-m_xMin)/m_xLen);
    long long int y = m_nRows - floor((i_y-m_yMin)/m_xLen) - 1;
+
    if(x>0 && y>0)
    {
-      if(y*m_nColumns+x >= m_heights.size())
+
+      if(y*m_nColumns+x < m_heights.size() ||
+              !(m_heights[y*m_nColumns+x] < 0) )
       {
-         return -0.0f;
+          return m_heights[y*m_nColumns+x];
       }
-      return m_heights[y*m_nColumns+x];
+         return -0.0f;
    }
    return 0;
 }

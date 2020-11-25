@@ -53,8 +53,9 @@ public:
    //-------------------------------------------------------------------------
    void saveSumIntensity(
            const std::string i_intsFileName,
-           double i_noiseLevel
-           );
+           double i_noiseLevel,
+           const std::vector<double> &userLimits
+                 );
    //-------------------------------------------------------------------------
    /// @brief method that prints headdata
    //-------------------------------------------------------------------------

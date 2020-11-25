@@ -60,6 +60,11 @@
 // -las "D:\RedGum\Classified_AofI\cld_150323_28_234103_d.las" -totalIn "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\CSVdata\cld_150323_28_234103_d.las.csv"
 
 
+// June 2020: FOREST project D4
+// -las "C:\DASOS_userGuide\DASOS_win\SampleDATA\DATASET_1\LDR-FW-FW10_01-201009821.LAS" -nl 12 -map HEIGHT_LEVELS "C:\Users\milto\Documents\TEPAK\Marie_Curie_IF\Work Packages\WP4\hello"
+
+
+
 void createMapProcess(MapsManager::mapInfo *i_info)
 {
     MapsManager m;
@@ -68,6 +73,7 @@ void createMapProcess(MapsManager::mapInfo *i_info)
 
 int main (int argc, char const* argv[])
 {
+
 
     clock_t tStart1 = clock();
 
@@ -126,6 +132,8 @@ int main (int argc, char const* argv[])
    // PARSING
    // pair arguments to numbers to ease search
    std::map<std::string, int> tags;
+
+   double zmin(0.0),zmax(-1.0);
 
    /// igm file name of hyperspectral imagery - string
    tags["-igm"] = 1; // -igm <filename>
@@ -287,6 +295,10 @@ int main (int argc, char const* argv[])
    /// enable to automatically calcualate the boundaries of the volume by taking the
    /// min and max boundaries of the discrete returns recorded withing a file.
    tags["-calBoundaries"]=33; // -calBoundaries <yes or no>
+
+   /// method that sets the Z limits of the volume used for DTM subtraction
+   /// since sometimes data ends outside volume
+   tags["-setZLimits"]=34; // -setZLimits <zmin> <zmax>
 
 
    try
@@ -785,6 +797,16 @@ int main (int argc, char const* argv[])
            }
            break;
         }
+        case 34:  // -setZLimits <zmin> <zmax>
+        {
+           argvIndex+=2;
+           if (argvIndex<argc)
+           {
+              zmax = atoi(argv[argvIndex-1]);
+              zmin = atoi(argv[argvIndex  ]);
+           }
+           break;
+        }
         default:
         {
            std::cout << "WARNING: Unkown tag: " << argv[argvIndex] << "\n";
@@ -864,7 +886,43 @@ int main (int argc, char const* argv[])
       if(lasFiles.size()!=0)
       {
          Las1_3_handler lala(lasFiles[0]);
-         lala.saveSumIntensity(intsfileName,noiseLevel);
+         if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
+         {
+            //then user haven't defined limits
+            std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
+            if (calBoundaries)
+            {
+               std::cout << "Calculating boundaries of discrete returns\n";
+              userLimits = lala.calBoundaries();
+   //            userLimits[0]=708587264.00;
+   //            userLimits[1]=612764480.00;
+   //            userLimits[2]=607443584.00;
+   //            userLimits[3]=506632352.00;
+   //            userLimits[4]=247611392.00;
+   //            userLimits[5]= 75554704.00;
+
+            }
+            else
+            {
+                userLimits = lala.getBoundaries();
+            }
+         }
+         else
+         {
+            std::vector<double> temp_userLimits(lala.getBoundaries());
+            userLimits[4] = temp_userLimits[4];
+            userLimits[5] = temp_userLimits[5];
+         }
+         if(zmax>zmin)
+         {
+             userLimits[5]=zmin;
+             userLimits[4]=zmax;
+         }
+
+         std::cout<< "userLimits "<< userLimits[0] << " " << userLimits[1]<<" "
+                   << userLimits[2]<<" " << userLimits[3]<<" " <<userLimits[4]<<" " << userLimits[5]<<"\n";
+
+         lala.saveSumIntensity(intsfileName,noiseLevel,userLimits);
       }
       else
       {
@@ -904,6 +962,11 @@ int main (int argc, char const* argv[])
          std::vector<double> temp_userLimits(lala.getBoundaries());
          userLimits[4] = temp_userLimits[4];
          userLimits[5] = temp_userLimits[5];
+      }
+      if(zmax>zmin)
+      {
+          userLimits[5]=zmin;
+          userLimits[4]=zmax;
       }
       std::cout<< "userLimits "<< userLimits[0] << " " << userLimits[1]<<" "
                 << userLimits[2]<<" " << userLimits[3]<<" " <<userLimits[4]<<" " << userLimits[5]<<"\n";

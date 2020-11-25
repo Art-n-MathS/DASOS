@@ -86,6 +86,7 @@ public:
 
     std::unordered_map<unsigned long int, double> m_intensities;
 
+    // second = number of returns
     std::unordered_map<unsigned long int, unsigned int> m_noOfSamplesPerVoxel;
 
 };

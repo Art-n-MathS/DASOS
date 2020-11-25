@@ -291,7 +291,7 @@ unsigned int Volume::getIndex(
 {
    gmtl::Vec3i indices= getIndices(i_point[0],i_point[1],i_point[2]);
    return indices[0] + indices[1]*m_noOfVoxelsX +
-           indices[2]*m_noOfVoxelsX*m_noOfVoxelsY;
+          indices[2] * m_noOfVoxelsX*m_noOfVoxelsY;
 }
 
 //-----------------------------------------------------------------------------

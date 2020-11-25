@@ -45,10 +45,229 @@ Las1_3_handler::Las1_3_handler(
    m_lasfile.close();
 }
 
+////-----------------------------------------------------------------------------
+//void Las1_3_handler::saveSumIntensity(
+//        const std::string i_intsFilename,
+//        double i_noiseLevel,
+//        const std::vector<double> &userLimits
+//        )
+//{
+//   m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
+//   if(!m_lasfile.is_open())
+//   {
+//      return;
+//   }
+//   if((unsigned short int)(public_header.point_data_format_ID)!=4)
+//   {
+//      std::cerr << " ++ ERROR: Not supported LAS file format\n";
+//      m_lasfile.close();
+//      return;
+//   }
+//   LAS1_3Types::Data_Point_Record_Format_4 point_info;
+//   m_lasfile.seekg((int) public_header.offset_to_point);
+//   if(!m_areWFInternal)
+//   {
+//      m_wdpFile.open(m_wdpFilename.c_str(),std::ios::binary);
+//      if(!m_wdpFile)
+//      {
+//         std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
+//      }
+//   }
+//   std::ofstream csv060,csv120;
+//   std::string strCSV120=i_intsFilename+"120.csv";
+//   std::string strCSV060=i_intsFilename+"060.csv";
+//   csv060.open(strCSV060.c_str());
+//   csv120.open(strCSV120.c_str());
+//   std::cout << public_header.number_of_point_records << "\n";
+//   unsigned int countIntsSums(0);
+//   unsigned count(0);
+//   for(unsigned int i=0; i<public_header.number_of_point_records; ++i)
+//   {
+//      if(i%(int(public_header.number_of_point_records/100))==1)
+//      {
+//          std::cout << ".";
+//      }
+//      m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+//      int wave_offset = public_header.start_of_wf_data_Packet_record +
+//               point_info.byte_offset_to_wf_packet_data;
+//      if((int)point_info.classification!=7)
+//      {
+//         if(wv_info.size()==0)
+//         {
+//            std::cout << "ERROR: no wf descriptor exist in the vlr\n";
+//            return;
+//         }
+
+//         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+//         if(wv_info.size()==1)
+//         {
+//            currentDescpriptor = wv_info[0];
+//         }
+//         else
+//         {
+//            for(unsigned int i=0; i< wv_info.size();++i)
+//            {
+//               if(point_info.wave_packet_descriptor_index == wv_info[i]->id)
+//               {
+//                  currentDescpriptor = wv_info[i];
+//               }
+//            }
+//         }
+
+//         if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
+//         {
+//             continue;
+//         }
+
+//         if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
+//             point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
+//             wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
+
+//         {
+//             std::cout << point_info.X<< " > " <<userLimits[3]-0.0001  << " && "
+//                       << point_info.X<< " < " << userLimits[2]+0.0001 << " && "
+//                       << point_info.Y<< " > " << userLimits[1]-0.0001 << " && "
+//                       << point_info.Y<< " < " << userLimits[0]-0.0001 << " " << (point_info.X > userLimits[3]-0.0001 && point_info.X < userLimits[2]+0.0001
+//                     && point_info.Y > userLimits[1]-0.0001 && point_info.Y < userLimits[0]-0.0001) << "\n";
+
+//             if (point_info.X > userLimits[3]-0.0001 && point_info.X < userLimits[2]+0.0001
+//                     && point_info.Y > userLimits[1]-0.0001 && point_info.Y < userLimits[0]-0.0001)
+//             {
+//           count++;
+//             }
+//           char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+//            if(wave_data==0)
+//            {
+//                std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+//                          << "Program will terminate\n";
+//                exit(EXIT_FAILURE);
+//            }
+//            int tmp(0);
+//            if(m_areWFInternal)
+//            {
+//               tmp = m_lasfile.tellg();
+//               m_lasfile.seekg(wave_offset);
+//               m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+//            }
+//            else
+//            {
+//               m_wdpFile.seekg(wave_offset);
+//               m_wdpFile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+//            }
+
+//            unsigned int noOfSamples = currentDescpriptor->number_of_samples;
+//            if(currentDescpriptor->bits_per_sample==8)
+//            {
+//               unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char
+//                        [noOfSamples*currentDescpriptor->bits_per_sample/8];
+//               if(waveSamplesIntensities==0)
+//               {
+//                   std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+//                  exit(EXIT_FAILURE);
+//               }
+//               memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
+//               long int sumOfInts(0);
+//               if (count%1000==0 && point_info.X > userLimits[3]-0.0001 && point_info.X < userLimits[2]+0.0001
+//                       && point_info.Y > userLimits[1]-0.0001 && point_info.Y < userLimits[0]-0.0001)
+//               {
+//                  for(unsigned int j=0; j< noOfSamples; ++j)
+//                  {
+//                     // save samples to csv
+//                     sumOfInts+=(int(waveSamplesIntensities[j]));
+//                  }
+//              // std::cout << noOfSamples << " : " << sumOfInts <<" " << int(waveSamplesIntensities[30])<< "\n";
+//                   csv060 << sumOfInts <<",";
+//                   countIntsSums++;
+//               }
+//               delete []waveSamplesIntensities;
+
+
+//            }
+//            else if(currentDescpriptor->bits_per_sample==16)
+//            {
+//                unsigned short int *waveSamplesIntensities = new (std::nothrow) unsigned short int
+//                         [noOfSamples];
+//                if(waveSamplesIntensities==0)
+//                {
+//                    std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+//                   exit(EXIT_FAILURE);
+//                }
+//                memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
+//                        currentDescpriptor->bits_per_sample/8);
+//                unsigned long int sumOfInts(0);
+//                unsigned long int sumOfIntsNL(0);
+//                unsigned int sumOfOverNL(0);
+//                if (count%1000==0 && point_info.X > userLimits[3]-0.0001 && point_info.X < userLimits[2]+0.0001
+//                        && point_info.Y > userLimits[1]-0.0001 && point_info.Y < userLimits[0]-0.0001)
+//                {
+//                   for(unsigned int j=0; j< noOfSamples; ++j)
+//                   {
+//                      // save samples to csv
+//                      if (int(waveSamplesIntensities[j])>i_noiseLevel)
+//                      {
+//                         sumOfOverNL++;
+//                         sumOfIntsNL+=waveSamplesIntensities[j];
+//                      }
+////                      if (currentDescpriptor->number_of_samples==60)
+////                      {
+////                        csv060 << int(waveSamplesIntensities[j]) << ",";
+////                      }
+////                      else
+////                      {
+////                          csv120 << int(waveSamplesIntensities[j]) << ",";
+////                      }
+//                      sumOfInts+=(int(waveSamplesIntensities[j]));
+//                   }
+//                   if (currentDescpriptor->number_of_samples==60)
+//                   {
+//                       csv060 << sumOfInts <<"," << sumOfOverNL << "," << sumOfIntsNL <<","
+//                           << (double(sumOfInts)/double(sumOfOverNL)) <<","
+//                           << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
+//                   }
+//                   else
+//                   {
+//                    csv120 << sumOfInts <<"," << sumOfOverNL << "," << sumOfIntsNL <<","
+//                        << (double(sumOfInts)/double(sumOfOverNL)) <<","
+//                        << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
+//                   }
+
+//                   if (currentDescpriptor->number_of_samples==60)
+//                   {
+//                    csv060 << "\n";
+//                   }
+//                   else
+//                   {
+//                       csv120 << "\n";
+//                   }
+
+//                    countIntsSums++;
+//                }
+//                delete []waveSamplesIntensities;
+//            }
+//            if(m_areWFInternal)
+//            {
+//               m_lasfile.seekg(tmp);
+//            }
+//            delete []wave_data;
+//         }
+//      }
+//      else
+//      {
+//         --i;
+//      }
+//   }
+//   csv060.close();
+//   csv120.close();
+
+//   m_lasfile.close();
+//   std::cout << "CSV " << i_intsFilename << " file saved\n";
+//}
+
 //-----------------------------------------------------------------------------
 void Las1_3_handler::saveSumIntensity(
         const std::string i_intsFilename,
-        double i_noiseLevel
+        double i_noiseLevel,
+        const std::vector<double> &userLimits
         )
 {
    m_lasfile.open(m_lasFilename.c_str(),std::ios::binary);
@@ -72,11 +291,8 @@ void Las1_3_handler::saveSumIntensity(
          std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
       }
    }
-   std::ofstream csv060,csv120;
-   std::string strCSV120=i_intsFilename+"120.csv";
-   std::string strCSV060=i_intsFilename+"060.csv";
-   csv060.open(strCSV060.c_str());
-   csv120.open(strCSV120.c_str());
+   std::vector<std::ofstream *> csvs,csvsRaw;
+   std::vector<unsigned int> noSamples;
    std::cout << public_header.number_of_point_records << "\n";
    unsigned int countIntsSums(0);
    for(unsigned int i=0; i<public_header.number_of_point_records; ++i)
@@ -111,15 +327,51 @@ void Las1_3_handler::saveSumIntensity(
                }
             }
          }
-
          if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
          {
              continue;
          }
+//         csv060.open(i_intsFilename+"120.csv");
+         unsigned int cNS=0;
+         for(;cNS<noSamples.size();++cNS)
+         {
+            if (noSamples[cNS]==currentDescpriptor->number_of_samples)
+            {
+               break;
+            }
+         }
+         assert(cNS<=noSamples.size() && noSamples.size() == csvs.size() && csvs.size()==csvsRaw.size());
+         if (cNS==noSamples.size())
+         {
+            noSamples.push_back(currentDescpriptor->number_of_samples);
+            csvs.push_back(new std::ofstream);
+            csvsRaw.push_back(new std::ofstream);
+            std::string tmpFileName(i_intsFilename+std::to_string(noSamples[cNS])+".csv");
+            csvs[cNS]->open(tmpFileName);
+            tmpFileName = i_intsFilename+std::to_string(noSamples[cNS])+"_raw.csv";
+            csvsRaw[cNS]->open(tmpFileName);
+            *csvs[cNS] << "SumofInts,NoOfInts,SumofIntsAboveNL,NofOfIntsAboveNL,SumofInts/NoOfInts,SumofIntsAboveNL/NofOfIntsAboveNL\n";
+            std::cout << "New File " << tmpFileName << " created\n";
+            std::cout << "currentDescpriptor->number_of_samples currentDescpriptor->bits_per_sample: \n - - - ";
+            std::cout << currentDescpriptor->number_of_samples << " " << int(currentDescpriptor->bits_per_sample) <<"\n";
 
+         }
+
+         // 104313 104155 437805 437652 ground
+         // 103176 102965 437551 437332 trees
          if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
              point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
-             wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
+             wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght
+
+
+              &&  (point_info.X*public_header.x_scale_factor+public_header.x_offset > userLimits[3]-0.0001
+                   && point_info.X*public_header.x_scale_factor+public_header.x_offset < userLimits[2]+0.0001
+                  && point_info.Y*public_header.y_scale_factor+public_header.y_offset > userLimits[1]-0.0001
+                   && point_info.Y*public_header.y_scale_factor+public_header.y_offset < userLimits[0]-0.0001)
+//             //  sample
+//          &&  (point_info.X > userLimits[3]-0.0001 && point_info.X < userLimits[2]+0.0001
+//              && point_info.Y > userLimits[1]-0.0001 && point_info.Y < userLimits[0]-0.0001)
+                 )
          {
            char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
             if(wave_data==0)
@@ -151,17 +403,28 @@ void Las1_3_handler::saveSumIntensity(
                    std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
                   exit(EXIT_FAILURE);
                }
-               memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
-               long int sumOfInts(0);
-               if (i%5000==0)
+               memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
+                       currentDescpriptor->bits_per_sample/8);
+               unsigned long int sumOfInts(0);
+               unsigned long int sumOfIntsNL(0);
+               unsigned int sumOfOverNL(0);
+//               if (countIntsSums%50==0)
                {
                   for(unsigned int j=0; j< noOfSamples; ++j)
                   {
                      // save samples to csv
+                     if (int(waveSamplesIntensities[j])>i_noiseLevel)
+                     {
+                        sumOfOverNL++;
+                        sumOfIntsNL+=waveSamplesIntensities[j];
+                     }
+                     *csvsRaw[cNS] <<  int(waveSamplesIntensities[j]) << ",";
                      sumOfInts+=(int(waveSamplesIntensities[j]));
                   }
-              // std::cout << noOfSamples << " : " << sumOfInts <<" " << int(waveSamplesIntensities[30])<< "\n";
-                   csv060 << sumOfInts <<",";
+                  *csvs[cNS] << /* sumOfInts <<"," <<*/ currentDescpriptor->number_of_samples<< ","<< sumOfIntsNL <<","<<sumOfOverNL << ","
+                          << (double(sumOfInts)/double(currentDescpriptor->number_of_samples)) <<","
+                          << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
+                  *csvsRaw[cNS] << "\n";
                    countIntsSums++;
                }
                delete []waveSamplesIntensities;
@@ -182,7 +445,7 @@ void Las1_3_handler::saveSumIntensity(
                 unsigned long int sumOfInts(0);
                 unsigned long int sumOfIntsNL(0);
                 unsigned int sumOfOverNL(0);
-                if (i%5000==0)
+//                if (countIntsSums%50==0)
                 {
                    for(unsigned int j=0; j< noOfSamples; ++j)
                    {
@@ -192,38 +455,14 @@ void Las1_3_handler::saveSumIntensity(
                          sumOfOverNL++;
                          sumOfIntsNL+=waveSamplesIntensities[j];
                       }
-//                      if (currentDescpriptor->number_of_samples==60)
-//                      {
-//                        csv060 << int(waveSamplesIntensities[j]) << ",";
-//                      }
-//                      else
-//                      {
-//                          csv120 << int(waveSamplesIntensities[j]) << ",";
-//                      }
+                      *csvsRaw[cNS] <<  int(waveSamplesIntensities[j]) << ",";
                       sumOfInts+=(int(waveSamplesIntensities[j]));
                    }
-                   if (currentDescpriptor->number_of_samples==60)
-                   {
-                       csv060 << sumOfInts <<"," << sumOfOverNL << "," << sumOfIntsNL <<","
-                           << (double(sumOfInts)/double(sumOfOverNL)) <<","
-                           << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
-                   }
-                   else
-                   {
-                    csv120 << sumOfInts <<"," << sumOfOverNL << "," << sumOfIntsNL <<","
-                        << (double(sumOfInts)/double(sumOfOverNL)) <<","
-                        << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";
-                   }
 
-                   if (currentDescpriptor->number_of_samples==60)
-                   {
-                    csv060 << "\n";
-                   }
-                   else
-                   {
-                       csv120 << "\n";
-                   }
-
+                   *csvs[cNS] << sumOfInts <<"," ;/*<< currentDescpriptor->number_of_samples<< ","<< sumOfIntsNL <<","<<sumOfOverNL << ","
+                           << (double(sumOfInts)/double(currentDescpriptor->number_of_samples)) <<","
+                           << (double(sumOfIntsNL)/double(sumOfOverNL)) << "\n";*/
+                   *csvsRaw[cNS] << "\n";
                     countIntsSums++;
                 }
                 delete []waveSamplesIntensities;
@@ -239,9 +478,17 @@ void Las1_3_handler::saveSumIntensity(
       {
          --i;
       }
+
    }
-   csv060.close();
-   csv120.close();
+
+   assert(csvs.size()==csvsRaw.size());
+   for(unsigned int ci=0; ci<csvs.size();++ci)
+   {
+      csvs[ci]->close();
+      csvsRaw[ci]->close();
+      delete csvs[ci];
+      delete csvsRaw[ci];
+   }
 
    m_lasfile.close();
    std::cout << "CSV " << i_intsFilename << " file saved\n";
@@ -653,8 +900,9 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                   for(unsigned int j=0; j< noOfSamples; ++j)
                   {
                     gmtl::Vec3f point(tempPosition);
+//                    std::cout << point[2] ;
                     point[2]-=dtm.getHeightOf(tempPosition[0],tempPosition[1]);
-//                    std::cout << tempPosition[2] << " " << point[2] << "\n";
+//                    std::cout << " - " << tempPosition[2] << " = " << point[2] << "\n";
                     i_obj->addItensity(point,waveSamplesIntensities[j]);
                     tempPosition+=offset;
                   }
@@ -675,7 +923,12 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                    for(unsigned int j=0; j< noOfSamples; ++j)
                    {
                      gmtl::Vec3f point(tempPosition);
-                     point[2]-=dtm.getHeightOf(tempPosition[0],tempPosition[1]);
+                     double temp (point[2]); double xtemp=dtm.getHeightOf(tempPosition[0],tempPosition[1]);
+                     point[2]-=xtemp;//dtm.getHeightOf(tempPosition[0],tempPosition[1]);
+                     if (xtemp>0.01)
+                     {
+                        std::cout << temp << " - " << xtemp << " = " << point[2] << "\n";
+                     }
                      i_obj->addItensity(point,waveSamplesIntensities[j]);
                      tempPosition+=offset;
                    }
@@ -892,6 +1145,7 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
 
                unsigned int noOfSamples = currentDescpriptor->number_of_samples;
 
+               double aveIntOfWaveform(0);
                gmtl::Vec3f tempPosition = origin;
                if(currentDescpriptor->bits_per_sample==8)
                {
@@ -903,11 +1157,30 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                      exit(EXIT_FAILURE);
                   }
                   memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
+                  assert(noOfSamples!=0);
+
+//                  aveIntOfWaveform=waveSamplesIntensities[0];
+//                  for(unsigned int wi=1; wi<noOfSamples; ++wi)
+//                  {
+//                     aveIntOfWaveform = double(wi)/(double(wi)+1.0)*aveIntOfWaveform
+//                             + 1.0/(double(wi)+1.0)*(waveSamplesIntensities[wi]);
+//                  }
+//                  double constAve(aveIntOfWaveform);
+//                  for(unsigned int j=0; j< noOfSamples; ++j)
+//                  {
+//                    i_obj->addItensity(tempPosition,waveSamplesIntensities[j]
+//                                       /aveIntOfWaveform*double(noOfSamples)*constAve);
+//                    aveIntOfWaveform=-(1.0/double(noOfSamples))*waveSamplesIntensities[j]
+//                           +((double(noOfSamples)-1.0)/double(noOfSamples))*aveIntOfWaveform;
+//                    tempPosition+=offset;
+//                  }
+
                   for(unsigned int j=0; j< noOfSamples; ++j)
                   {
                     i_obj->addItensity(tempPosition,waveSamplesIntensities[j]);
                     tempPosition+=offset;
                   }
+
                   delete []waveSamplesIntensities;
 
                }
@@ -922,11 +1195,30 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                    }
                    memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
                            currentDescpriptor->bits_per_sample/8);
+
+//                   aveIntOfWaveform=waveSamplesIntensities[0];
+//                   for(unsigned int wi=1; wi<noOfSamples; ++wi)
+//                   {
+//                      aveIntOfWaveform = double(wi)/(double(wi)+1.0)*aveIntOfWaveform
+//                              + 1.0/(double(wi)+1.0)*(waveSamplesIntensities[wi]);
+//                   }
+//                   for(unsigned int j=0; j< noOfSamples; ++j)
+//                   {
+//                     i_obj->addItensity(tempPosition,waveSamplesIntensities[j]
+//                                        /aveIntOfWaveform*noOfSamples);
+//                     aveIntOfWaveform=-(1.0/double(noOfSamples))*waveSamplesIntensities[j]
+//                            +((double(noOfSamples)-1.0)/double(noOfSamples))*aveIntOfWaveform;
+//                     tempPosition+=offset;
+//                   }
+
+
                    for(unsigned int j=0; j< noOfSamples; ++j)
                    {
                      i_obj->addItensity(tempPosition,waveSamplesIntensities[j]);
                      tempPosition+=offset;
                    }
+
+
                    delete []waveSamplesIntensities;
                }
                if(m_areWFInternal)
