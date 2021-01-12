@@ -886,7 +886,9 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
 
 
 
-               gmtl::Vec3f tempPosition = origin;
+               gmtl::Vec3f *tempPosition=new gmtl::Vec3f;
+               (*tempPosition)[0]=origin[0]; (*tempPosition)[1]=origin[1]; (*tempPosition)[2]=origin[2];
+
                if(currentDescpriptor->bits_per_sample==8)
                {
                   unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char
@@ -899,12 +901,14 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                   memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
                   for(unsigned int j=0; j< noOfSamples; ++j)
                   {
-                    gmtl::Vec3f point(tempPosition);
-//                    std::cout << point[2] ;
-                    point[2]-=dtm.getHeightOf(tempPosition[0],tempPosition[1]);
-//                    std::cout << " - " << tempPosition[2] << " = " << point[2] << "\n";
-                    i_obj->addItensity(point,waveSamplesIntensities[j]);
-                    tempPosition+=offset;
+                    gmtl::Vec3f *point=new gmtl::Vec3f;
+                    (*point)[0]=(*tempPosition)[0]; (*point)[1]=(*tempPosition)[1]; (*point)[2]=(*tempPosition)[2];
+                    std::cout << point[2] ;
+                    (*point)[2]-=dtm.getHeightOf((*tempPosition)[0],(*tempPosition)[1]);
+                    std::cout << " - " << tempPosition[2] << " = " << point[2] << "\n";
+                    i_obj->addItensity((*point),waveSamplesIntensities[j]);
+                    (*tempPosition)+=offset;
+                    delete point;
                   }
                   delete []waveSamplesIntensities;
 
@@ -922,18 +926,30 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                            currentDescpriptor->bits_per_sample/8);
                    for(unsigned int j=0; j< noOfSamples; ++j)
                    {
-                     gmtl::Vec3f point(tempPosition);
-                     double temp (point[2]); double xtemp=dtm.getHeightOf(tempPosition[0],tempPosition[1]);
-                     point[2]-=xtemp;//dtm.getHeightOf(tempPosition[0],tempPosition[1]);
+                     gmtl::Vec3f *point=new gmtl::Vec3f;
+                     (*point)[0]=(*tempPosition)[0]; (*point)[1]=(*tempPosition)[1]; (*point)[2]=(*tempPosition)[2];
+//                     std::cout << "**************************\n";
+//                     std::cout << (*point)[0] << " " << (*point)[1] << " " << (*point)[2] << "\n";
+
+                     double xtemp=dtm.getHeightOf((*point)[0],(*point)[1]);
                      if (xtemp>0.01)
                      {
-                        std::cout << temp << " - " << xtemp << " = " << point[2] << "\n";
+                        (*point)[2]-=xtemp;//dtm.getHeightOf(tempPosition[0],tempPosition[1]);
+//                        std::cout <<  " - " << xtemp << " = " << (*point)[2] << "\n";
+//                        std::cout <<"* "<< (*point)[2] << " *\n";
                      }
-                     i_obj->addItensity(point,waveSamplesIntensities[j]);
-                     tempPosition+=offset;
+                     else
+                     {
+//                      std::cout << (*point)[2] << " * " << xtemp << " * ";
+                     }
+
+                     i_obj->addItensity((*point),waveSamplesIntensities[j]);
+                     (*tempPosition)+=offset;
+                     delete  point;
                    }
                    delete []waveSamplesIntensities;
                }
+               delete  tempPosition;
                if(m_areWFInternal)
                {
                   m_lasfile.seekg(tmp);

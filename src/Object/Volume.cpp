@@ -107,6 +107,7 @@ unsigned int Volume::getNoOfLevels()const
 //-----------------------------------------------------------------------------
 void Volume::addItensity(const gmtl::Vec3f &i_point, double i_intensity)
 {
+//    std::cout << i_point[2] << "\n";
    if(i_intensity>m_noiseLevel)
    {
 //      std::cout << "Int OK - ";

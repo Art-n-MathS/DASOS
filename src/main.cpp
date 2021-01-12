@@ -935,7 +935,7 @@ int main (int argc, char const* argv[])
    if(lasFiles.size()!=0)
    {
       Las1_3_handler lala(lasFiles[0]);
-      lala.printPublicHeader();
+      //lala.printPublicHeader();
       if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
       {
          //then user haven't defined limits
