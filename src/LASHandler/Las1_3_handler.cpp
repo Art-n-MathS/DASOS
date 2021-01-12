@@ -938,10 +938,10 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
 //                        std::cout <<  " - " << xtemp << " = " << (*point)[2] << "\n";
 //                        std::cout <<"* "<< (*point)[2] << " *\n";
                      }
-                     else
-                     {
+//                     else
+//                     {
 //                      std::cout << (*point)[2] << " * " << xtemp << " * ";
-                     }
+//                     }
 
                      i_obj->addItensity((*point),waveSamplesIntensities[j]);
                      (*tempPosition)+=offset;
