@@ -203,41 +203,44 @@ bool DtmBilReader::isBigEndian()
 //-----------------------------------------------------------------------------
 float DtmBilReader::getHeightOf(const float i_x, const float i_y)const
 {
-//   std::cout << "**************************\n";
-//   std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
-//   std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
-//   std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
-//   std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
 
 
    assert(m_heights.size()==m_nRows*m_nCols);
    // get index
    long long int x = floor((i_x-m_xMin)/m_xLen);
    long long int y = m_nRows - floor((i_y-m_yMin)/m_yLen)-1;
-
-//   std::cout << "Indexes x y: " << x << " " << y << "\n";
    if(!(x<0 || y<0 || x>=m_nRows || y>=m_nCols))
    {
-      if (!(y*m_nCols+x < m_heights.size()))
-      {
-         std::cout << y <<"*" << m_nCols << "+" << x << "!<" << m_heights.size() <<"\n";
-      }
+
       assert(y*m_nCols+x < m_heights.size());
       {
           if ((m_heights[y*m_nCols+x] > -1000000 ||
                m_heights[y*m_nCols+x] < 1000000 ))
           {
-             return m_heights[y*m_nCols+x];
+             return 0.0f;
           }
           else
           {
+//              std::cout << "**************************\n";
 //              std::cout << "A\n";
+//              std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
+//              std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
+//              std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
+//              std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
+//              std::cout << "Indexes x y: " << x << " " << y << "\n";
               return 0.0f;
           }
 
       }
    }
+//   std::cout << "**************************\n";
 //   std::cout << "B\n";
+//   std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
+//   std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
+//   std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
+//   std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
+//   std::cout << "Indexes x y: " << x << " " << y << "\n";
+
    return 0;
 }
 
