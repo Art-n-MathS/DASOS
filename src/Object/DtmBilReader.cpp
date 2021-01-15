@@ -36,26 +36,17 @@ DtmBilReader::DtmBilReader(
    }
    readHeader(i_dtm);
 
-   std::cout << "HEADER READ!!\n";
 
    // fill preloaded heights
    m_heights.resize(m_nRows*m_nCols);
    dtm.read(reinterpret_cast<char*>(&m_heights[0]), m_nCols*m_nRows*sizeof(float));
    dtm.close();
-
-   std::cout << "(+++++++++++) m_heights.size() "<< m_heights.size() << " m_nRows "
-             << m_nRows << " - m_nColumns " << m_nCols << "\n";
-   std::cout << "Limits of DTM min(x,y) max(x,y): " << m_xMin    << " " << m_yMax
-             << " " << m_xMin    << " " << m_yMax    << "\n";
-   std::cout << "(+++++++++++) m_nRows " << m_nRows << " - m_nColumns " << m_nCols
-             << "\n";
 }
 
 
 //-----------------------------------------------------------------------------
 void DtmBilReader::readHeader(const std::string &i_dtm)
 {
-   std::cout << "READING HEADER :::::::::\n\n";
    std::string header(i_dtm);
    header.replace(header.end()-3,header.end(),"hdr");
    std::ifstream hdrFile;
@@ -105,11 +96,9 @@ void DtmBilReader::readHeader(const std::string &i_dtm)
          break;
       case 2:  // NROWS
          m_nRows = atoi(words[++i].c_str());
-         std::cout << "+++++++++++ m_nRows " << m_nRows << "\n";
          break;
       case 3:  // NCOLS
          m_nCols = atoi(words[++i].c_str());
-         std::cout << "+++++++++++ m_nColumns " << m_nCols << "\n";
          break;
       case 4:  // NBANDS
          nBands = atoi(words[++i].c_str());
@@ -133,11 +122,9 @@ void DtmBilReader::readHeader(const std::string &i_dtm)
          break;
       case 7:  // ULXMAP
          xMin = atof(words[++i].c_str());
-         std::cout << xMin << " xMin +++++++++++++++++++++++++++++++++++++++\n";
          break;
       case 8:  // ULYMAP
          m_yMax = atof(words[++i].c_str());
-         std::cout << m_yMax << " xMax +++++++++++++++++++++++++++++++++++++\n";
          break;
       case 9:  // XDIM
          m_xLen = atof(words[++i].c_str());
@@ -176,7 +163,6 @@ void DtmBilReader::readHeader(const std::string &i_dtm)
    }
    in.seekg (0, std::ios::end);
    m_size = in.tellg();
-   std::cout << m_size << " " << m_nBits*m_nCols*m_nRows << "\n";
    if(m_size!=m_nBits*m_nCols*m_nRows)
    {
       std::cout << "ERROR: size of bil file do not aggree with bytes*cols*rows\n";
@@ -210,37 +196,36 @@ float DtmBilReader::getHeightOf(const float i_x, const float i_y)const
    long long int x = floor((i_x-m_xMin)/m_xLen);
    long long int y = m_nRows - floor((i_y-m_yMin)/m_yLen)-1;
    if(!(x<0 || y<0 || x>=m_nRows || y>=m_nCols))
-   {
+     {
 
-      assert(y*m_nCols+x < m_heights.size());
-      {
-          if ((m_heights[y*m_nCols+x] > -1000000 ||
-               m_heights[y*m_nCols+x] < 1000000 ))
-          {
-             return 0.0f;
-          }
-          else
-          {
-//              std::cout << "**************************\n";
-//              std::cout << "A\n";
-//              std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
-//              std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
-//              std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
-//              std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
-//              std::cout << "Indexes x y: " << x << " " << y << "\n";
-              return 0.0f;
-          }
+        assert(y*m_nCols+x < m_heights.size());
+        {
+            if ((m_heights[y*m_nCols+x] > -1000000 &&
+                 m_heights[y*m_nCols+x] < 1000000 ))
+            {
+               return m_heights[y*m_nCols+x];
+            }
+            else
+            {
+  //              std::cout << "**************************\n";
+  //              std::cout << "A\n";
+  //              std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
+  //              std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
+  //              std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
+  //              std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
+  //              std::cout << "Indexes x y: " << x << " " << y << "\n";
+                return 0.0f;
+            }
 
-      }
-   }
-//   std::cout << "**************************\n";
-//   std::cout << "B\n";
-//   std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
-//   std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
-//   std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
-//   std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
-//   std::cout << "Indexes x y: " << x << " " << y << "\n";
-
+        }
+     }
+  //   std::cout << "**************************\n";
+  //   std::cout << "B\n";
+  //   std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
+  //   std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";
+  //   std::cout << "DTM nRows nCols: " << m_nRows << " " << m_nCols <<"\n";
+  //   std::cout << " m_xLen m_yLen " << m_xLen << " " << m_yLen << "\n";
+  //   std::cout << "Indexes x y: " << x << " " << y << "\n";
    return 0;
 }
 
