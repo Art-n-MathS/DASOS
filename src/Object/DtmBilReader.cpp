@@ -26,6 +26,11 @@ DtmBilReader::DtmBilReader(
     m_yMax(0.0f),
     m_xMax(0.0f)
 {
+   if (m_dtm=="")
+   {
+      std::cout<<"DTM file was not loaded\n";
+      return;
+   }
    std::ifstream dtm;
    dtm.open(i_dtm,std::ios::binary);
    if(!dtm.is_open())
@@ -55,6 +60,10 @@ DtmBilReader::DtmBilReader(
 //-----------------------------------------------------------------------------
 void DtmBilReader::readHeader(const std::string &i_dtm)
 {
+    if (m_dtm=="")
+    {
+       return;
+    }
    std::cout << "READING HEADER :::::::::\n\n";
    std::string header(i_dtm);
    header.replace(header.end()-3,header.end(),"hdr");
@@ -203,6 +212,11 @@ bool DtmBilReader::isBigEndian()
 //-----------------------------------------------------------------------------
 float DtmBilReader::getHeightOf(const float i_x, const float i_y)const
 {
+
+    if (m_dtm=="")
+    {
+       return 0.0;
+    }
 //   std::cout << "**************************\n";
 //   std::cout << "geoX, geoY input = "<< i_x << " " << i_y << "\n";
 //   std::cout << "DTM ymax ymin xmax xmin: " << m_yMax << " " << m_yMin << " "<< m_xMax << " " << m_xMin  <<"\n";

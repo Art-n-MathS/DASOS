@@ -107,12 +107,6 @@ private:
    void read_point_record_format_4(Volume *i_obj,
            const std::string i_type,
            const std::string &m_dtm);
-
-   void read_point_record_format_4(
-           Volume *i_obj,
-           const std::string i_type
-           );
-
    //-------------------------------------------------------------------------
    /// @brief method that read Point Record Format 0
    //-------------------------------------------------------------------------
