@@ -756,72 +756,76 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
         const std::string &i_dtm
         )
 {
-   DtmBilReader dtm(i_dtm,i_obj);
-   LAS1_3Types::Data_Point_Record_Format_4 point_info;
-   m_lasfile.seekg((int) public_header.offset_to_point);
+    DtmBilReader dtm(i_dtm,i_obj);
 
-   unsigned int count=0;
-   // temporarly saving discrete values that are associated with a
-   // waveform but the 1st return haven't been saved yet
-   std::vector<gmtl::Vec3f> discretePoints;
-   // the corresponding intensities of the discrete points
-   std::vector<unsigned short> discreteIntensities;
-   // the corresponding wave offsets of the dicrete points
-   std::vector<int> discreteWaveOffsets;
+    LAS1_3Types::Data_Point_Record_Format_4 point_info;
+    m_lasfile.seekg((int) public_header.offset_to_point);
 
-   std::map<std::string, int> types;
-   types["FULL-WAVEFORM"] = 1;
-   types["ALL_DISCRETE"] = 2;
-   types["DISCRETE_N_WAVEFORMS"] = 3;
-   types["DISCRETE"] = 4;
-   types["AGC"] = 5;
+    unsigned int count=0;
+    // temporarly saving discrete values that are associated with a
+    // waveform but the 1st return haven't been saved yet
+    std::vector<gmtl::Vec3f> discretePoints;
+    // the corresponding intensities of the discrete points
+    std::vector<unsigned short> discreteIntensities;
+    // the corresponding wave offsets of the dicrete points
+    std::vector<int> discreteWaveOffsets;
 
-   if(!m_areWFInternal)
-   {
-      m_wdpFile.open(m_wdpFilename.c_str(),std::ios::binary);
-      if(!m_wdpFile)
-      {
-         std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
-      }
-   }
+    std::map<std::string, int> types;
+    types["FULL-WAVEFORM"] = 1;
+    types["ALL_DISCRETE"] = 2;
+    types["DISCRETE_N_WAVEFORMS"] = 3;
+    types["DISCRETE"] = 4;
+    types["AGC"] = 5;
+    types["OCCLUSIONS"] = 6;
 
-   std::string s(i_type);
-   std::transform(s.begin(), s.end(), s.begin(), toupper);
 
-   unsigned int percentage = public_header.number_of_point_records / 10;
-   std::cout << "Progress on reading " << public_header.number_of_point_records << " pulses:\n";
+    if(!m_areWFInternal)
+    {
+       m_wdpFile.open(m_wdpFilename.c_str(),std::ios::binary);
+       if(!m_wdpFile)
+       {
+          std::cerr << "ERROR: Failed to open "<< m_wdpFilename << "\n" ;
+       }
+    }
 
-   for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
-   {
-      if(i%percentage == 0)
-      {
-         std::cout << i/percentage*10 <<  "% ...";
-      }
-      m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
-      int wave_offset = public_header.start_of_wf_data_Packet_record +
-               point_info.byte_offset_to_wf_packet_data;
+    std::string s(i_type);
+    std::transform(s.begin(), s.end(), s.begin(), toupper);
 
-      if((int)point_info.classification!=7)
-      {
-         // TYPES:
-         // 1. Full-waveform
-         // 2. All_Discrete
-         // 3. Discrete_n_Waveforms
-         // 4. Discrete (associated with waveform only
-         // 5. AGC values, which are saved in the point_ID
+    unsigned int percentage = public_header.number_of_point_records / 10;
+    std::cout << "Progress on reading " << public_header.number_of_point_records << " pulses:\n";
 
-         // find the corresponding discription
-         if(wv_info.size()==0)
-         {
-            std::cout << "ERROR: no wf descriptor exist in the vlr\n";
-            return;
-         }
+    for(unsigned int i=0; i< public_header.number_of_point_records; ++i)
+    {
+       if(i%percentage == 0)
+       {
+          std::cout << i/percentage*10 <<  "% ...";
+       }
+       m_lasfile.read((char *) &point_info, (int) public_header.point_data_record_length);
+       int wave_offset = public_header.start_of_wf_data_Packet_record +
+                point_info.byte_offset_to_wf_packet_data;
 
-         switch(types[s])
-         {
-         // Waveform samples only
-         case 1:
-         {
+       if((int)point_info.classification!=7)
+       {
+          // TYPES:
+          // 1. Full-waveform
+          // 2. All_Discrete
+          // 3. Discrete_n_Waveforms
+          // 4. Discrete (associated with waveform only
+          // 5. AGC values, which are saved in the point_ID
+           // 6. Occlusions
+
+          // find the corresponding discription
+          if(wv_info.size()==0)
+          {
+             std::cout << "ERROR: no wf descriptor exist in the vlr\n";
+             return;
+          }
+          switch(types[s])
+          {
+          // Waveform samples only
+          case 1:
+          case 6:
+          {
              LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
              if(wv_info.size()==1)
              {
@@ -837,127 +841,157 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
                    }
                 }
              }
+
              if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
              {
                 break;
              }
 
-            if((unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  &&
-                    point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
-                    wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
-            {
-               count++;
-               char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
-               if(wave_data==0)
-               {
-                   std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
-                             << "Program will terminate\n";
-                   exit(EXIT_FAILURE);
-               }
-               unsigned long long int tmp(0);
-               if(m_areWFInternal)
-               {
-                  tmp = m_lasfile.tellg();
-                  m_lasfile.seekg(wave_offset);
-                  m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-               }
-               else
-               {
-                  m_wdpFile.seekg(wave_offset);
-                  m_wdpFile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
-               }
+             if(/*(unsigned int)(point_info.returnNo_noOfRe_scanDirFla_EdgeFLn&7)==1  && */
+                 point_info.wf_packet_size_in_bytes == currentDescpriptor->bits_per_sample*currentDescpriptor->number_of_samples/8 &&
+                 wave_offset+point_info.wf_packet_size_in_bytes<=m_wvFileLenght)
+             {
 
-               gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
-                                   point_info.Y*public_header.y_scale_factor+public_header.y_offset,
-                                   point_info.Z*public_header.z_scale_factor+public_header.z_offset);
+                count++;
+                char *wave_data = new (std::nothrow) char [point_info.wf_packet_size_in_bytes];
+                if(wave_data==0)
+                {
+                    std::cerr << "Fail assigning memory in file Las1_3_handler.cpp\n"
+                              << "Program will terminate\n";
+                    exit(EXIT_FAILURE);
+                }
+                long long int tmp(0);
+                if(m_areWFInternal)
+                {
+                   tmp  = m_lasfile.tellg();
+                   m_lasfile.seekg(wave_offset);
+                   m_lasfile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+                }
+                else
+                {
+                   m_wdpFile.seekg(wave_offset);
+                   m_wdpFile.read((char *) wave_data,point_info.wf_packet_size_in_bytes);
+                }
 
-               float temporalSampleSpacing = ((int)currentDescpriptor->temporal_sample_spacing)/1000.0f;
-               gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
-               offset *= (1000.0f * temporalSampleSpacing);
+                gmtl::Vec3f origin (point_info.X*public_header.x_scale_factor+public_header.x_offset,
+                                    point_info.Y*public_header.y_scale_factor+public_header.y_offset,
+                                    point_info.Z*public_header.z_scale_factor+public_header.z_offset);
 
-               origin[0] = origin[0] + (double )point_info.X_t*
-                       (double )point_info.return_point_wf_location;
-               origin[1] = origin[1] + (double )point_info.Y_t*
-                       (double )point_info.return_point_wf_location;
-               origin[2] = origin[2] + (double )point_info.Z_t*
-                       (double )point_info.return_point_wf_location;
+                float temporalSampleSpacing = ((int)currentDescpriptor->temporal_sample_spacing)/1000.0f;
+                gmtl::Vec3f offset= gmtl::Vec3f(point_info.X_t, point_info.Y_t, point_info.Z_t);
+                offset *= (1000.0f * temporalSampleSpacing);
 
-               unsigned int noOfSamples = currentDescpriptor->number_of_samples;
+                origin[0] = origin[0] + (double )point_info.X_t*
+                        (double )point_info.return_point_wf_location;
+                origin[1] = origin[1] + (double )point_info.Y_t*
+                        (double )point_info.return_point_wf_location;
+                origin[2] = origin[2] + (double )point_info.Z_t*
+                        (double )point_info.return_point_wf_location;
 
+                unsigned int noOfSamples = currentDescpriptor->number_of_samples;
 
+                gmtl::Vec3f *tempPosition=new gmtl::Vec3f;
+                (*tempPosition)[0]=origin[0]; (*tempPosition)[1]=origin[1]; (*tempPosition)[2]=origin[2];
 
-               gmtl::Vec3f *tempPosition=new gmtl::Vec3f;
-               (*tempPosition)[0]=origin[0]; (*tempPosition)[1]=origin[1]; (*tempPosition)[2]=origin[2];
-
-               if(currentDescpriptor->bits_per_sample==8)
-               {
-                  unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char
-                           [noOfSamples*currentDescpriptor->bits_per_sample/8];
-                  if(waveSamplesIntensities==0)
-                  {
-                      std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
-                     exit(EXIT_FAILURE);
-                  }
-                  memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
-                  for(unsigned int j=0; j< noOfSamples; ++j)
-                  {
-                    gmtl::Vec3f *point=new gmtl::Vec3f;
-                    (*point)[0]=(*tempPosition)[0]; (*point)[1]=(*tempPosition)[1]; (*point)[2]=(*tempPosition)[2];
-                    std::cout << point[2] ;
-                    (*point)[2]-=dtm.getHeightOf((*tempPosition)[0],(*tempPosition)[1]);
-                    std::cout << " - " << tempPosition[2] << " = " << point[2] << "\n";
-                    i_obj->addItensity((*point),waveSamplesIntensities[j]);
-                    (*tempPosition)+=offset;
-                    delete point;
-                  }
-                  delete []waveSamplesIntensities;
-
-               }
-               else if(currentDescpriptor->bits_per_sample==16)
-               {
-                   unsigned short int *waveSamplesIntensities = new (std::nothrow) unsigned short int
-                            [noOfSamples];
+                if(currentDescpriptor->bits_per_sample==8)
+                {
+                   unsigned char *waveSamplesIntensities = new (std::nothrow) unsigned char
+                            [noOfSamples*currentDescpriptor->bits_per_sample/8];
                    if(waveSamplesIntensities==0)
                    {
                        std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
                       exit(EXIT_FAILURE);
                    }
-                   memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
-                           currentDescpriptor->bits_per_sample/8);
+                   memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples);
+
+                   if (types[s]==6)
+                   {
+                      std::cout << "calculating Occlusions\n";
+                      double averageWS(0.0),sumWS(0.0),currentWS(0.0);
+                      for (unsigned int xx=0;xx<currentDescpriptor->number_of_samples;++xx) {
+                          sumWS+=waveSamplesIntensities[xx];
+                      }
+                      averageWS=sumWS/currentDescpriptor->number_of_samples;
+                      currentWS+=waveSamplesIntensities[0];
+                      for (unsigned int xx=1;xx<currentDescpriptor->number_of_samples;++xx) {
+                          waveSamplesIntensities[xx]=waveSamplesIntensities[xx]*
+                                  (currentDescpriptor->number_of_samples-xx)*averageWS/(sumWS-currentWS);
+                          currentWS+=waveSamplesIntensities[xx];
+                      }
+                   }
+
                    for(unsigned int j=0; j< noOfSamples; ++j)
                    {
-                     gmtl::Vec3f *point=new gmtl::Vec3f;
-                     (*point)[0]=(*tempPosition)[0]; (*point)[1]=(*tempPosition)[1]; (*point)[2]=(*tempPosition)[2];
-//                     std::cout << "**************************\n";
-//                     std::cout << (*point)[0] << " " << (*point)[1] << " " << (*point)[2] << "\n";
-
-                     double xtemp=dtm.getHeightOf((*point)[0],(*point)[1]);
-                     if (xtemp>0.01)
-                     {
-                        (*point)[2]-=xtemp;//dtm.getHeightOf(tempPosition[0],tempPosition[1]);
-//                        std::cout <<  " - " << xtemp << " = " << (*point)[2] << "\n";
-//                        std::cout <<"* "<< (*point)[2] << " *\n";
-                     }
-//                     else
-//                     {
-//                      std::cout << (*point)[2] << " * " << xtemp << " * ";
-//                     }
-
-                     i_obj->addItensity((*point),waveSamplesIntensities[j]);
-                     (*tempPosition)+=offset;
-                     delete  point;
+                       gmtl::Vec3f *point=new gmtl::Vec3f;
+                       (*point)[0]=(*tempPosition)[0];
+                       (*point)[1]=(*tempPosition)[1];
+                       (*point)[2]=(*tempPosition)[2];
+                       double xtemp=dtm.getHeightOf((*point)[0],(*point)[1]);
+                       if (xtemp>0.01)
+                       {
+                          (*point)[2]-=xtemp;
+                       }
+                       i_obj->addItensity((*point),waveSamplesIntensities[j]);
+                       (*tempPosition)+=offset;
+                       delete  point;
                    }
                    delete []waveSamplesIntensities;
-               }
-               delete  tempPosition;
-               if(m_areWFInternal)
-               {
+
+                }
+                else if(currentDescpriptor->bits_per_sample==16)
+                {
+                    unsigned short int *waveSamplesIntensities = new (std::nothrow) unsigned short int
+                             [noOfSamples];
+                    if(waveSamplesIntensities==0)
+                    {
+                        std::cerr << "Error: Memory could not be allocated in file Pulse.cpp\n";
+                       exit(EXIT_FAILURE);
+                    }
+                    memcpy(waveSamplesIntensities,wave_data,currentDescpriptor->number_of_samples*
+                            currentDescpriptor->bits_per_sample/8);
+
+                    if (types[s]==6)
+                    {
+                       double averageWS(0.0),sumWS(0.0),currentWS(0.0);
+                       for (unsigned int xx=0;xx<currentDescpriptor->number_of_samples;++xx) {
+                           sumWS+=waveSamplesIntensities[xx];
+                       }
+                       averageWS=sumWS/currentDescpriptor->number_of_samples;
+                       currentWS+=waveSamplesIntensities[0];
+                       for (unsigned int xx=1;xx<currentDescpriptor->number_of_samples;++xx) {
+                           waveSamplesIntensities[xx]=waveSamplesIntensities[xx]*
+                                   (currentDescpriptor->number_of_samples-xx)*averageWS/(sumWS-currentWS);
+                           currentWS+=waveSamplesIntensities[xx];
+                       }
+                    }
+
+                    for(unsigned int j=0; j< noOfSamples; ++j)
+                    {
+                        gmtl::Vec3f *point=new gmtl::Vec3f;
+                        (*point)[0]=(*tempPosition)[0];
+                        (*point)[1]=(*tempPosition)[1];
+                        (*point)[2]=(*tempPosition)[2];
+                        double xtemp=dtm.getHeightOf((*point)[0],(*point)[1]);
+                        if (xtemp>0.01)
+                        {
+                           (*point)[2]-=xtemp;
+                        }
+                        i_obj->addItensity((*point),waveSamplesIntensities[j]);
+                        (*tempPosition)+=offset;
+                        delete  point;
+                    }
+                    delete []waveSamplesIntensities;
+                }
+                delete  tempPosition;
+
+                if(m_areWFInternal)
+                {
                   m_lasfile.seekg(tmp);
-               }
-               delete []wave_data;
-            }
-            break;
-         }
+                }
+                delete []wave_data;
+             }
+             break;
+          }
          // All Discrete Points
          case 2:
             if((int)point_info.classification!=7)

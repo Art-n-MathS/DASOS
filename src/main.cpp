@@ -114,6 +114,8 @@ int main (int argc, char const* argv[])
    // 1. All_Discrete
    // 2. Discrete_n_Waveform
    // 3. Discrete (associated with waveform only
+   // 4. Occlusions LAS1.3 Packet format 4 waveform only
+
    std::string fileType("Full-waveform");
 //   fileType = "All_Discrete";
 

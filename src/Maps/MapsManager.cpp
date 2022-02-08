@@ -94,7 +94,7 @@ void MapsManager::createMap(
       m_map = new DensityMap(m_infoOfMap->name,m_infoOfMap->obj);
       break;
    case 3:
-      std::cout << "Thickness mapn\n";
+      std::cout << "Thickness map\n";
       m_map = new ThicknessMap(m_infoOfMap->name,m_infoOfMap->obj);
       break;
    case 4:
