@@ -8,6 +8,7 @@
 #include <fstream>
 #include <math.h>
 #include <iomanip>
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 DtmBilReader::DtmBilReader(

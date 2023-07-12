@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <functional>
 #include <numeric>
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 Int_PlotsManager::Int_PlotsManager(
@@ -603,7 +604,7 @@ void Int_PlotsManager::printProcessedValues(
 void Int_PlotsManager::exportPriors(
         Volume *i_obj,
         const std::vector<Int_Plot *> &i_plots,
-        const std::__cxx11::string &i_VolFileName
+        const std::string &i_VolFileName
         )
 {
    if((!(tx%2 | ty%2)) && ttype==0 /*square*/)

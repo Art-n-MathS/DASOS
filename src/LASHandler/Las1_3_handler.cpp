@@ -11,6 +11,7 @@
 #include <gmtl/gmtl.h>
 #include <map>
 #include "DtmBilReader.h"
+#include <assert.h>
 
 //-----------------------------------------------------------------------------
 Las1_3_handler::Las1_3_handler(
