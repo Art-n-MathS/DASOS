@@ -15,6 +15,8 @@
 #include <functional>
 #include <numeric>
 #include <assert.h>
+#include <AverageHeightDifference.h>
+#include <Map.h>
 
 //-----------------------------------------------------------------------------
 Int_PlotsManager::Int_PlotsManager(
@@ -407,7 +409,8 @@ void Int_PlotsManager::printLabelsIn(std::ofstream &i_file)
               "Top_Patch_Len_Median,Top_Patch_Len_Std,Mirror_Diff_X_Mean,"
               "Mirror_Diff_X_Median,Mirror_Diff_X_Std,Mirror_Diff_Y_Mean,"
               "Mirror_Diff_Y_Median,Mirror_Diff_Y_Std,Mirror_Diff_Z_Mean,"
-              "Mirror_Diff_Z_Median,Mirror_Diff_Z_Std";
+              "Mirror_Diff_Z_Median,Mirror_Diff_Z_Std,"
+              "AverageHeightDifference_Mean,AverageHeightDifference_std";
 }
 
 //-----------------------------------------------------------------------------
@@ -588,6 +591,9 @@ void Int_PlotsManager::printProcessedValues(
    i_file << "," << MeanMeadianStdMirrorDiffZ[0]; // 26. Mirror_Diff_Z_Mean
    i_file << "," << MeanMeadianStdMirrorDiffZ[1]; // 27. Mirror_Diff_Z_Median
    i_file << "," << MeanMeadianStdMirrorDiffZ[2]; // 28. Mirror_Diff_Z_Std
+
+   i_file << "," <<""; // 29. AverageHeightDifference_Mean
+   i_file << "," <<""; // 30. AverageHeightDifference_std
 
    // Mirror Difference in the y-axis : using intensities as booleans
 
