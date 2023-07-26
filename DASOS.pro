@@ -6,7 +6,6 @@ CONFIG += console
 CONFIG -= app_bundle
 
 SOURCES += \
-    src/LASHandler/tmp.cpp \
     src/main.cpp \
     src/bilLib/bil.cpp \
     src/bilLib/binaryreader.cpp \

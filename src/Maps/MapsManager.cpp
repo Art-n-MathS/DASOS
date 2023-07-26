@@ -22,7 +22,7 @@
 #include <algorithm>
 
 //-----------------------------------------------------------------------------
-MapsManager::MapsManager():m_map(0),
+MapsManager::MapsManager():m_map(nullptr),m_saveMaps(false),
     m_FWMetrics({"NON-EMPTY_VOXELS",
                  "DENSITY",
                  "THICKNESS",
@@ -32,8 +32,7 @@ MapsManager::MapsManager():m_map(0),
                  "FIRST_PATCH",
                  "AVERAGE_HEIGHT_DIFFERENCE",
                  "INTENSITY_AVG",
-                 "INTENSITY_MAX",
-                 "HEIGHT_LEVELS"
+                 "INTENSITY_MAX"
                 })
 {
    // The types should aggree with the fw metrics list
@@ -57,10 +56,106 @@ MapsManager::MapsManager():m_map(0),
       {"INTENSITY_AVG",16},
       {"INTENSITY_MAX",17},
       {"FIELDPLOT",18},
-      {"FIELDPLOT",18},
       {"HEIGHT_LEVELS",19}
 
    };
+}
+
+//-----------------------------------------------------------------------------
+const std::vector<double> &MapsManager::getValues(
+        const std::vector<std::pair<unsigned int, unsigned int> > &i_coo)
+{
+    std::cout << "i_coo " << i_coo.size() << "\n";
+    std::cout << "m_maps.size() " << m_maps.size() << "\n";
+    std::cout << i_coo[0].first << " " << i_coo[0].second << " first element \n";
+    std::cout << "hello world! 1\n\n";
+    m_values.clear();
+    if (m_maps.size()==0)
+    {
+        std::cout<< "ERROR: No 2D maps have been generated to export as features!";
+        return  m_values;
+    }
+    for (unsigned int i=0; i<m_maps.size(); i++)
+    {
+        std::cout << m_maps[i] << "      +\n";
+
+    }
+    std::cout << "hello world! 2\n\n";
+    if (i_coo.size()==0)
+    {
+        std::cout<< "ERROR: No indexes stored for the corresponding window to "
+                    "export feature vector\n";
+        return m_values;
+    }
+
+    std::cout << "hello world! 3\n\n";
+    for(unsigned int i=0; i<m_maps.size(); ++i)
+    {
+        double sum(0.0), diff(0.0), ave(0.0);
+        if(m_maps[i]!=nullptr)
+        {
+            std::cout << "Map is valid!";
+            for(unsigned j=0; j<i_coo.size(); ++j)
+            {
+                sum+=double(m_maps[i]->getValue(i_coo[j].first, i_coo[j].second));
+            }
+            ave = sum/i_coo.size();
+            for(unsigned j=0; j<i_coo.size(); ++j)
+            {
+                diff+=(ave-m_maps[i]->getValue(i_coo[j].first, i_coo[j].second));
+            }
+            diff = diff/i_coo.size();
+        }
+        else {
+            //std::cout << "giving neg values as map " << i << " is 0";
+            ave  = -1000.0;
+            diff = -1000.0;
+        }
+        std::cout << "ave and diff = " << ave << " " << diff << "\n";
+        //values.push_back(sum/i_coo.size());
+        m_values.push_back(ave);
+        m_values.push_back(diff);
+    }
+
+    std::cout << "hello world! 4\n\n";
+    return m_values;
+}
+
+//-----------------------------------------------------------------------------
+void MapsManager::createALLFWMAPs(Volume *i_vol)
+{
+    m_saveMaps=true;
+    std::vector<mapInfo *>mInfo;
+    for (unsigned int i=0; i<m_FWMetrics.size(); ++i)
+    {
+        std::cout << "GENERATING ALMOST METRIC " << m_FWMetrics[i] << "\n";
+         mInfo.push_back(new mapInfo);
+         mInfo[mInfo.size()-1]->type = m_FWMetrics[i];
+         mInfo[mInfo.size()-1]->name = m_FWMetrics[i];
+         mInfo[mInfo.size()-1]->band = 140;
+         mInfo[mInfo.size()-1]->thres = 0;
+         mInfo[mInfo.size()-1]->samp = 0;
+         mInfo[i]->obj = i_vol;
+    }
+    for(unsigned int i=0; i<m_maps.size(); ++i)
+    {
+        delete m_maps[i];
+    }
+    m_maps.clear();
+    for(unsigned int i=0; i<mInfo.size(); ++i)
+    {
+        createMap(mInfo[i]);
+
+        m_maps.push_back(m_map);
+        //else {
+            // map returned is empty
+        //}
+    }
+    m_map=nullptr;
+    for (unsigned int i=0; i<mInfo.size(); ++i)
+    {
+        delete mInfo[i];
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -74,11 +169,12 @@ void MapsManager::createMap(
         mapInfo *m_infoOfMap
         )
 {
-   if (m_map!=0)
+   if (m_map!=nullptr and !m_saveMaps)
    {
       delete m_map;
-      m_map=0;
+      m_map=nullptr;
    }
+
    // convert i_type to upper case letters
    std::string s(m_infoOfMap->type);
    std::transform(s.begin(), s.end(), s.begin(), toupper);
@@ -179,28 +275,45 @@ void MapsManager::createMap(
 //       break;
    case 19:
        std::cout << "Height Levels\n";
-       m_map = new HeightLevels(m_infoOfMap->name,m_infoOfMap->obj);
+       if (m_saveMaps)
+       {
+          m_map = new HeightLevels(m_infoOfMap->name,m_infoOfMap->obj);
+       }
        break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";
       break;
    }
    // create and save the map
-   if(m_map!=0)
+   if(m_map!=nullptr)
    {
-      m_map->createAndSave(m_infoOfMap->thres,m_infoOfMap->samp);
-      delete m_map;
-      m_map=0;
+      m_map->createMapOnly(m_infoOfMap->thres,m_infoOfMap->samp);
+      if (m_saveMaps)
+      {
+          m_map->saveAsc();
+          std::cout <<"SAVING MAP\n";
+      }
+      else {
+          // for extracting feature vectors
+      }
    }
+
 }
 
 
 //-----------------------------------------------------------------------------
 MapsManager::~MapsManager()
 {
-   if(m_map!=0)
+   if(m_map!=nullptr)
    {
       delete m_map;
+   }
+   for(unsigned int i=0; i<m_maps.size(); ++i)
+   {
+       if(m_maps[i]!=nullptr)
+       {
+          delete m_maps[i];
+       }
    }
 }
 

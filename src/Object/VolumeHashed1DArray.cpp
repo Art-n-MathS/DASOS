@@ -312,6 +312,7 @@ void VolumeHashed1DArray::readObjectFromFile(
     m_noiseLevel = atof(words[19].c_str());
     m_lengthOfVoxel = atof(words[21].c_str());
 
+
     unsigned int noOfIntensities  = m_noOfVoxelsX*m_noOfVoxelsY*m_noOfVoxelsZ;
     bool isFileCompressed = (words[25] == "true");
     unsigned int inum = (unsigned int) atoi(words[23].c_str());

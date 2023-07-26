@@ -15,7 +15,8 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <Volume.h>
+#include "Volume.h"
+#include "MapsManager.h"
 
 //-----------------------------------------------------------------------------
 /// @file Int_PlotsManager.h
@@ -69,6 +70,10 @@ public:
    /// @brief method that sets   volsDir
    //--------------------------------------------------------------------------
    void set_volsDir(const char *i_c){volsDir=i_c;}
+   //--------------------------------------------------------------------------
+   /// @brief method that sets a las file if volsDir not defined
+   //--------------------------------------------------------------------------
+   void set_las(Volume *i_vol){m_vol=i_vol;}
    //--------------------------------------------------------------------------
    /// @brief method that sets    fcolumn
    //--------------------------------------------------------------------------
@@ -191,6 +196,14 @@ private:
            double i_vl,
            double i_height
            , double i_isolevel);
+   //--------------------------------------------------------------------------
+   /// @brief method that takes as input a volume and exports the priors
+   //--------------------------------------------------------------------------
+   void givenVolExportPriors(
+           Volume *Vol,
+           double isolevel,
+           const std::string &current
+           );
    //--------------------------------------------------------------------------
    /// @brief method that returns whether a column is inside the cylinder or
    /// not
@@ -326,14 +339,25 @@ private:
    //--------------------------------------------------------------------------
    std::vector<Int_Plot *> m_plots;
    //--------------------------------------------------------------------------
+   /// @brief temporary storing the location of pixels of a plot and use them
+   /// to extract the mean and standard deviation of the 2D metrics
+   //--------------------------------------------------------------------------
+   std::vector< std::pair<unsigned int, unsigned int> >m_tmpPixelsOfWindow;
+   //--------------------------------------------------------------------------
    /// @brief current plot
    /// used to speed up calculations since usually trees of the same plot are
    /// saved after each other
    //--------------------------------------------------------------------------
    unsigned int short m_currentPlot;
    //--------------------------------------------------------------------------
-   /// @brief the csv labels of our interest
+   /// @brief manages all maps for exporting metrics related to all 2D maps
    //--------------------------------------------------------------------------
+   MapsManager m_mapsManager;
+   //--------------------------------------------------------------------------
+   /// @brief if volsDir not defined then a las file can be imported instead
+   //--------------------------------------------------------------------------
+   Volume *m_vol;
+
 
 };
 

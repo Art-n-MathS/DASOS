@@ -18,7 +18,7 @@ Las1_3_handler::Las1_3_handler(
         const std::string i_filename
         ):
     m_lasFilename(i_filename),
-    i_hist(0),
+    i_hist(nullptr),
     m_areWFInternal(true)
 {
    std::cout << "\n" << i_filename << "\n";
@@ -313,7 +313,7 @@ void Las1_3_handler::saveSumIntensity(
             return;
          }
 
-         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = nullptr;
          if(wv_info.size()==1)
          {
             currentDescpriptor = wv_info[0];
@@ -328,7 +328,7 @@ void Las1_3_handler::saveSumIntensity(
                }
             }
          }
-         if(currentDescpriptor==NULL || point_info.wave_packet_descriptor_index==0)
+         if(currentDescpriptor==nullptr || point_info.wave_packet_descriptor_index==0)
          {
              continue;
          }
@@ -541,7 +541,7 @@ void Las1_3_handler::saveSamples(
             return;
          }
 
-         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+         LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = nullptr;
          if(wv_info.size()==1)
          {
             currentDescpriptor = wv_info[0];
@@ -827,7 +827,7 @@ void Las1_3_handler::read_point_record_format_4(Volume *i_obj,
           case 1:
           case 6:
           {
-             LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = NULL;
+             LAS1_3Types::WF_packet_Descriptor *currentDescpriptor = nullptr;
              if(wv_info.size()==1)
              {
                 currentDescpriptor = wv_info[0];
@@ -1199,7 +1199,7 @@ void Las1_3_handler::readFileAndGetObject(
    read_public_header();
    read_variable_length_records();
 
-   if(i_obj==0)
+   if(i_obj==nullptr)
    {
       std::cerr << "Error: Memory could not be allocated\n";
       exit(EXIT_FAILURE);
@@ -1293,7 +1293,7 @@ void Las1_3_handler::read_variable_length_records()
 {
    for(unsigned int i=0; i<wv_info.size();++i)
    {
-      if(wv_info[i]!=NULL)
+      if(wv_info[i]!=nullptr)
       {
          delete wv_info[i];
       }
@@ -1311,7 +1311,7 @@ void Las1_3_handler::read_variable_length_records()
       if(headdata_rec.record_ID == 1001)
       {
          i_hist = new (std::nothrow) int[headdata_rec.record_length_after_header/4];
-         if(i_hist==0)
+         if(i_hist==nullptr)
          {
              std::cout << "Memory assignment failed in Las1_3_handler\n"
                        << "Program will terminate\n";
@@ -1415,13 +1415,13 @@ void Las1_3_handler::printPublicHeader()const
 //-----------------------------------------------------------------------------
 Las1_3_handler::~Las1_3_handler()
 {
-    if (i_hist!=0)
+    if (i_hist!=nullptr)
     {
         delete []i_hist;
     }
     for(unsigned int i=0; i<wv_info.size();++i)
     {
-       if(wv_info[i]!=NULL)
+       if(wv_info[i]!=nullptr)
        {
           delete wv_info[i];
        }

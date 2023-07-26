@@ -199,7 +199,7 @@ PW_descriptor::~PW_descriptor()
 {
    for(unsigned int i=0; i< m_samplingRecords.size();++i)
    {
-      if(m_samplingRecords[i]!=NULL)
+      if(m_samplingRecords[i]!=nullptr)
       {
          delete m_samplingRecords[i];
       }

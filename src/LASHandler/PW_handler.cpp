@@ -55,7 +55,7 @@ void PW_handler::saveSamples(
     for(unsigned int i=0; i<i_noOfSamples && i<public_header.number_of_pulses; ++i)
     {
        plsfile.read((char *) &pulse_info, (int)public_header.pulse_size);
-       PW_descriptor *currentDis = NULL;
+       PW_descriptor *currentDis = nullptr;
        unsigned short int id = pulse_info.pulse_discriptor_index;
        unsigned int dIndex=0;
        for(; dIndex< m_pwDecriptors.size();++dIndex)
@@ -230,7 +230,7 @@ void PW_handler::readFileAndGetObject(Volume *i_obj,
                       ( target[1]-anchor[1])/1000.0,
                       ( target[2]-anchor[2])/1000.0);
 
-      PW_descriptor *currentDis = NULL;
+      PW_descriptor *currentDis = nullptr;
       unsigned short int id = pulse_info.pulse_discriptor_index;
       unsigned int dIndex=0;
       for(; dIndex< m_pwDecriptors.size();++dIndex)

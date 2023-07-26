@@ -19,7 +19,7 @@ Volume *VolumeFactory::produceVolume(
         )
 {
 
-   Volume *myVolume = NULL;
+   Volume *myVolume = nullptr;
 
    std::string type = i_type;
    std::transform(type.begin(), type.end(), type.begin(), toupper);
@@ -47,7 +47,7 @@ MarchingCubes *VolumeFactory::getMarchingCubes(
         unsigned int i_x
         )
 {
-   MarchingCubes *myMC = NULL;
+   MarchingCubes *myMC = nullptr;
    std::string type = i_type;
    std::transform(type.begin(), type.end(), type.begin(), toupper);
 
@@ -65,7 +65,7 @@ MarchingCubes *VolumeFactory::getMarchingCubes(
       default:
          std::cout << "ERROR: *Undifined type of Object " << type << " 2\nProgram will terminate\n";
          std::exit(EXIT_FAILURE);
-         break;
+
       }
    }
    else
@@ -82,7 +82,7 @@ Volume * VolumeFactory::produceVolume(
         const std::string &i_type
         )
 {
-    Volume *myVolume = NULL;
+    Volume *myVolume = nullptr;
 
     std::string type = i_type;
     std::transform(type.begin(), type.end(), type.begin(), toupper);

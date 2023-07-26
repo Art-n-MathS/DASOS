@@ -15,8 +15,7 @@
 #include <functional>
 #include <numeric>
 #include <assert.h>
-#include <AverageHeightDifference.h>
-#include <Map.h>
+
 
 //-----------------------------------------------------------------------------
 Int_PlotsManager::Int_PlotsManager(
@@ -37,6 +36,8 @@ Int_PlotsManager::Int_PlotsManager(
     , fpRadius("RADIUS")
     , eparameters(0)
     , m_currentPlot(0)
+    , m_mapsManager()
+    , m_vol(nullptr)
 {
   readFieldplots();
 }
@@ -48,8 +49,8 @@ bool Int_PlotsManager::checkValidity() const
        std::cout << "ERROR: csvExportingTemplates was not defined\n";
    if (csvImportingFieldplots=="")
        std::cout << "ERROR: csvImportingFieldplots was not defined\n";
-   if (volsDir=="")
-       std::cout << "ERROR: volsDir was not defined\n";
+   if (volsDir=="" && m_vol==nullptr)
+       std::cout << "ERROR: volsDir or a las file should be defined\n";
    if (fcolumn=="")
        std::cout << "ERROR: fcolumn was not defined\n";
    if (fclass=="")
@@ -73,7 +74,7 @@ bool Int_PlotsManager::checkValidity() const
 
    return ( (csvExportingTemplates!="") &&
             (csvImportingFieldplots!="") &&
-            (volsDir!="") &&
+            (volsDir!="" || m_vol!=nullptr) &&
             (fcolumn!="") &&
             (fclass!="") &&
             (ttype<2) &&
@@ -104,6 +105,7 @@ Int_PlotsManager::Int_PlotsManager()
     , fpRadius("RADIUS")
     , eparameters(0)
     , m_currentPlot(0)
+    , m_vol(nullptr)
 {
 
 }
@@ -124,7 +126,7 @@ const Int_Plot * Int_PlotsManager::getPlotOfAOI(
    }
    std::cerr << "WARNING:: No plot found in the Area of Interest."
              << "Returning empty pointer\n";
-   return NULL;
+   return nullptr;
 }
 
 //-----------------------------------------------------------------------------
@@ -193,9 +195,9 @@ void Int_PlotsManager::addTree(
    }
    Int_Plot::CSVtreeInfo *nextTree = new Int_Plot::CSVtreeInfo;
    // information for identifying fl
-   double eastingX = 0.0f;
-   double radius = 0.0f;
-   double northingY = 0.0f;
+   double eastingX = 0.0;
+   double radius = 0.0;
+   double northingY = 0.0;
 
    // read info for the tree
    for(unsigned int i=0; i<i_labels.size(); ++i)
@@ -409,8 +411,16 @@ void Int_PlotsManager::printLabelsIn(std::ofstream &i_file)
               "Top_Patch_Len_Median,Top_Patch_Len_Std,Mirror_Diff_X_Mean,"
               "Mirror_Diff_X_Median,Mirror_Diff_X_Std,Mirror_Diff_Y_Mean,"
               "Mirror_Diff_Y_Median,Mirror_Diff_Y_Std,Mirror_Diff_Z_Mean,"
-              "Mirror_Diff_Z_Median,Mirror_Diff_Z_Std,"
-              "AverageHeightDifference_Mean,AverageHeightDifference_std";
+              "Mirror_Diff_Z_Median,Mirror_Diff_Z_Std";
+
+    if(ttype!=0)
+    {
+        const std::vector<std::string > &namesOfFWMetrics = m_mapsManager.getNamesOfFWMetrics();
+        for (unsigned int i=0; i<namesOfFWMetrics.size(); ++i)
+        {
+            i_file<<","<<namesOfFWMetrics[i] << "_Mean,"<<namesOfFWMetrics[i]<<"_Std";
+        }
+    }
 }
 
 //-----------------------------------------------------------------------------
@@ -451,7 +461,6 @@ void Int_PlotsManager::printProcessedValues(
    centralVoxel[0] = floor(double(maxX)/2.0);
    centralVoxel[1] = floor(double(maxY)/2.0);
    centralVoxel[2] = floor(double(maxZ)/2.0);
-
    // interpretation
    for(int dX=0; dX<maxX; ++dX)
    {
@@ -567,6 +576,7 @@ void Int_PlotsManager::printProcessedValues(
    i_file << "," << MeanMedianStdDis[1];          // 14. Dis_Median
    i_file << "," << MeanMedianStdDis[2];          // 15. Dis_Std
 
+
    if(int(centralVoxel[0])+int(centralVoxel[1])*maxX+
            int(centralVoxel[2])*maxX*maxY>=firstPathLens.size())
    {
@@ -592,8 +602,14 @@ void Int_PlotsManager::printProcessedValues(
    i_file << "," << MeanMeadianStdMirrorDiffZ[1]; // 27. Mirror_Diff_Z_Median
    i_file << "," << MeanMeadianStdMirrorDiffZ[2]; // 28. Mirror_Diff_Z_Std
 
-   i_file << "," <<""; // 29. AverageHeightDifference_Mean
-   i_file << "," <<""; // 30. AverageHeightDifference_std
+   std::cout << "************************** 1" << "\n\n";
+   const gmtl::Vec3f limits = m_vol->getMaxLimits();
+   std::cout << limits[0] << " " << limits[1] << "\n";
+   const std::vector<double > &values = m_mapsManager.getValues(m_tmpPixelsOfWindow);
+   for(unsigned int i=0; i<values.size(); ++i)
+   {
+       i_file << "," << values[i];
+   }
 
    // Mirror Difference in the y-axis : using intensities as booleans
 
@@ -613,6 +629,7 @@ void Int_PlotsManager::exportPriors(
         const std::string &i_VolFileName
         )
 {
+
    if((!(tx%2 | ty%2)) && ttype==0 /*square*/)
    {
       std::cout<<"Warning: Centre of template not in the centre. "
@@ -724,6 +741,9 @@ void Int_PlotsManager::exportPriors(
                          if(eparameters>0)
                          {
                             currentPrior[dX+dY*maxX+dZ*maxX*maxY]=i_obj->getIntensity(x+dX,y+dY,z+dZ);
+                            // pair (x+dY , y+dY)
+                            std::pair<unsigned int, unsigned> pixLocation (x+dX,y+dY);
+                            m_tmpPixelsOfWindow.push_back(pixLocation);
                          }
                          else
                          {
@@ -759,18 +779,67 @@ void Int_PlotsManager::exportPriors(
 }
 
 //-----------------------------------------------------------------------------
+void Int_PlotsManager::givenVolExportPriors(
+        Volume *vol,
+        double isolevel,
+        const std::string &current
+        )
+{
+    if (vol==nullptr)
+    {
+        std::cerr << "ERROR: Volume imported to Int_PlotsManager::"
+                     "givenVolExportPriors is empty\n";
+        return;
+    }
+    std::vector<Int_Plot *>currentPlots;
+
+    gmtl::Vec3f maxLimits = vol->getMaxLimits();
+    gmtl::Vec3f minLimits = vol->getMinLimits();
+    vol->setIsolevel(isolevel);
+
+    currentPlots.clear();
+    for(unsigned int p=0; p<m_plots.size(); ++p)
+    {
+       if(m_plots[p]->isCentreOfPlotInsideVol(minLimits[0],
+                   minLimits[1],maxLimits[0]-minLimits[0],
+                               maxLimits[1]-minLimits[1]))
+       {
+          currentPlots.push_back(m_plots[p]);
+       }
+    }
+
+    if(currentPlots.size()==0)
+    {
+       std::cout << "WARNING: No fieldplot passing through volume "
+                 << current << "\n";
+       if(vol!=NULL)
+       {
+          delete vol;
+          vol = NULL;
+       }
+    }
+
+    if(ttype!=0)
+    {
+        m_mapsManager.createALLFWMAPs(vol);
+    }
+
+    exportPriors(vol,currentPlots,current);
+}
+
+//-----------------------------------------------------------------------------
 void Int_PlotsManager::readVols_n_ExportPriors(
         const std::string &volumeType,
         double isolevel
         )
 {
+    std::cout << "Int_PlotsManager::readVols_n_ExportPriors\n";
     Volume *vol = NULL;
     std::vector<double> userLimits(6);
        // read all vols for each one create a template with dead trees or all cols
        std::string extension(".vol");
        DIR *dir;
        struct dirent *ent;
-       std::vector<Int_Plot *>currentPlots;
        if ((dir = opendir (volsDir.c_str())) != NULL)
        {
          while((ent = readdir (dir)) != NULL)
@@ -784,32 +853,8 @@ void Int_PlotsManager::readVols_n_ExportPriors(
               {
                   current = volsDir + "/" + current;
                   vol = VolumeFactory::produceVolume(current,volumeType);
-                  gmtl::Vec3f maxLimits = vol->getMaxLimits();
-                  gmtl::Vec3f minLimits = vol->getMinLimits();
-                  vol->setIsolevel(isolevel);
-                  currentPlots.clear();
-                  for(unsigned int p=0; p<m_plots.size(); ++p)
-                  {
-                     if(m_plots[p]->isCentreOfPlotInsideVol(minLimits[0],
-                                 minLimits[1],maxLimits[0]-minLimits[0],
-                                             maxLimits[1]-minLimits[1]))
-                     {
-                        currentPlots.push_back(m_plots[p]);
-                     }
-                  }
-                  if(currentPlots.size()==0)
-                  {
-                     std::cout << "WARNING: No fieldplot passing through volume "
-                               << current << "\n";
-                     if(vol!=NULL)
-                     {
-                        delete vol;
-                        vol = NULL;
-                     }
-                     continue;
-                  }
 
-                  exportPriors(vol,currentPlots,current);
+                  givenVolExportPriors(vol,isolevel,current);
 
                   if(vol!=NULL)
                   {
@@ -820,9 +865,13 @@ void Int_PlotsManager::readVols_n_ExportPriors(
            }
          }
        }
+       else if (m_vol!=nullptr)
+       {
+           givenVolExportPriors(m_vol,isolevel,"");
+       }
        else
        {
-          std::cerr << "ERROR: Directory of volumes was not found\n";
+          std::cerr << "ERROR: Directory of volumes or volume not loaded\n";
           std::exit(EXIT_FAILURE);
        }
 }
@@ -837,4 +886,6 @@ Int_PlotsManager::~Int_PlotsManager()
          delete m_plots[i];
       }
    }
+
+
 }

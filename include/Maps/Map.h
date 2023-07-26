@@ -25,7 +25,19 @@ public:
    //--------------------------------------------------------------------------
    /// @brief method that creates and saves a map image
    //--------------------------------------------------------------------------
-   void createAndSave(unsigned int i_thres, unsigned int i_sample);
+   void createMapOnly(unsigned int i_thres, unsigned int i_sample);
+   //--------------------------------------------------------------------------
+   /// @brief method that returns the map value
+   /// @param[in] i_x the x coordinate of the voxel
+   /// @param[in] i_y the y coordinate of the voxel
+   /// @returns the value of the map at x,y pixel location
+   //--------------------------------------------------------------------------
+   double getValue(unsigned int i_x, unsigned int i_y);
+   //--------------------------------------------------------------------------
+   /// @brief method that saves the map values before normalisation into
+   /// a text file
+   //--------------------------------------------------------------------------
+   void saveAsc();
    //--------------------------------------------------------------------------
    /// @brief default destructor
    //--------------------------------------------------------------------------
@@ -40,11 +52,7 @@ private:
 
 
 protected:
-   //--------------------------------------------------------------------------
-   /// @brief method that saves the map values before normalisation into
-   /// a text file
-   //--------------------------------------------------------------------------
-   void saveAsc();
+
    //--------------------------------------------------------------------------
    /// @brief method that returns the intensity value of the voxel
    /// @param[in] i_x the x coordinate of the voxel

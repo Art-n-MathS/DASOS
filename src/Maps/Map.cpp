@@ -44,6 +44,7 @@ float Map::getIntensity(unsigned int i_x, unsigned int i_y, unsigned int i_z)
    return m_object->getIntensity(i_x,i_y,i_z);
 }
 
+
 //-----------------------------------------------------------------------------
 void Map::saveAsc()
 { 
@@ -71,15 +72,26 @@ void Map::saveAsc()
 }
 
 //-----------------------------------------------------------------------------
-void Map::createAndSave(unsigned int /*i_thres*/, unsigned int /*i_sample*/)
+void Map::createMapOnly(unsigned int /*i_thres*/, unsigned int /*i_sample*/)
 {
+    m_mapValues.resize(m_noOfPixelsX*m_noOfPixelsY);
     if(m_mapValues.size()==0)
     {
        std::cout << "Map has not been initialised correctly\n";
        return;
     }
     createMap();
-    saveAsc();
+}
+
+//-----------------------------------------------------------------------------
+double Map::getValue(unsigned int i_x, unsigned int i_y)
+{
+    if(getIndex(i_x,i_y)>=m_mapValues.size())
+    {
+        std::cout << "ERROR: field plot outside volume!\n";
+        return 0;
+    }
+    return m_mapValues[getIndex(i_x,i_y)];
 }
 
 //-----------------------------------------------------------------------------

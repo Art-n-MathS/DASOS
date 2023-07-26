@@ -94,9 +94,9 @@ int main (int argc, char const* argv[])
    std::string dtmFileName("");
    std::vector<std::string> pwFiles;
    std::string volumeType("HASHED_1D_ARRAY");
-   double voxelLength = 2.5f;
-   double noiseLevel = 25.0f;
-   double isolevel = 1.0f;
+   double voxelLength = 2.5;
+   double noiseLevel = 25.0;
+   double isolevel = 1.0;
    std::string mapsAll("");
 
    Int_PlotsManager fieldplotsManager; // manager of the plots instead of the previous one
@@ -129,7 +129,7 @@ int main (int argc, char const* argv[])
    unsigned int mapsIndex=0;
    bool optPolygonisation = false;
 
-   std::vector<double> userLimits(6, 0.0f);
+   std::vector<double> userLimits(6, 0.0);
 
    // PARSING
    // pair arguments to numbers to ease search
@@ -837,212 +837,219 @@ int main (int argc, char const* argv[])
    // create templates from fieldplot
    //--------------------------------------------------------------------------------------
    // check validity of fieldplot manager
-   if(isFieldPlotManagerValid)
-   {
-       fieldplotsManager.interprateData(volumeType,isolevel);
-   }
 
-   Volume *vol = NULL; 
+   Volume *vol = nullptr;
    double Construction_total (0);
+
+
+
+
+
 
 
 
    //--------------------------------------------------------------------------------------
    // read filename
    //--------------------------------------------------------------------------------------
-   if(lasFiles.size()==0 && volumeFileName=="" && pwFiles.size()==0)
+   if(!(lasFiles.size()==0 && volumeFileName=="" && pwFiles.size()==0))
    {
-      if(isFieldPlotManagerValid)
-      {
-         std::cout << "   ***   EXIT   ***\n";
-         return EXIT_SUCCESS;
-      }
-      std::cerr << "LAS, pulsewave or volume file haven't been specified\n";
-      std::cerr << "use \"DASOS --help\" for instructions.\n";
-      return EXIT_FAILURE;
-   }
-   if(csvSamplesPulses_exportingFile!="")
-   {
-      std::cout << "Exporting 10 pulses into " << csvSamplesPulses_exportingFile << "\n"
-                << "Pulses exported from the first file loaded\n";
-      if(lasFiles.size()!=0)
-      {
-         Las1_3_handler lala(lasFiles[0]);
-         lala.saveSamples(csvSamplesPulses_exportingFile,noSamples);
-      }
-      else if (pwFiles.size()!=0)
-      {
-         PW_handler lala(pwFiles[0]);
-         lala.saveSamples(csvSamplesPulses_exportingFile,noSamples);
-      }
-      else
-      {
-         std::cerr << "ERROR: no pulsewaves or las file loaded\n";
-         return EXIT_FAILURE;
-      }
-      return EXIT_SUCCESS;
-   }
-   if(intsfileName!="")
-   {
-      std::cout << "Exporting sum intensity of pulses into " << csvSamplesPulses_exportingFile << "\n";
-      if(lasFiles.size()!=0)
-      {
-         Las1_3_handler lala(lasFiles[0]);
-         if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
-         {
-            //then user haven't defined limits
-            std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
-            if (calBoundaries)
-            {
-               std::cout << "Calculating boundaries of discrete returns\n";
-              userLimits = lala.calBoundaries();
-   //            userLimits[0]=708587264.00;
-   //            userLimits[1]=612764480.00;
-   //            userLimits[2]=607443584.00;
-   //            userLimits[3]=506632352.00;
-   //            userLimits[4]=247611392.00;
-   //            userLimits[5]= 75554704.00;
+       if(csvSamplesPulses_exportingFile!="")
+       {
+          std::cout << "Exporting 10 pulses into " << csvSamplesPulses_exportingFile << "\n"
+                    << "Pulses exported from the first file loaded\n";
+          if(lasFiles.size()!=0)
+          {
+             Las1_3_handler lala(lasFiles[0]);
+             lala.saveSamples(csvSamplesPulses_exportingFile,noSamples);
+          }
+          else if (pwFiles.size()!=0)
+          {
+             PW_handler lala(pwFiles[0]);
+             lala.saveSamples(csvSamplesPulses_exportingFile,noSamples);
+          }
+          else
+          {
+             std::cerr << "ERROR: no pulsewaves or las file loaded\n";
+             return EXIT_FAILURE;
+          }
+          return EXIT_SUCCESS;
+       }
+       if(intsfileName!="")
+       {
+          std::cout << "Exporting sum intensity of pulses into " << csvSamplesPulses_exportingFile << "\n";
+          if(lasFiles.size()!=0)
+          {
+             Las1_3_handler lala(lasFiles[0]);
+             if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
+             {
+                //then user haven't defined limits
+                std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
+                if (calBoundaries)
+                {
+                   std::cout << "Calculating boundaries of discrete returns\n";
+                  userLimits = lala.calBoundaries();
+       //            userLimits[0]=708587264.00;
+       //            userLimits[1]=612764480.00;
+       //            userLimits[2]=607443584.00;
+       //            userLimits[3]=506632352.00;
+       //            userLimits[4]=247611392.00;
+       //            userLimits[5]= 75554704.00;
 
-            }
-            else
-            {
-                userLimits = lala.getBoundaries();
-            }
-         }
-         else
-         {
-            std::vector<double> temp_userLimits(lala.getBoundaries());
-            userLimits[4] = temp_userLimits[4];
-            userLimits[5] = temp_userLimits[5];
-         }
-         if(zmax>zmin)
-         {
-             userLimits[5]=zmin;
-             userLimits[4]=zmax;
-         }
+                }
+                else
+                {
+                    userLimits = lala.getBoundaries();
+                }
+             }
+             else
+             {
+                std::vector<double> temp_userLimits(lala.getBoundaries());
+                userLimits[4] = temp_userLimits[4];
+                userLimits[5] = temp_userLimits[5];
+             }
+             if(zmax>zmin)
+             {
+                 userLimits[5]=zmin;
+                 userLimits[4]=zmax;
+             }
 
-         std::cout<< "userLimits "<< userLimits[0] << " " << userLimits[1]<<" "
-                   << userLimits[2]<<" " << userLimits[3]<<" " <<userLimits[4]<<" " << userLimits[5]<<"\n";
+             std::cout<< "userLimits "<< userLimits[0] << " " << userLimits[1]<<" "
+                       << userLimits[2]<<" " << userLimits[3]<<" " <<userLimits[4]<<" " << userLimits[5]<<"\n";
 
-         lala.saveSumIntensity(intsfileName,noiseLevel,userLimits);
-      }
-      else
-      {
-         std::cerr << "ERROR: no pulsewaves or las file loaded\n";
-         return EXIT_FAILURE;
-      }
-      return EXIT_SUCCESS;
-   }
-   std::cout << lasFiles.size() << " ----- las file size\n";
-   if(lasFiles.size()!=0)
-   {
-      Las1_3_handler lala(lasFiles[0]);
-      //lala.printPublicHeader();
-      if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
-      {
-         //then user haven't defined limits
-         std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
-         if (calBoundaries)
-         {
-            std::cout << "Calculating boundaries of discrete returns\n";
-           userLimits = lala.calBoundaries();
-//            userLimits[0]=708587264.00;
-//            userLimits[1]=612764480.00;
-//            userLimits[2]=607443584.00;
-//            userLimits[3]=506632352.00;
-//            userLimits[4]=247611392.00;
-//            userLimits[5]= 75554704.00;
+             lala.saveSumIntensity(intsfileName,noiseLevel,userLimits);
+          }
+          else
+          {
+             std::cerr << "ERROR: no pulsewaves or las file loaded\n";
+             return EXIT_FAILURE;
+          }
+          return EXIT_SUCCESS;
+       }
 
-         }
-         else
-         {
-             userLimits = lala.getBoundaries();
-         }
-      }
-      else
-      {
-         std::vector<double> temp_userLimits(lala.getBoundaries());
-         userLimits[4] = temp_userLimits[4];
-         userLimits[5] = temp_userLimits[5];
-      }
-      if(zmax>zmin)
-      {
-          userLimits[5]=zmin;
-          userLimits[4]=zmax;
-      }
-      std::cout<< "userLimits "<< userLimits[0] << " " << userLimits[1]<<" "
-                << userLimits[2]<<" " << userLimits[3]<<" " <<userLimits[4]<<" " << userLimits[5]<<"\n";
-      std::vector<double> temp_userLimits(lala.getBoundaries());
-      std::cout << "Fligtline Limits "<< temp_userLimits[0] << " " << temp_userLimits[1]<<" "
-                << temp_userLimits[2]<<" " << temp_userLimits[3]<<" " <<temp_userLimits[4]<<" " << temp_userLimits[5]<<"\n";
+       std::cout << lasFiles.size() << " ----- las file size\n";
+       if(lasFiles.size()!=0)
+       {
+          Las1_3_handler lala(lasFiles[0]);
+          //lala.printPublicHeader();
+          if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
+          {
+             //then user haven't defined limits
+             std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
+             if (calBoundaries)
+             {
+                std::cout << "Calculating boundaries of discrete returns\n";
+               userLimits = lala.calBoundaries();
+    //            userLimits[0]=708587264.00;
+    //            userLimits[1]=612764480.00;
+    //            userLimits[2]=607443584.00;
+    //            userLimits[3]=506632352.00;
+    //            userLimits[4]=247611392.00;
+    //            userLimits[5]= 75554704.00;
+
+             }
+             else
+             {
+                 userLimits = lala.getBoundaries();
+             }
+          }
+          else
+          {
+             std::vector<double> temp_userLimits(lala.getBoundaries());
+             userLimits[4] = temp_userLimits[4];
+             userLimits[5] = temp_userLimits[5];
+          }
+          if(zmax>zmin)
+          {
+              userLimits[5]=zmin;
+              userLimits[4]=zmax;
+          }
+          std::cout<< "userLimits "<< userLimits[0] << " " << userLimits[1]<<" "
+                    << userLimits[2]<<" " << userLimits[3]<<" " <<userLimits[4]<<" " << userLimits[5]<<"\n";
+          std::vector<double> temp_userLimits(lala.getBoundaries());
+          std::cout << "Fligtline Limits "<< temp_userLimits[0] << " " << temp_userLimits[1]<<" "
+                    << temp_userLimits[2]<<" " << temp_userLimits[3]<<" " <<temp_userLimits[4]<<" " << temp_userLimits[5]<<"\n";
 
 
-      const std::clock_t before_Vol_Construction = std::clock();
-      // -las "C:\Users\milto\Documents\TEPAK\SampleData\L004-1-M01-S1-C1_s_w_2.las" -dtm "C:\Users\milto\Documents\TEPAK\SampleData\DTM_1m_AofI.bil" -map height "C:\Users\milto\Documents\TEPAK\SampleData\height.dtm2"
-      //  userLimits[5]-=380.0;
-      vol = VolumeFactory::produceVolume(voxelLength,userLimits,volumeType);
-      vol->setNoiseLevel(noiseLevel);
-      lala.readFileAndGetObject(vol,fileType,dtmFileName);
-//      for(unsigned int nextFile=1; nextFile<lasFiles.size(); ++nextFile)
-//      {
-//         Las1_3_handler nextLAShandler(lasFiles[nextFile]);
-//         nextLAShandler.readFileAndGetObject(vol,fileType,dtmFileName);
-//      }
-      vol->normalise();
+          const std::clock_t before_Vol_Construction = std::clock();
+          // -las "C:\Users\milto\Documents\TEPAK\SampleData\L004-1-M01-S1-C1_s_w_2.las" -dtm "C:\Users\milto\Documents\TEPAK\SampleData\DTM_1m_AofI.bil" -map height "C:\Users\milto\Documents\TEPAK\SampleData\height.dtm2"
+          //  userLimits[5]-=380.0;
+          vol = VolumeFactory::produceVolume(voxelLength,userLimits,volumeType);
+          vol->setNoiseLevel(noiseLevel);
+          lala.readFileAndGetObject(vol,fileType,dtmFileName);
+    //      for(unsigned int nextFile=1; nextFile<lasFiles.size(); ++nextFile)
+    //      {
+    //         Las1_3_handler nextLAShandler(lasFiles[nextFile]);
+    //         nextLAShandler.readFileAndGetObject(vol,fileType,dtmFileName);
+    //      }
+          vol->normalise();
 
-       Construction_total = double(std::clock()-before_Vol_Construction)/ double(CLOCKS_PER_SEC); // time in milliseconds
+           Construction_total = double(std::clock()-before_Vol_Construction)/ double(CLOCKS_PER_SEC); // time in milliseconds
 
-   }
-   else if (volumeFileName!="")
-   {
-       vol = VolumeFactory::produceVolume(volumeFileName,volumeType);
-       gmtl::Vec3f maxLimits = vol->getMaxLimits();
-       gmtl::Vec3f minLimits = vol->getMinLimits();
-       userLimits[0] = maxLimits[1];
-       userLimits[1] = minLimits[1];
-       userLimits[2] = maxLimits[0];
-       userLimits[3] = minLimits[0];
-       userLimits[4] = maxLimits[2];
-       userLimits[5] = maxLimits[2];
+       }
+       else if (volumeFileName!="")
+       {
+           vol = VolumeFactory::produceVolume(volumeFileName,volumeType);
+           gmtl::Vec3f maxLimits = vol->getMaxLimits();
+           gmtl::Vec3f minLimits = vol->getMinLimits();
+           userLimits[0] = maxLimits[1];
+           userLimits[1] = minLimits[1];
+           userLimits[2] = maxLimits[0];
+           userLimits[3] = minLimits[0];
+           userLimits[4] = maxLimits[2];
+           userLimits[5] = maxLimits[2];
+           vol->setIsolevel(isolevel);
+       }
+       else if (pwFiles.size()!=0)
+       {
+          PW_handler pw(pwFiles[0]);
+          if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
+          {
+             //then user haven't defined limits
+             userLimits = pw.getBoundaries();
+             std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
+             std::cout << "userLimits " << userLimits[0] << " " << userLimits[1] << " " << userLimits[2] << " " << userLimits[3] <<" " << userLimits[4] << " " << userLimits[5] << "\n";
+          }
+          else
+          {
+             std::vector<double> temp_userLimits(pw.getBoundaries());
+             userLimits[4] = temp_userLimits[4];
+             userLimits[5] = temp_userLimits[5];
+          }
+          vol = VolumeFactory::produceVolume(voxelLength,userLimits,volumeType);
+          pw.readFileAndGetObject(vol,"full-waveform",dtmFileName);
+          for(unsigned int nextFile=1; nextFile<pwFiles.size(); ++nextFile)
+          {
+             PW_handler nextPWhandler(pwFiles[nextFile]);
+             nextPWhandler.readFileAndGetObject(vol,"full-waveform",dtmFileName);
+          }
+
+          vol->normalise();
+          std::cout << "Pulse WAVES read!\n";
+       }
+
        vol->setIsolevel(isolevel);
+       vol->setNoiseLevel(noiseLevel);
+
+       if(exportVolumeFileName!="")
+       {
+         vol->exportToFile(exportVolumeFileName,volumeCompression);
+       }
+
+
    }
-   else if (pwFiles.size()!=0)
+
+   //--------------------------------------------------------------------------------------
+   // Export field data
+   //--------------------------------------------------------------------------------------
+   if(isFieldPlotManagerValid)
    {
-      PW_handler pw(pwFiles[0]);
-      if(userLimits[0]<0.001 && userLimits[0]>-0.0001)
-      {
-         //then user haven't defined limits
-         userLimits = pw.getBoundaries();
-         std::cout << "WARNING: Limits haven't been set, so entire file will be loaded\n";
-         std::cout << "userLimits " << userLimits[0] << " " << userLimits[1] << " " << userLimits[2] << " " << userLimits[3] <<" " << userLimits[4] << " " << userLimits[5] << "\n";
-      }
-      else
-      {
-         std::vector<double> temp_userLimits(pw.getBoundaries());
-         userLimits[4] = temp_userLimits[4];
-         userLimits[5] = temp_userLimits[5];
-      }
-      vol = VolumeFactory::produceVolume(voxelLength,userLimits,volumeType);
-      pw.readFileAndGetObject(vol,"full-waveform",dtmFileName);
-      for(unsigned int nextFile=1; nextFile<pwFiles.size(); ++nextFile)
-      {
-         PW_handler nextPWhandler(pwFiles[nextFile]);
-         nextPWhandler.readFileAndGetObject(vol,"full-waveform",dtmFileName);
-      }
-
-      vol->normalise();
-      std::cout << "Pulse WAVES read!\n";
+       std::cout << "Export field data \n ";
+       if (vol != nullptr)
+       {
+           fieldplotsManager.set_las(vol);
+       }
+       fieldplotsManager.interprateData(volumeType,isolevel);
    }
-
-   vol->setIsolevel(isolevel);
-   vol->setNoiseLevel(noiseLevel);
-
-   if(exportVolumeFileName!="")
-   {
-     vol->exportToFile(exportVolumeFileName,volumeCompression);
-   }
-
-
 
 
 
@@ -1067,11 +1074,11 @@ int main (int argc, char const* argv[])
       }
 
       glData->exportToObj(objFileName,igmFileName,bilFileName,bands);
-      if (glData!=NULL)
+      if (glData!=nullptr)
       {
          delete glData;
       }
-      if (mc!=NULL)
+      if (mc!=nullptr)
       {
          delete mc;
       }
@@ -1160,7 +1167,7 @@ int main (int argc, char const* argv[])
     }
 
 
-   if(vol!=NULL)
+   if(vol!=nullptr)
    {
       delete vol;
    }
