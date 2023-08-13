@@ -5,16 +5,19 @@ Marine Laboratory and the source code is released under the GNU GENERAL PUBLIC
  LICENSE, Version 3. 
 
 For any publications using DASOS, please reference the following paper:
-Miltiadou, M., Grant, M. G., Campbell, N. D., Warren, M., Clewley, D., & Hadjimitsis, D. G. (2019, June). Open source software DASOS: Efficient accumulation, analysis, and visualisation of full-waveform lidar. In Seventh International Conference on Remote Sensing and Geoinformation of the Environment (RSCy2019) (Vol. 11174, pp. 524-540). SPIE. 
-Available at: https://www.researchgate.net/publication/334069759_Open_source_software_DASOS_efficient_accumulation_analysis_and_visualisation_of_full-waveform_lidar 
+Miltiadou M., Warren M. A., Grant M., Brown M., 2015, Alignment of 
+Hyperspectral Imagery and full-waveform LiDAR data for visualisation and 
+classification purposes, ISPRS Archives 36th International Symposium of
+Remote Sensing of the enviroment
+Available at: http://meetingorganizer.copernicus.org/ISRSE36/ISRSE36-158-2.pdf
 
 For testing the system, please download the following sample here: 
-https://www.dropbox.com/sh/hzpl16gue5xvjmb/AADQsJOsqKkx0lCX4mJjvBPVa?dl=0
-These sample data were (1) either collected by by the NERC Airborne Research and Survey
+https://rsg.pml.ac.uk/shared_files/arsf/DASOS/
+"These sample data were collected by the NERC Airborne Research and Survey
 Facility (ARSF). Copyright is held by the UK Natural Environment
-Research Council (NERC). (2) Or provided by Interpine Group Ltd. The data are free for non-commercial use,
+Research Council (NERC). The data are free for non-commercial use,
 NERC-ARSF must be acknowledged in any publications, software or other
-media that make use of these data.
+media that make use of these data."
 
 
 Installation Dependancies:
@@ -111,13 +114,12 @@ DASOS User Quide:
                               - LOWEST_RETURN
                               - FIELDPLOT
                               - ALL_FW
-                              - HEIGHT_LEVELS
-                              This feature exports 2D maps into .asc format. 
-                              The ALL_FW option generates one metrics
+                              All the maps are exported into .asc format and 
+                              can be loaded int QGIS and other software 
+                              packages. The ALL_FW option generates one metrics
                               for each available full-waveform LiDAR related 
                               metrics and their names are:
                               outputName+metricsType+.asc
-                              
 
 -map HYPERSPECTRAL <band> <outputName> The hyperspectral map needs an extra 
                               parameter defining which band will be outputed
@@ -125,8 +127,6 @@ DASOS User Quide:
 -exportVolume c <volumeFileName> exports the volume into an ASCII file to speed
                               up future interpolation of the data. 'c' refers 
                               to compressed and its an implicit functionality. 
-                              It is recommended to be used for testing only as 
-                              resolution of data is reduced during exportation.
 
 -column <label>               the label of the column that defines the class of
                               each entry (e.g. <label>= isDead)
@@ -177,11 +177,13 @@ Full userguide available at: https://github.com/Art-n-MathS/DASOS/DASOS_userGuid
 
 Please note that this is a research software generated for supporting my thesis
 Therefore it may be file formats dependant and it may contain bugs.
+Identified bugs potential improvements list can be found here:
+https://docs.google.com/spreadsheets/d/10yE5p463cLA_GtKkyiaWEzScW7N9cVxbPs5y0muXuZY/edit?usp=sharing
 
 For bringing potential issues in discussion please use our group:
 https://groups.google.com/forum/#!forum/dasos---the-native-full-waveform-fw-lidar-software
 
-For updates and news please follow twitter @DrMiltiadou and @_DASOS_
+For updates and news please follow twitter @MiltoMiltiadou
 
 
 

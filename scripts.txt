@@ -1,0 +1,20 @@
+-las "C:\Users\milto\Downloads\Data\Flightline_3\900_faixa3_DTM.las" -dtm "C:\Users\milto\Downloads\Data\DTM\DTM.bil" -vl 10 -icsv C:\Users\milto\Downloads\Data\Flightline_3\Fieldplot_T1.csv -userLimits 7522176.924 7521856.36 343360.124 343202.69
+ -nl 15 -setZLimits -100 200 -ttype cylinder 5 2 -eparameters processed -column Label -ocsv out.csv -exportVolume c volumTest.vol  -map height height.asc
+
+-las "C:\Users\milto\Downloads\Data\Flightline_3\900_faixa3_DTM.las" -vl 3 -icsv C:\Users\milto\Downloads\Data\Flightline_3\Fieldplot_T1.csv -userLimits 7522176.924 7521856.36 343360.124 343202.69
+ -nl 15 -ttype cylinder 8 5 -eparameters processed -column Label -ocsv out.csv -exportVolume c volumTest.vol  -map height height.asc
+
+-volume volumTest.vol  -vl 3  -nl 15 -icsv C:\Users\milto\Downloads\Data\Flightline_3\Fieldplot_T1.csv  -eparameters processed -column Label -class hello -ttype cylinder 8 5 -ocsv out.csv -map height height1.asc
+
+
+-vols "C:/Users/milto/Documents/EngD/DASOS2023_2/VolsDir/"  -vl 3  -nl 15 -icsv C:\Users\milto\Downloads\Data\Flightline_3\Fieldplot_T1.csv  -eparameters processed -column Label -class hello -ttype cylinder 8 5 -ocsv out.csv 
+
+
+
+-volume "C:/Users/milto/Documents/EngD/DASOS2023_2/VolsDir/volumTest.vol" -map heightTest
+
+-las "C:\Users\milto\Downloads\Data\Flightline_3\900_faixa3_DTM.las"  -vl 6  -nl 15 -icsv C:\Users\milto\Downloads\Data\Flightline_3\Fieldplot_T1.csv  -eparameters processed -column Label -class hello -ttype cylinder 6 3 -ocsv out.csv 
+
+
+-las "C:\Users\milto\Downloads\Data\Flightline_3\900_faixa3_DTM.las" -map height heightTestLa
+
