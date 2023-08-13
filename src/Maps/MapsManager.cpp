@@ -141,11 +141,13 @@ void MapsManager::createALLFWMAPs(Volume *i_vol)
         delete m_maps[i];
     }
     m_maps.clear();
+    m_maps.resize(mInfo.size(),nullptr);
     for(unsigned int i=0; i<mInfo.size(); ++i)
     {
         createMap(mInfo[i]);
 
-        m_maps.push_back(m_map);
+        m_maps[i]=m_map;
+        m_map=nullptr;
         //else {
             // map returned is empty
         //}
