@@ -22,7 +22,7 @@
 #include <algorithm>
 
 //-----------------------------------------------------------------------------
-MapsManager::MapsManager():m_map(nullptr),m_saveMaps(false),
+MapsManager::MapsManager():m_map(nullptr),
     m_FWMetrics({"NON-EMPTY_VOXELS",
                  "DENSITY",
                  "THICKNESS",
@@ -33,7 +33,7 @@ MapsManager::MapsManager():m_map(nullptr),m_saveMaps(false),
                  "AVERAGE_HEIGHT_DIFFERENCE",
                  "INTENSITY_AVG",
                  "INTENSITY_MAX"
-                })
+                }) // {"HEIGHT_LEVELS",19} also FW related but needs to be called individually and cannot be included into the the 3D metrics extraction
 {
    // The types should aggree with the fw metrics list
    m_types =
@@ -102,7 +102,7 @@ const std::vector<double> &MapsManager::getValues(
             ave = sum/i_coo.size();
             for(unsigned j=0; j<i_coo.size(); ++j)
             {
-                diff+=(ave-m_maps[i]->getValue(i_coo[j].first, i_coo[j].second));
+                diff+=std::abs(ave-double(m_maps[i]->getValue(i_coo[j].first, i_coo[j].second)));
             }
             diff = diff/i_coo.size();
         }
@@ -124,7 +124,6 @@ const std::vector<double> &MapsManager::getValues(
 //-----------------------------------------------------------------------------
 void MapsManager::createALLFWMAPs(Volume *i_vol)
 {
-    m_saveMaps=true;
     std::vector<mapInfo *>mInfo;
     for (unsigned int i=0; i<m_FWMetrics.size(); ++i)
     {
@@ -169,7 +168,7 @@ void MapsManager::createMap(
         mapInfo *m_infoOfMap
         )
 {
-   if (m_map!=nullptr and !m_saveMaps)
+   if (m_map!=nullptr)
    {
       delete m_map;
       m_map=nullptr;
@@ -275,10 +274,8 @@ void MapsManager::createMap(
 //       break;
    case 19:
        std::cout << "Height Levels\n";
-       if (m_saveMaps)
-       {
-          m_map = new HeightLevels(m_infoOfMap->name,m_infoOfMap->obj);
-       }
+       m_map = new HeightLevels(m_infoOfMap->name,m_infoOfMap->obj);
+
        break;
    default:
       std::cout << std::string (s) << " is not a valid type of map";
@@ -288,14 +285,8 @@ void MapsManager::createMap(
    if(m_map!=nullptr)
    {
       m_map->createMapOnly(m_infoOfMap->thres,m_infoOfMap->samp);
-      if (m_saveMaps)
-      {
-          m_map->saveAsc();
-          std::cout <<"SAVING MAP\n";
-      }
-      else {
-          // for extracting feature vectors
-      }
+      m_map->saveAsc();
+      std::cout <<"SAVING MAP\n";
    }
 
 }

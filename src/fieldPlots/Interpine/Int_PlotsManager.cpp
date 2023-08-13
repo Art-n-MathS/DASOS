@@ -675,7 +675,7 @@ void Int_PlotsManager::exportPriors(
       }
    }
    fileWithTemplates <<"\n";
-   fileWithTemplates << std::setprecision(3) << std::fixed;
+   fileWithTemplates << std::setprecision(8) << std::fixed;
    unsigned int lenPrior =maxX*maxY*maxZ;
    double *currentPrior=new double[lenPrior];
 
